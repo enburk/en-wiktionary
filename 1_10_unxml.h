@@ -1,6 +1,6 @@
 Pass <str, entry> unxml = [](auto & input, auto & output)
 {
-    Result result {__FILE__, output};
+    Result result {__FILE__, output, false}; // don't generate reports by default - they are huge
 
     const std::vector<str> tagmap = 
     {
@@ -51,7 +51,7 @@ Pass <str, entry> unxml = [](auto & input, auto & output)
             case 0: if (got(s, tags,  "<page>"  , true )) mode = 1; break;
             case 1: if (got(s, tags,  "<title>" , true )) mode = 2; break;
             case 2: if (got(s, title, "</title>", false)) mode = 3; break;
-            case 3: if (got(s, tags,  "<text"   , true )) if (s.empty() || s.headed(' ') || s.headed('>')) mode = 4; break;
+            case 3: if (got(s, tags,  "<text"   , true )) if (s.empty() || s.starts_with(' ') || s.starts_with('>')) mode = 4; break;
             case 4: if (got(s, tags,  ">"       , true )) mode = 5; break;
             case 5: if (got(s, topic, "<"       , false)) mode = 0; break;
             }
@@ -60,15 +60,35 @@ Pass <str, entry> unxml = [](auto & input, auto & output)
             {
                 bool accept = true; str report = "";
 
-                if (title.headed("Wiktionary:")) { report = "Wiktionary"; accept = false; } else
-                if (title.headed("Appendix:"  )) { report = "Appendix"  ; accept = false; } else
-                if (title.headed("Category:"  )) { report = "Category"  ; accept = false; } else
-                if (title.headed("Template:"  )) { report = "Template"  ; accept = true;  } else
-                if (title.headed("Index:"     )) { report = "Index"     ; accept = false; } else
-                if (title.found (":"          )) { report = "Meta"      ; accept = false; } else
+                if (title.starts_with("Template:"  )) { report = "meta Template"  ; accept = true;  } else
+                if (title.starts_with("Wiktionary:")) { report = "meta Wiktionary"; accept = false; } else
+                if (title.starts_with("Appendix:"  )) { report = "meta Appendix"  ; accept = false; } else
+                if (title.starts_with("Category:"  )) { report = "meta Category"  ; accept = false; } else
+                if (title.starts_with("Index:"     )) { report = "meta Index"     ; accept = false; } else
+                if (title.found      (":"          )) { report = "meta"           ; accept = false; } else
                 {
                     bool latin = false; for (signed char c : title) if (c > 0) { latin = true; break; }
-                    if (!latin) { report = "Z"; accept = false; }
+                    if (!latin) { report = "non-English titles"; accept = false; }
+                }
+
+                if (accept
+                && !title.starts_with("Template:")
+                && !topic.found("English")
+                && !topic.found("Translingual")
+                && !topic.found("#redirect")
+                && !topic.found("#REDIRECT")) { report = "non-English topics"; accept = false; }
+
+                if (accept)
+                {
+                    for (int e, b = 0; ; )
+                    {
+                        b = topic.find("&lt;!--", str::start_from(b)); if (b == str::nope){ break; }
+                        e = topic.find("--&gt;" , str::start_from(b)); if (e == str::nope){ break; }
+
+                        result.reject (topic.substr (b, e-b+6 ) + "\n", "xml comments");
+                        
+                        topic.erase (b, e-b+6);
+                    }
                 }
 
                 accept ?
@@ -79,7 +99,7 @@ Pass <str, entry> unxml = [](auto & input, auto & output)
             }
         }
 
-    //  result.reject (tags); // file would be huge - about half of the original xml
+        result.reject (tags); // huge file - about half of the original xml
 
         tags.clear ();
     }

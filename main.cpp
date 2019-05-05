@@ -3,17 +3,18 @@
 #include <array>
 #include <vector>
 #include <string>
+#include <variant>
 #include <cassert>   
 #include <iomanip>
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include <filesystem>
 #include <iterator>
 #include <algorithm>
 #include <functional>
 #include <condition_variable>
 #include <chrono>
-using namespace std::chrono_literals;
 
 template <typename ... Args> void print (Args... args) {
 //    static std::recursive_mutex mutex;
@@ -30,6 +31,27 @@ const bool GENERATE_REPORTS = true;
 //#include "_report.h"
 #include "_result.h"
 #include "1.h"
+#include "2.h"
+
+Pass <pass2::entry, nothing> stop = [](auto & input, auto & output)
+{
+    decltype (std::chrono::high_resolution_clock::now ())
+    start  =  std::chrono::high_resolution_clock::now ();
+
+    for (auto && e : input) { ; }
+
+    decltype (std::chrono::high_resolution_clock::now ())
+    stop   =  std::chrono::high_resolution_clock::now ();
+
+    auto duration = stop - start;
+
+    auto minutes = std::chrono::duration_cast<std::chrono::minutes>(duration); duration -= minutes;
+    auto seconds = std::chrono::duration_cast<std::chrono::seconds>(duration); duration -= seconds;
+
+    std::cout << std::endl << "total: "
+    << minutes.count ()  << " minutes "
+    << seconds.count ()  << " seconds " << std::endl; 
+};
 
 int main ()
 {
@@ -41,9 +63,8 @@ int main ()
     //pass::start >>
         
     pass1::unzip >> pass1::unxml >>
+
+    pass2::english >>
     
-    pass1::stop >>
-        
-    terminator;
-    return 0;
+    stop >> terminator; return 0;
 }

@@ -18,6 +18,9 @@ struct Report
             RC rc = f.create ( dir / name + ".txt" );  if( ! rc.ok ) throw std::logic_error (rc.msg);
         }
 
+            while (!topic.empty() && topic.front() == "" ) topic.erase  (0);
+            while (!topic.empty() && topic.back () == "" ) topic.truncate();
+
         for   ( int n=0; n<topic0.size (); n++ ) topic0 [n].strip ();
         while ( topic0.size () > 0 && topic0 [0]     == "" ) topic0.erase (0);
         while ( topic0.size () > 0 && topic0.last () == "" ) topic0.trunc ();

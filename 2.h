@@ -1,39 +1,30 @@
 namespace pass2
 {
-    inline const char esc [] =
-    "#############################################################################################################################";
+    inline const auto esc = pass1::esc;
 
     struct entry { str title; array<str> topic;
     
         auto size () { auto n = title.size(); for (const auto & s : topic) n += s.size(); return n; }
 
-        friend std::ostream & operator << (std::ostream & out, entry && entry)
+        auto empty () { return title.empty() && topic.empty(); }
+
+        void canonicalize ()
         {
-            out << entry.title;
-            out << esc; for (auto && s : entry.topic)
-            out << s;
-            return out;
+            for (auto & s : topic) s.strip ();
+            while (topic.back() == "") topic.pop_back();
+            topic.erase(topic. begin(), std::find_if(topic. begin(), topic.end (), [](auto & s){ return s != ""; }));
+            topic.erase(std::unique(topic.begin(), topic.end(), [](auto & s1, auto & s2){ return s1 == "" && s2 == ""; }), topic.end());
+        }
 
-            out << esc         << endl 
-                << entry.title << endl
-                << esc         << endl 
-                << entry.topic << endl;
+        friend std::ostream & operator << (std::ostream & out, const entry & entry)
+        {
+            out << esc         << std::endl 
+                << entry.title << std::endl
+                << esc         << std::endl << std::endl 
+                << entry.topic << std::endl;
             return out;
-
         }
     };
 
-    //using Pass = Pass<entry, entry>;
-
-    #include "1_00_unzip.h"
-    #include "1_10_unxml.h"
-//    #include "1_15_uncomment.h"
-
-    //PASS(stop)
-    Pass<entry, entry> stop = [filename =__FILE__](auto & input, auto & output)
-    {
-        for (auto && i: input) { ; }
-
-        cout << "stop" << endl;
-    };
+    #include "2_10_english.h"
 }

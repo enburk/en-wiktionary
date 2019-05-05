@@ -9,6 +9,8 @@ template<class type> struct array : public std::vector<type>
 
     friend array operator + (const array & a, const type  & b) { array tt; tt += a; tt+= b; return tt; }
     friend array operator + (const type  & a, const array & b) { array tt; tt += a; tt+= b; return tt; }
+
+    friend std::ostream & operator << (std::ostream & out, const array & a) { for (const auto & e : a) out << e << std::endl; return out; }
 };
 
 struct str : public std::string
@@ -37,8 +39,89 @@ struct str : public std::string
     str head (int num) const { return substr (0, num); }
     str tail (int num) const { return substr (size () - num, max); }
 
-    bool headed (str s) const { if (size () < s.size ()) return false; for (int i=0; i<s.size (); i++) if ((*this) [          i] != s [            i]) return false; return true; }
-    bool tailed (str s) const { if (size () < s.size ()) return false; for (int i=0; i<s.size (); i++) if ((*this) [size ()-1-i] != s [s.size ()-1-i]) return false; return true; }
+    struct one_of     { base chars; };
+    struct one_not_of { base chars; };
+
+    typedef std::variant<str, one_of, one_not_of> pattern;
+
+    struct start { int offset; bool from_end; };
+    static start start_from     (int offset = 0){ return start {offset, false}; }
+    static start start_from_end (int offset = 0){ return start {offset, true }; }
+
+    auto find  (pattern pattern, start start = start_from(0)) const
+    {
+        const_iterator i;
+
+        if (std::holds_alternative<str>(pattern))
+        {
+            if (start.from_end) i = std::next(
+                std::search(rbegin() + start.offset, rend(),
+                std::boyer_moore_horspool_searcher(
+                std::get<str>(pattern).rbegin(),
+                std::get<str>(pattern).rend ())
+            )).base();
+
+            else i = 
+                std::search(begin() + start.offset, end(),
+                std::boyer_moore_horspool_searcher(
+                std::get<str>(pattern).begin(),
+                std::get<str>(pattern).end ()));
+        }
+
+        else
+
+        if (std::holds_alternative<one_of>(pattern))
+        {
+            auto n = start.from_end ?
+                find_last_of (std::get<one_of>(pattern).chars, size() - 1 - start.offset):
+                find_first_of(std::get<one_of>(pattern).chars, start.offset);
+            i = n == npos ? end() : begin() + n;
+        }
+
+        else
+
+        if (std::holds_alternative<one_not_of>(pattern))
+        {
+            auto n = start.from_end ?
+                find_last_not_of (std::get<one_not_of>(pattern).chars, size() - 1 - start.offset):
+                find_first_not_of(std::get<one_not_of>(pattern).chars, start.offset);
+            i = n == npos ? end() : begin() + n;
+        }
+
+        return i == end() ? nope : int(i - begin());
+    }
+
+    bool found (pattern pattern, start start = start_from(0)) const { return find (pattern, start) != nope; }
+
+    enum class delimiter { exclude, to_the_left, to_the_right };
+
+    bool split_by (pattern pattern, start start, str& s1, str& s2, delimiter delimiter = delimiter::exclude)
+    {
+        int n = find (pattern, start);
+        int m = std::holds_alternative<str>(pattern) ? std::get<str>(pattern).size () : 1;
+        s1 = n == nope ? *this : head (n     + (delimiter == delimiter::to_the_left  ? m : 0));
+        s2 = n == nope ? str() : from (n + m - (delimiter == delimiter::to_the_right ? m : 0));
+        return n != nope;
+    }
+
+    bool split_by (pattern pattern, str& s1, str& s2, delimiter delimiter = delimiter::exclude)
+    {
+        return split_by (pattern, start_from(0), s1, s2, delimiter);
+    }
+
+    array<str> split_by (pattern pattern)
+    {
+        array<str> a;
+        str s, ss = *this;
+        while (ss != ""){ ss.split_by(pattern, s, ss); a.push_back(s); };
+        return a;
+    }
+
+    bool starts_with (str s) const { int n = s.size(); if (size() < n) return false; auto i =  begin(); auto j = s. begin(); while (n--) if (*i++ != *j++) return false; return true; }
+    bool ends_with   (str s) const { int n = s.size(); if (size() < n) return false; auto i = rbegin(); auto j = s.rbegin(); while (n--) if (*i++ != *j++) return false; return true; }
+
+    str lowercased () const { str s = *this; std::transform(s.begin(), s.end(), s.begin(), ::tolower); return s; }
+    str uppercased () const { str s = *this; std::transform(s.begin(), s.end(), s.begin(), ::toupper); return s; }
 
     void append    (                  str s){ *this += s; }
     void insert    (int pos,          str s){ *this = head (pos) + s + from (pos); }
@@ -47,49 +130,16 @@ struct str : public std::string
     void erase     (int pos, int num = 1   ){ if (pos < 0) num += pos, pos = 0; num = std::min (num, size () - pos); if (num > 0) base::erase (pos, num); }
     void truncate  (int pos                ){ erase (pos, max); }
     void truncate  (                       ){ erase (size () - 1); }
-    void strip     (const str & set = " "  ){ trimr (set); triml (set); }
-    void triml     (const str & set = " "  ){ size_type n = find_first_not_of (set); *this = n == npos ? str () : from ((int) n  ); }
-    void trimr     (const str & set = " "  ){ size_type n = find_last_not_of  (set); *this = n == npos ? str () : head ((int) n+1); }
+    void strip     (const str & chars = " "){ trimr (chars); triml (chars); }
+    void triml     (const str & chars = " "){ int n = find (one_not_of {chars});                    if (n == nope) clear(); else erase (0, n); }
+    void trimr     (const str & chars = " "){ int n = find (one_not_of {chars}, start_from_end ()); if (n == nope) clear(); else truncate (n+1); }
 
-    struct bool_{ bool b; bool_(bool b) : b(b) {}; }; // prevent { bool b = "ABC"; }
+    int replace_all (str from, str to){ int pos = 0, nn = 0; while ((pos = find (from, start_from(pos))) != nope){ replace (pos, from.size (), to); pos += to.size (); nn++; }; return nn; }
 
-    int  find      (const str & s, int start_pos = 0) const { size_type rc = base::find  (s, start_pos); return rc == npos ? nope : (int) rc; }
-    int  findr     (const str & s, int start_pos = 0) const { size_type rc = base::rfind (s, start_pos); return rc == npos ? nope : (int) rc; }
-    bool found     (const str & s, int start_pos = 0) const { return find (s, start_pos) != nope; }
-
-    int replace_all (str from, str to){ int pos = 0, nn = 0; while ((pos = find (from, pos)) != nope){ replace (pos, from.size (), to); pos += to.size (); nn++; }; return nn; }
-
-};
-/*
-int     findf_set       ( const str8 & set,  bool_ in = true ) const { size_type rc = in.b ? base::find_first_of (set) : base::find_first_not_of (set); return rc == npos ? -1 : (int) rc; }
-int     findr_set       ( const str8 & set,  bool_ in = true ) const { size_type rc = in.b ? base::find_last_of  (set) : base::find_last_not_of  (set); return rc == npos ? -1 : (int) rc; }
-
-int     findf           ( int start_pos, const str8 & s, bool_ cases = true ) const { if( cases.b ){ size_type rc = base::find  ( s, start_pos ); return rc == npos ? -1 : (int) rc; }; return as_lower ().findf ( start_pos, s.as_lower (), true ); }
-int     findr           ( int start_pos, const str8 & s, bool_ cases = true ) const { if( cases.b ){ size_type rc = base::rfind ( s, start_pos ); return rc == npos ? -1 : (int) rc; }; return as_lower ().findr ( start_pos, s.as_lower (), true ); }
-
-int     findf_set       ( int start_pos, const str8 & set,  bool_ in = true ) const { size_type rc = in.b ? base::find_first_of ( set, start_pos ) : base::find_first_not_of ( set, start_pos ); return rc == npos ? -1 : (int) rc; }
-int     findr_set       ( int start_pos, const str8 & set,  bool_ in = true ) const { size_type rc = in.b ? base::find_last_of  ( set, start_pos ) : base::find_last_not_of  ( set, start_pos ); return rc == npos ? -1 : (int) rc; }
-
-void canonize  ()
+    void canonicalize ()
     {
-        int d = 0, s = 0; char cc = ' '; while (s < size ())
-        {
-            char c = at(s++);
-            if( c == '\t' || c  == '\r' || c == '\n' )  c = ' ';
-            if( c != ' '  || cc != ' '  ) at (d++) = c; cc = c;
-        }
-        if (cc == ' ' && d > 0) d--; truncate (d);
+        for (char & c : *this) if( c == '\t' || c  == '\r' || c == '\n' )  c = ' ';
+        base::erase(std::unique(begin(), end(), [](char c1, char c2){ return c1 == ' ' && c2 == ' '; }), end());
+        strip();
     }
-    // P A R S I N G
-    // sepn_case :
-    // -1 - separator appends  to left string
-    //  0 - separator excludes from both
-    //  1 - separator prepends to right string
-
-    bool    parse           ( const str8 & sept, str8 & a1, str8 & a2, bool cases = true, int sepn_case = 0 ) const { str8 aa = *this; int m = sept.size (); int n = aa.findf(sept,cases); a1 = n==-1 ? aa    : aa.head (n + (sepn_case==-1 ? m : 0)); a2 = n==-1 ? str8() : aa.from (n+m - (sepn_case== 1 ? m : 0)); return n != -1; }
-    bool    parsr           ( const str8 & sept, str8 & a2, str8 & a1, bool cases = true, int sepn_case = 0 ) const { str8 aa = *this; int m = sept.size (); int n = aa.findr(sept,cases); a2 = n==-1 ? str8() : aa.head (n + (sepn_case==-1 ? m : 0)); a1 = n==-1 ? aa    : aa.from (n+m - (sepn_case== 1 ? m : 0)); return n != -1; }
-    char    parse_set       ( const str8 & set,  str8 & a1, str8 & a2, bool in    = true, int sepn_case = 0 ) const { str8 aa = *this; int n = aa.findf_set(set,in); char t = n ==-1 ? L'\0' : aa[n]; a1 = n==-1 ? aa    :  aa.head (n + (sepn_case==-1 ? 1 : 0)); a2 = n==-1 ? str8() : aa.from (n+1 - (sepn_case== 1 ? 1 : 0)); return t; }
-    char    parsr_set       ( const str8 & set,  str8 & a2, str8 & a1, bool in    = true, int sepn_case = 0 ) const { str8 aa = *this; int n = aa.findr_set(set,in); char t = n ==-1 ? L'\0' : aa[n]; a2 = n==-1 ? str8() :  aa.head (n + (sepn_case==-1 ? 1 : 0)); a1 = n==-1 ? aa    : aa.from (n+1 - (sepn_case== 1 ? 1 : 0)); return t; }
-
-    std::vector<str8> parse ( const str8 & sept, bool cases = true ) const { std::vector<str8> aa;  str8 s, ss = *this;  while ( ss != "" ){ ss.parse ( sept, s, ss, cases ); aa.push_back (s); };  return aa; }
-*/
+};

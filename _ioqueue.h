@@ -2,7 +2,7 @@ template <class Task> struct ioqueue
 {
     std::int64_t cargo = 0;
     std::int64_t cargo_upper_bound = 1024*1024;
-    // todo: bandwidth statistics
+    // to do: bandwidth statistics
 
     std::queue<Task> queue;
     std::condition_variable cv;
@@ -23,6 +23,7 @@ template <class Task> struct ioqueue
         while (cargo > cargo_upper_bound) // w/o + task.size()
         {
             lock.unlock();
+            using namespace std::chrono_literals;
             std::this_thread::sleep_for(1ms);
             lock.lock();
         }

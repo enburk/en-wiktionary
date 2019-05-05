@@ -154,8 +154,8 @@
     <ClInclude Include="1.h" />
     <ClInclude Include="1_00_unzip.h" />
     <ClInclude Include="1_10_unxml.h" />
-    <ClInclude Include="1_15_uncomment.h" />
     <ClInclude Include="2.h" />
+    <ClInclude Include="2_10_english.h" />
     <ClInclude Include="_aux.h" />
     <ClInclude Include="_ioqueue.h" />
     <ClInclude Include="_pass.h" />
