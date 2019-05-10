@@ -1,13 +1,14 @@
 namespace pass1
 {
-    inline const char esc [] =
-    "#############################################################################################################################";
+    inline const char esc [] = "#################################################################";
 
     struct entry { str title; str topic;
     
         auto size () { return title.size() + topic.size(); }
 
         auto empty () { return title.empty() && topic.empty(); }
+
+        void canonicalize () {}
 
         friend std::ostream & operator << (std::ostream & out, const entry & entry)
         {

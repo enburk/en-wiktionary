@@ -1,6 +1,7 @@
 template<class type> struct array : public std::vector<type>
 {
     using base = std::vector<type>;
+    using base::vector;
 
     int size () const { return (int) base::size (); }
 
@@ -11,6 +12,9 @@ template<class type> struct array : public std::vector<type>
     friend array operator + (const type  & a, const array & b) { array tt; tt += a; tt+= b; return tt; }
 
     friend std::ostream & operator << (std::ostream & out, const array & a) { for (const auto & e : a) out << e << std::endl; return out; }
+
+    bool found (const type e) const { return std::find (base::begin(), base::end(), e) != base::end(); }
+    bool binary_found (const type e) const { return std::binary_search (base::begin(), base::end(), e); }
 };
 
 struct str : public std::string

@@ -1,47 +1,63 @@
 Pass <pass1::entry, entry> english = [](auto & input, auto & output)
 {
-    Result result {__FILE__, output};
+    Result result {__FILE__, output, false};
 
-    std::map<str,int> smap, stmap, semap, somap; //headers;
-    std::map<int,str> imap; 
+    std::map<str,int> languages, sequals, headers;
 
-    for (auto [title, topic_string] : input)
+    for (auto [title, topic] : input)
     {
         static int64_t nn = 0; if (++nn % 10'000 == 0) print("english ", nn, " entries ", input.cargo, " cargo ");
 
-        array<str> topic = topic_string.split_by ("\n");
+        array<str> ss = topic.split_by ("\n");
 
-        for (str & s : topic)
+        if (title.starts_with("Template:")
+        ||  topic.starts_with("#REDIRECT")
+        ||  topic.starts_with("#redirect"))
+        { output.push (entry {std::move(title), std::move(ss)}); continue; }
+
+        std::map<str, array<str>> topics; str kind = "prelude";
+
+        for (str s : ss)
         {
-            if (s.found ( "==" ))
+            if (s.found ("=="))
             {
-                if (title.starts_with ("Template:")) { stmap [s]++; continue; }
-
-                if (s.starts_with ( "==" ))
+                if (!s.starts_with ( "==" )) sequals [s]++; else
                 {
-                    if (s.found ( "English" )) semap [s]++; else smap [s]++; continue;
+                    int level  = s.find (str::one_not_of {"="});
+                    str prefix = s.head (level);
+                    str header = s;
+                    header.triml ("= ");
+                    header.trimr (" =");
+
+                    if (header.found ("English"))
+                    {
+                        if (prefix != "=="            ) kind = "Probably English"; else
+                        if (header == "English"       ) kind = header; else
+                        if (header == "Old English"   ) kind = header; else
+                        if (header == "Middle English") kind = header; else
+                                                        kind = "Other English";
+                    }
+                    else if (prefix == "==" && header == "Translingual" ) header = kind = "English";
+                    else if (prefix == "==") { kind = "Foreign"; languages [s]++; }
+
+                    else headers [s]++;
+
+                    s = prefix + " " + header;
                 }
-
-                somap [s]++;
-
-                
-
-                //str header = s;
-                //str l; header.spit_by (str::one_of{"="}, l, header, false, 1 );  sl.strip ( " \t" );  int level = sl.size ();
-                //str r; header.spit_by (str::one_of{"="}, header, r, false,-1 );  sr.strip ( " \t" );  he.strip ( "[ ]\t" ); 
             }
+
+            if (s != "== English") topics [kind] += s;
         }
+
+        for (auto [kind, body] : topics)
+            if (kind == "English")
+                result.accept (entry {title, std::move(body)}); else
+                result.reject (entry {title, std::move(body)}, kind);
     }
 
-    for (auto [h, n] : smap) imap [n] = h;
-
-    for (auto [h, n] : smap) result.report (h + " " + std::to_string(n) + "\n", "map str to int");
-    for (auto [n, h] : imap) result.report (h + " " + std::to_string(n) + "\n", "map int to str");
-
-    for (auto [h, n] : semap) result.report (h + " " + std::to_string(n) + "\n", "english");
-    for (auto [h, n] : stmap) result.report (h + " " + std::to_string(n) + "\n", "templates");
-    for (auto [h, n] : somap) result.report (h + " " + std::to_string(n) + "\n", "others");
-
+    for (auto [s, n] : languages) result.report (s + " " + std::to_string(n), "languages");
+    for (auto [s, n] : sequals  ) result.report (s + " " + std::to_string(n), "sequals"  );
+    for (auto [s, n] : headers  ) result.report (s + " " + std::to_string(n), "headers"  );
 };
 
 

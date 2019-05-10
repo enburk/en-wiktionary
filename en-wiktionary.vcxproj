@@ -156,10 +156,10 @@
     <ClInclude Include="1_10_unxml.h" />
     <ClInclude Include="2.h" />
     <ClInclude Include="2_10_english.h" />
+    <ClInclude Include="2_20_headers.h" />
     <ClInclude Include="_aux.h" />
     <ClInclude Include="_ioqueue.h" />
     <ClInclude Include="_pass.h" />
-    <ClInclude Include="_report.h" />
     <ClInclude Include="_result.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

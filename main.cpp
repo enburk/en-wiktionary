@@ -28,23 +28,19 @@ const bool GENERATE_REPORTS = true;
 #include "_aux.h"
 #include "_ioqueue.h"
 #include "_pass.h"
-//#include "_report.h"
 #include "_result.h"
 #include "1.h"
 #include "2.h"
 
 Pass <pass2::entry, nothing> stop = [](auto & input, auto & output)
 {
-    decltype (std::chrono::high_resolution_clock::now ())
-    start  =  std::chrono::high_resolution_clock::now ();
+    auto start = std::chrono::high_resolution_clock::now ();
 
     for (auto && e : input) { ; }
 
-    decltype (std::chrono::high_resolution_clock::now ())
-    stop   =  std::chrono::high_resolution_clock::now ();
+    auto stop  = std::chrono::high_resolution_clock::now ();
 
     auto duration = stop - start;
-
     auto minutes = std::chrono::duration_cast<std::chrono::minutes>(duration); duration -= minutes;
     auto seconds = std::chrono::duration_cast<std::chrono::seconds>(duration); duration -= seconds;
 
@@ -64,7 +60,7 @@ int main ()
         
     pass1::unzip >> pass1::unxml >>
 
-    pass2::english >>
+    pass2::english >> pass2::headers >>
     
     stop >> terminator; return 0;
 }

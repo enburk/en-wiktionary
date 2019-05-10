@@ -85,7 +85,7 @@ Pass <str, entry> unxml = [](auto & input, auto & output)
                         b = topic.find("&lt;!--", str::start_from(b)); if (b == str::nope){ break; }
                         e = topic.find("--&gt;" , str::start_from(b)); if (e == str::nope){ break; }
 
-                        result.reject (topic.substr (b, e-b+6 ) + "\n", "xml comments");
+                        result.reject (topic.substr (b, e-b+6 ), "xml comments");
                         
                         topic.erase (b, e-b+6);
                     }
