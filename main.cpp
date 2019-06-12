@@ -1,3 +1,4 @@
+#define _CRT_SECURE_NO_DEPRECATE
 #include <map>
 #include <queue>
 #include <array>
@@ -15,6 +16,7 @@
 #include <functional>
 #include <condition_variable>
 #include <chrono>
+#include <zlib.h>
 
 template <typename ... Args> void print (Args... args) {
 //    static std::recursive_mutex mutex;
@@ -29,6 +31,9 @@ const bool GENERATE_REPORTS = true;
 #include "_ioqueue.h"
 #include "_pass.h"
 #include "_result.h"
+
+std::map<str,str> redirect;
+
 #include "1.h"
 #include "2.h"
 
@@ -58,9 +63,9 @@ int main ()
 
     //pass::start >>
         
-    pass1::unzip >> pass1::unxml >>
+    pass1::unzip >> pass1::unxml >> pass1::skip >>
 
-    pass2::english >> pass2::headers >>
+    pass2::english >> pass2::headers >> pass2::unquote >>
     
     stop >> terminator; return 0;
 }

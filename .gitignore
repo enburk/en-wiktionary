@@ -11,7 +11,9 @@
 8_*/
 9_*/
 enwiktionary-pages-articles.xml
+*.gz
 *.bz2
+*.zip
 *.unzip
 .vstudio/
 

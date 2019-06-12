@@ -22,4 +22,5 @@ namespace pass1
 
     #include "1_00_unzip.h"
     #include "1_10_unxml.h"
+    #include "1_20_skip.h"
 }

@@ -14,5 +14,8 @@
     <ClInclude Include="2.h" />
     <ClInclude Include="2_10_english.h" />
     <ClInclude Include="2_20_headers.h" />
+    <ClInclude Include="2_40_cleanup.h" />
+    <ClInclude Include="2_30_unquote.h" />
+    <ClInclude Include="1_20_skip.h" />
   </ItemGroup>
 </Project>
