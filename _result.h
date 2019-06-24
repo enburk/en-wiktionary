@@ -52,9 +52,9 @@ template <class Entry> struct Result
     {
         entry.canonicalize();
         if (entry.topic.empty()) return;
-        output->push (entry);
         if (on) stream ("accept", filename) << entry; if (content)
         if (on) stream ("accept", filename + " #") << entry.title << str("\n");
+        output->push (std::move(entry));
     }
     void reject (Entry entry, str filename = "", bool content = false)
     {
@@ -73,6 +73,9 @@ template <class Entry> struct Result
 
     void reject (str s, str filename = "") { if (on) if (s != "") stream ("reject", filename) << s << str("\n"); }
     void report (str s, str filename = "") { if (on) if (s != "") stream ("report", filename) << s << str("\n"); }
+
+    void reject (str::const_iterator f, str::const_iterator l) { if (on) stream ("reject", "") << str(f, l); }
+    void report (str::const_iterator f, str::const_iterator l) { if (on) stream ("report", "") << str(f, l); }
 
     // std::map<string, std::map<string, array<string>>> reports;
     // 

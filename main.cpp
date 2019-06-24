@@ -32,12 +32,15 @@ const bool GENERATE_REPORTS = true;
 #include "_pass.h"
 #include "_result.h"
 
-std::map<str,str> redirect;
+std::unordered_map<str,str> redirects;
+std::unordered_map<str,str> redirects_templates;
+std::unordered_map<str,str> templates;
 
 #include "1.h"
 #include "2.h"
+#include "3.h"
 
-Pass <pass2::entry, nothing> stop = [](auto & input, auto & output)
+Pass <pass3::entry, nothing> stop = [](auto & input, auto & output)
 {
     auto start = std::chrono::high_resolution_clock::now ();
 
@@ -59,13 +62,14 @@ int main ()
     /// Go to: https://dumps.wikimedia.org/enwiktionary/
     /// Download: enwiktionary-20190320-pages-articles.xml.bz2 (or latest version)
     /// Unzip it and rename to: enwiktionary-pages-articles.xml
+    /// Gzip it to: enwiktionary-pages-articles.xml.gz
     /// Then run and wait...
 
-    //pass::start >>
-        
-    pass1::unzip >> pass1::unxml >> pass1::skip >>
+    pass1::unzip >> pass1::unxml >> pass1::skip >> pass1::untag >>
 
     pass2::english >> pass2::headers >> pass2::unquote >>
+
+    pass3::gather >> 
     
     stop >> terminator; return 0;
 }

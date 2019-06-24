@@ -20,52 +20,85 @@ Pass <str, entry> unxml = [](auto & input, auto & output)
                 "<format>text/x-wiki</format>",
                 "<text>xml:space=\"preserve\"</text>",
                 "<text xml:space=\"preserve\">",
-                // topic here
+                // topic there
                 "</text>",
             "</revision>",
         "</page>"
     };
 
-    auto got = [](str & src, str & dst, str tag, bool inclusive)
-    {
-        int n = src.find(tag);
-        if (n == str::nope) { dst += src; src = ""; return false; }
-        if (inclusive) n += tag.size();
-        dst += src.head(n);
-        src.erase (0, n);
-        return true;
-    };
+    const str ss [] = { "<page>", "<title>", "</title>", "<text", "preserve", ">", "<"};
+
+    const auto searcher1 = std::boyer_moore_horspool_searcher(ss[1].begin(), ss[1].end());
+    const auto searcher2 = std::boyer_moore_horspool_searcher(ss[2].begin(), ss[2].end());
+    const auto searcher3 = std::boyer_moore_horspool_searcher(ss[3].begin(), ss[3].end());
+    const auto searcher4 = std::boyer_moore_horspool_searcher(ss[4].begin(), ss[4].end());
+
+    using I = str::const_iterator;
+
+    auto find1 = [searcher1](I f, I l) { return std::search (f, l, searcher1); };
+    auto find2 = [searcher2](I f, I l) { return std::search (f, l, searcher2); };
+    auto find3 = [searcher3](I f, I l) { return std::search (f, l, searcher3); };
+    auto find4 = [searcher4](I f, I l) { return std::search (f, l, searcher4); };
+    auto find5 = [         ](I f, I l) { return std::find   (f, l, '>'); };
+    auto find6 = [         ](I f, I l) { return std::find   (f, l, '<'); };
 
     str title;
     str topic;
-    str tags;
-    int mode = 0;
+    int mode = 1;
 
-    for (str && s : input)
+    str s; s.reserve(16*1024*1024);
+    I i = s.begin();
+    I j = s.begin(); 
+
+    while (true)
     {
-        static int64_t nn = 0; if (++nn % 30'000 == 0) print("unxml   ", nn, " chunks ", input.cargo, " cargo ");
+        I found = 
+        mode == 1 ? find1(j, s.end()):
+        mode == 2 ? find2(j, s.end()):
+        mode == 3 ? find3(j, s.end()):
+        mode == 4 ? find4(j, s.end()):
+        mode == 5 ? find5(j, s.end()):
+        mode == 6 ? find6(j, s.end()): s.end();
 
-        while (s != "")
+        if (found == s.end())
         {
-            switch (mode) {
-            case 0: if (got(s, tags,  "<page>"  , true )) mode = 1; break;
-            case 1: if (got(s, tags,  "<title>" , true )) mode = 2; break;
-            case 2: if (got(s, title, "</title>", false)) mode = 3; break;
-            case 3: if (got(s, tags,  "<text"   , true )) if (s.empty() || s.starts_with(' ') || s.starts_with('>')) mode = 4; break;
-            case 4: if (got(s, tags,  ">"       , true )) mode = 5; break;
-            case 5: if (got(s, topic, "<"       , false)) mode = 0; break;
+            j = s.end() - (ss[mode].size() - 1);
+
+            auto offset = i - s.begin();
+            
+            if (offset > (int) s.capacity() / 2)
+            {
+                s.erase(0, (int) offset); offset = 0;
+                j = s.begin() + offset + (j - i);
+                i = s.begin() + offset;
             }
 
-            if (mode == 0 && title.size () > 0)
-            {
-                result.accept (entry {std::move(title), std::move(topic)}, "", true);
-                title = "";
-                topic = "";
-            }
+            static int64_t nn = 0; if (++nn % 30'000 == 0) print("unxml   ", nn, " chunks ", input.cargo, " cargo ");
+
+            str next; if (!input.pop(next)) break; s += next;
+            j = s.begin() + offset + (j - i);
+            i = s.begin() + offset;
+            continue;
         }
 
-        result.reject (tags); // huge file - about half of the original xml
+        if (mode != 2 && mode != 6) found += ss[mode].size();
 
-        tags.clear ();
+        switch (mode) {
+        case 1: result.reject(i, found); i = j = found; mode = 2; break; // "<title>"
+        case 2: title = str  (i, found); i = j = found; mode = 3; break; // "</title>"
+        case 3: result.reject(i, found); i = j = found; mode = 4; break; // "<text"
+        case 4: result.reject(i, found); i = j = found; mode = 5; break; // "preserve"
+        case 5: result.reject(i, found); i = j = found; mode = 6; break; // ">"
+        case 6: topic = str  (i, found); i = j = found; mode = 1; break; // "<"
+        }
+
+        if (mode == 1 && title.size () > 0)
+        {
+            result.accept (entry {std::move(title), std::move(topic)}, "", true);
+            title = "";
+            topic = "";
+        }
     }
+
+    result.reject(i, s.end());
 };

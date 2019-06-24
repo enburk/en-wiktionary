@@ -29,6 +29,8 @@ struct str : public std::string
     str (const str &  s ) = default;
     str (      str && s ) = default;
 
+    str (base::const_iterator f, base::const_iterator l) : base (f, l) {}
+
     int size () const { return (int) base::size (); }
 
     str & operator  = (const str & s){ base::operator  = (s); return *this; }
@@ -147,3 +149,17 @@ struct str : public std::string
         strip();
     }
 };
+
+namespace std
+{
+    template <> struct hash<str>
+    {
+        std::size_t operator()(const str& s) const
+        {
+            using std::size_t;
+            using std::hash;
+            using std::string;
+            return hash<string>()(s);
+        }
+    };
+}

@@ -9,13 +9,7 @@ Pass <entry, entry> unquote = [](auto & input, auto & output)
 
     for (auto [title, topic] : input)
     {
-        static int64_t nn = 0; if (++nn % 10'000 == 0) print("unquote ", nn, " entries ", input.cargo, " cargo ");
-
-        if (title.starts_with("Template:quote-")) { result.reject (entry {std::move(title), std::move(topic)}, "Template quote-"); continue; }
-        if (title.starts_with("Template:cite-" )) { result.reject (entry {std::move(title), std::move(topic)}, "Template cite-" ); continue; }
-        if (title.starts_with("Template:RQ:"   )) { result.reject (entry {std::move(title), std::move(topic)}, "Template RQ"    ); continue; }
-        if (title.starts_with("Template:R:"    )) { result.reject (entry {std::move(title), std::move(topic)}, "Template R"     ); continue; }
-        if (title.starts_with("Template:"      )) { result.accept (entry {std::move(title), std::move(topic)}, "Template"       ); continue; }
+        static int64_t nn = 0; if (++nn % 20'000 == 0) print("unquote ", nn, " entries ", input.cargo, " cargo ");
 
         std::map<str, array<str>> topics; str kind = "accepted"; int braces = 0;
 

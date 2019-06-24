@@ -36,11 +36,6 @@ Pass <entry, entry> headers = [](auto & input, auto & output)
     {
         static int64_t nn = 0; if (++nn % 10'000 == 0) print("headers ", nn, " entries ", input.cargo, " cargo ");
 
-        if (title.starts_with("Template:unicode ")) { result.reject (entry {std::move(title), std::move(topic)}, "Template unicode"); continue; }
-        if (title.starts_with("Template:index/"  )) { result.reject (entry {std::move(title), std::move(topic)}, "Template index"); continue; }
-        if (title.starts_with("Template:User "   )) { result.reject (entry {std::move(title), std::move(topic)}, "Template user"); continue; }
-        if (title.starts_with("Template:"        )) { result.accept (entry {std::move(title), std::move(topic)}, "Template"); continue; }
-
         std::map<str, array<str>> topics; str kind = "prelude";
 
         for (str s : topic)

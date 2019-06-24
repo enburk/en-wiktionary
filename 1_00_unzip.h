@@ -67,17 +67,18 @@ Pass <nothing, str> unzip = [](auto &, auto & output)
     gzbuffer(file, 1024*1024);
     
     const
-    unsigned int buffer_size = 1024;//*1024;
-    unsigned char buffer[buffer_size];
+    unsigned int buffer_size = 8*1024*1024;
     unsigned int bytes;
     while (true)
     {
-        bytes = gzread(file, buffer, buffer_size); if (bytes == 0) break;
+        str buffer; buffer.resize(buffer_size);
+        bytes = gzread(file, (unsigned char*)buffer.data(), buffer_size);
+        if (bytes == 0) break;
+        buffer.resize (bytes);
+        output.push(std::move(buffer));
 
         bytes_read += bytes; if (bytes_read > bytes_said + 1024*1024*512) {
         bytes_said = bytes_read; print("unzip ", bytes_read>>20, " MB "); }
-                                
-        output.push(std::string((char*) buffer, (char*) buffer + bytes));
     }
     
     gzclose(file);

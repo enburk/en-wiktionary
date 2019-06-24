@@ -4,56 +4,15 @@ Pass <pass1::entry, entry> english = [](auto & input, auto & output)
 
     std::map<str,int> languages, sequals, headers;
 
-    for (auto [title, topic] : input)
+    for (auto && [title, topic] : input)
     {
-        static int64_t nn = 0; if (++nn % 10'000 == 0) print("english ", nn, " entries ", input.cargo, " cargo ");
-
-        for (int e, b = 0; ; )
-        {
-            b = topic.find("&lt;ref&gt;", str::start_from(b)); if (b == str::nope){ break; }
-            e = topic.find("&lt;/ref&gt;" , str::start_from(b)); if (e == str::nope){ break; }
-
-            result.reject (topic.substr (b, e-b+12 ), "untag ref");
-                        
-            topic.erase (b, e-b+12);
-        }
+        static int64_t nn = 0; if (++nn % 20'000 == 0) print("english ", nn, " entries ", input.cargo, " cargo ");
 
         array<str> ss = topic.split_by ("\n");
 
-        if (topic.starts_with("#REDIRECT")
-        ||  topic.starts_with("#redirect"))
-        {
-            for (str s : ss)
-            {
-                if (s.starts_with("#REDIRECT")
-                ||  s.starts_with("#redirect"))
-                {
-                    s.erase(0,9); s.strip();
-                    s.replace_all("[[", "");
-                    s.replace_all("]]", "");
-                    redirect [title] = s;
-                    result.report (title + " => " + s, "redirect");
-                }
-                else result.report (s, "redirect skip");
-            }
-            result.report (entry {std::move(title), std::move(ss)}, "redirect topics");
-            continue;
-        }
+        std::unordered_map<str, array<str>> topics; str kind = "prelude";
 
-        if (title.starts_with("Template:"))
-        {
-            str kind = 
-                title.size() >= 9+4 && title[9+4-1] == '-' ? "xxx-" :
-                title.size() >= 9+3 && title[9+3-1] == '-' && !title.starts_with("Template:en-") ? "xx-" : "";
-            if (kind == "")
-            result.accept (entry {std::move(title), std::move(ss)}, "templates", true);
-            result.reject (entry {std::move(title), std::move(ss)}, "templates " + kind, true);
-            continue;
-        }
-
-        std::map<str, array<str>> topics; str kind = "prelude";
-
-        for (str s : ss)
+        for (str & s : ss)
         {
             if (s.found ("=="))
             {
@@ -82,7 +41,9 @@ Pass <pass1::entry, entry> english = [](auto & input, auto & output)
                 }
             }
 
-            if (s != "== English") topics [kind] += s;
+            if (!result.on && kind != "English") continue;
+
+            if (s != "== English") topics [kind] += std::move(s);
         }
 
         for (auto [kind, body] : topics)

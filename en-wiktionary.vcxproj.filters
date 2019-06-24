@@ -17,5 +17,8 @@
     <ClInclude Include="2_40_cleanup.h" />
     <ClInclude Include="2_30_unquote.h" />
     <ClInclude Include="1_20_skip.h" />
+    <ClInclude Include="3.h" />
+    <ClInclude Include="3_10_gather.h" />
+    <ClInclude Include="1_30_untag.h" />
   </ItemGroup>
 </Project>
