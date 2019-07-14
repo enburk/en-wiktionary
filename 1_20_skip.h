@@ -4,9 +4,11 @@ Pass <entry, entry> skip = [](auto & input, auto & output)
 
     for (auto && [title, topic] : input)
     {
-        static int64_t nn = 0; if (++nn % 80'000 == 0) print("skip    ", nn, " entries ", input.cargo, " cargo ");
+        static int64_t nn = 0; if (++nn % 150'000 == 0) print("skip    ", nn, " entries ", input.cargo, " cargo ");
 
         bool accept = true; str report = "";
+
+        if (title.starts_with("Unsupported titles/" )) { report = "Unsupported titles"; accept = false; } else
 
         if (title.starts_with("Template:"  )) { report = "meta Template"  ; accept = true;  } else
         if (title.starts_with("Wiktionary:")) { report = "meta Wiktionary"; accept = false; } else

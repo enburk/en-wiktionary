@@ -1,6 +1,7 @@
 #define _CRT_SECURE_NO_DEPRECATE
 #include <map>
 #include <queue>
+#include <stack>
 #include <array>
 #include <vector>
 #include <string>
@@ -18,9 +19,9 @@
 #include <chrono>
 #include <zlib.h>
 
+std::mutex print_mutex;
 template <typename ... Args> void print (Args... args) {
-//    static std::recursive_mutex mutex;
-//    std::lock_guard lock{mutex};
+    std::lock_guard lock{print_mutex};
     ((std::cout << args), ...);
     std::cout << std::endl;
 }
@@ -67,9 +68,9 @@ int main ()
 
     pass1::unzip >> pass1::unxml >> pass1::skip >> pass1::untag >>
 
-    pass2::english >> pass2::headers >> pass2::unquote >>
+    pass2::english >> pass2::headers >> pass2::unquote >> pass2::cleanup >>
 
-    pass3::gather >> 
+    pass3::gather >> pass3::brackets >> pass3::templating >> 
     
     stop >> terminator; return 0;
 }

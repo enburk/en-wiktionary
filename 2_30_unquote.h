@@ -9,7 +9,7 @@ Pass <entry, entry> unquote = [](auto & input, auto & output)
 
     for (auto [title, topic] : input)
     {
-        static int64_t nn = 0; if (++nn % 20'000 == 0) print("unquote ", nn, " entries ", input.cargo, " cargo ");
+        static int64_t nn = 0; if (++nn % 80'000 == 0) print("unquote ", nn, " entries ", input.cargo, " cargo ");
 
         std::map<str, array<str>> topics; str kind = "accepted"; int braces = 0;
 
@@ -63,9 +63,15 @@ Pass <entry, entry> unquote = [](auto & input, auto & output)
         {
             if (s.starts_with ("#"))
             {
-                if (s.starts_with ("#* '''")) kind = "#*"; else
-                if (s.starts_with ("##* '''")) kind = "##*"; else
-                if (s.starts_with (kind + ":")) kind = kind; else
+                str prefix = s.head(15);
+                prefix.replace_all("##", "#");
+                prefix.replace_all(" ", "");
+
+                if (prefix.starts_with ("#*:"       )) kind = kind; else
+                if (prefix.starts_with ("#*'''"     )) kind = "'''"; else
+                if (prefix.starts_with ("#*ca.'''"  )) kind = "ca.'''"; else
+                if (prefix.starts_with ("#*{{rfdate")) kind = "{{rfdate"; else
+
                 kind = "accepted";
             }
             else kind = "accepted";
@@ -75,7 +81,7 @@ Pass <entry, entry> unquote = [](auto & input, auto & output)
 
         for (auto [kind, body] : topics)
             if (kind == "accepted")
-                result.accept (entry {title, std::move(body)}); else { str report = kind; report.replace_all("*", "'''");
-                result.reject (entry {title, std::move(body)}, report); }
+                result.accept (entry {title, std::move(body)}); else
+                result.reject (entry {title, std::move(body)}, kind);
     }
 };

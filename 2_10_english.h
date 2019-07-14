@@ -8,12 +8,15 @@ Pass <pass1::entry, entry> english = [](auto & input, auto & output)
     {
         static int64_t nn = 0; if (++nn % 20'000 == 0) print("english ", nn, " entries ", input.cargo, " cargo ");
 
-        array<str> ss = topic.split_by ("\n");
-
         std::unordered_map<str, array<str>> topics; str kind = "prelude";
 
-        for (str & s : ss)
+        int n0 = 0;
+        while (n0 < topic.size())
         {
+            int n1 = topic.find('\n', str::start_from(n0)); if (n1 == str::nope) n1 = topic.size();
+            str s = topic.substr(n0, n1-n0);
+            n0 = n1 + 1; 
+
             if (s.found ("=="))
             {
                 if (!s.starts_with ( "==" )) sequals [s]++; else

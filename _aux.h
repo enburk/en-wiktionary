@@ -6,7 +6,14 @@ template<class type> struct array : public std::vector<type>
     int size () const { return (int) base::size (); }
 
     void operator += (const type  & e) { base::push_back (e); }
-    void operator += (const array & a) { base::insert (base::end (), a.begin (), a.end ()); }
+    void operator += (const array & a) { base::insert (base::end(), a.cbegin(), a.cend()); }
+
+//    void operator += (type e) { base::push_back (std::move(e)); }
+//    void operator += (const array & a) { if (base::empty()) *this = a; else base::insert (base::end(), a.cbegin(), a.cend()); }
+//    void operator += (     array && a) { if (base::empty()) *this = std::move(a); else base::insert (base::end(), 
+//        std::make_move_iterator(std::begin(a)),
+//        std::make_move_iterator(std::end(a)));
+//    }
 
     friend array operator + (const array & a, const type  & b) { array tt; tt += a; tt+= b; return tt; }
     friend array operator + (const type  & a, const array & b) { array tt; tt += a; tt+= b; return tt; }
@@ -33,8 +40,10 @@ struct str : public std::string
 
     int size () const { return (int) base::size (); }
 
-    str & operator  = (const str & s){ base::operator  = (s); return *this; }
-    str & operator += (const str & s){ base::operator += (s); return *this; }
+    str & operator  = (const str &  s){ base::operator  = (s); return *this; }
+    str & operator  = (      str && s){ base::operator  = (std::move(s)); return *this; }
+    str & operator += (const str &  s){ base::operator += (s); return *this; }
+    str & operator += (      str && s){ base::operator += (std::move(s)); return *this; }
 
     static const int max = std::numeric_limits<int>::max ();
     static const int nope = -1;

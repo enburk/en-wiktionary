@@ -34,7 +34,7 @@ Pass <entry, entry> headers = [](auto & input, auto & output)
 
     for (auto [title, topic] : input)
     {
-        static int64_t nn = 0; if (++nn % 10'000 == 0) print("headers ", nn, " entries ", input.cargo, " cargo ");
+        static int64_t nn = 0; if (++nn % 40'000 == 0) print("headers ", nn, " entries ", input.cargo, " cargo ");
 
         std::map<str, array<str>> topics; str kind = "prelude";
 
@@ -55,7 +55,7 @@ Pass <entry, entry> headers = [](auto & input, auto & output)
 
                 { kind = "zzz other headers"; other_headers [header]++; }
 
-                s = "== " + header;
+                s = "==== " + header;
             }
 
             if (kind == "prelude" && s.starts_with ("{{wiki"  )) topics ["prelude wiki"] += s; else
