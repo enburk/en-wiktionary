@@ -6,7 +6,7 @@ Pass <pass1::entry, entry> english = [](auto & input, auto & output)
 
     for (auto && [title, topic] : input)
     {
-        static int64_t nn = 0; if (++nn % 20'000 == 0) print("english ", nn, " entries ", input.cargo, " cargo ");
+        static int64_t nn = 0; if (++nn % 100'000 == 0) print("english ", nn, " entries ", input.cargo, " cargo ");
 
         std::unordered_map<str, array<str>> topics; str kind = "prelude";
 

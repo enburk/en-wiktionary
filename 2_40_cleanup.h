@@ -2,15 +2,11 @@ Pass <entry, entry> cleanup = [](auto & input, auto & output)
 {
     Result result {__FILE__, output, false};
 
-    array<str> related
-    {
-        "derived terms", "related terms", "coordinate terms"
-    };
-
+    array<str> related { "derived terms", "related terms", "coordinate terms" };
 
     for (auto [title, topic] : input)
     {
-        static int64_t nn = 0; if (++nn % 80'000 == 0) print("cleanup ", nn, " entries ", input.cargo, " cargo ");
+        static int64_t nn = 0; if (++nn % 100'000 == 0) print("cleanup ", nn, " entries ", input.cargo, " cargo ");
 
         std::map<str, array<str>> topics;
 
@@ -20,6 +16,8 @@ Pass <entry, entry> cleanup = [](auto & input, auto & output)
 
         for (str & s : topic)
         {
+            if (s == "----") continue;
+
             if (s.starts_with ("==== "))
             {
                 str kind = "accepted";

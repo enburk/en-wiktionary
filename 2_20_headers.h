@@ -1,40 +1,47 @@
+std::unordered_set<str> parts_of_speech
+{
+    "noun", "pronoun", "proper noun", "verb", "adjective", "adverb", "numeral", "number", "article", "particle", 
+    "preposition", "postposition", "determiner", "conjunction", "interjection",
+    "abbreviation", "initialism", "contraction", "acronym", 
+    "letter", "symbol", "punctuation mark", "diacritical mark",
+    "suffix", "prefix", "infix", "affix", "interfix",
+    "phrase", "prepositional phrase", "proverb", 
+};
+std::unordered_set<str> related_terms
+{
+    "alternative forms", "abbreviations",
+    "synonyms", "antonyms", "hypernyms", "hyponyms", "meronyms", "holonyms", "troponyms",
+    "derived terms", "related terms", "coordinate terms",
+    "see also", 
+};
+std::unordered_set<str> usage_notes
+{
+    "pronunciation", "etymology",
+    "usage notes", "trivia",
+};
+
 Pass <entry, entry> headers = [](auto & input, auto & output)
 {
     Result result {__FILE__, output, false};
 
-    array<str> accepted 
-    {
-        "noun", "pronoun", "proper noun", "verb", "adjective", "adverb", "numeral", "number", "article", "particle", 
-        "preposition", "postposition", "determiner", "conjunction", "interjection",
-        "abbreviation", "initialism", "contraction", "acronym", 
-        "letter", "symbol", "punctuation mark", "diacritical mark",
-        "suffix", "prefix", "infix", "affix", "interfix",
-        "phrase", "prepositional phrase", "proverb", 
-        "synonyms", "antonyms", "hypernyms", "hyponyms", "meronyms", "holonyms", "troponyms",
-        "alternative forms", "abbreviations",
-        "derived terms", "related terms", "coordinate terms",
-        "pronunciation", "etymology",
-        "usage notes", "see also", "trivia",
-        "END"
-    };
+    std::unordered_set<str> accepted;
+    for (auto h : parts_of_speech) accepted.emplace(h);
+    for (auto h : related_terms) accepted.emplace(h);
+    for (auto h : usage_notes) accepted.emplace(h);
 
-    array<str> rejected
+    std::unordered_set<str> rejected
     {
         "conjugation",
         "translations", "descendants",
         "references", "further reading", "quotations", "citations", "external links", "notes",
         "anagrams", "gallery", "statistics",
-        "END"
     };
-
-    std::sort(accepted.begin(), accepted.end());
-    std::sort(rejected.begin(), rejected.end());
 
     std::map<str,int> other_headers;
 
     for (auto [title, topic] : input)
     {
-        static int64_t nn = 0; if (++nn % 40'000 == 0) print("headers ", nn, " entries ", input.cargo, " cargo ");
+        static int64_t nn = 0; if (++nn % 100'000 == 0) print("headers ", nn, " entries ", input.cargo, " cargo ");
 
         std::map<str, array<str>> topics; str kind = "prelude";
 
@@ -50,8 +57,8 @@ Pass <entry, entry> headers = [](auto & input, auto & output)
                 if (header.starts_with ("etymology "    )) header = "etymology";
                 if (header.starts_with ("pronunciation ")) header = "pronunciation";
 
-                if (accepted.binary_found (header)) kind = "accepted"; else
-                if (rejected.binary_found (header)) kind = header; else
+                if (accepted.find (header) != accepted.end()) kind = "accepted"; else
+                if (rejected.find (header) != rejected.end()) kind = header; else
 
                 { kind = "zzz other headers"; other_headers [header]++; }
 

@@ -38,6 +38,15 @@ struct str : public std::string
 
     str (base::const_iterator f, base::const_iterator l) : base (f, l) {}
 
+    explicit str (array<str> lines)
+    {
+        for (auto line : lines) {
+            *this += line;
+            *this += '\n';
+        }
+        if (*this != "") pop_back();
+    }
+
     int size () const { return (int) base::size (); }
 
     str & operator  = (const str &  s){ base::operator  = (s); return *this; }

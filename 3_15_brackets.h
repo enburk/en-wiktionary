@@ -1,162 +1,106 @@
-struct bracketer
+const std::map<str, std::unordered_set<str>> rejected_templates
 {
-    str output;
-    str report;
-
-    std::stack <std::pair<str,str>,
-    std::vector<std::pair<str,str>>> stack;
-
-    str   closing; 
-    str & opening () { return stack.top().first; }
-    str & payload () { return stack.top().second; }
-    str paragraph; 
-
-    void dump ()
+    {   "mid",
     {
-        str repair = closing;
-        report += paragraph + "\n";
-        report += "=================================================================\n";
-        report += "CLOSING: " + closing + "\n";
-        while (stack.size() > 0) { auto [oo, xx] = stack.top(); stack.pop(); repair = oo + xx + repair;
-        report += "STACK: " + oo + xx + "\n"; }
-        stack.emplace ("", repair);
-        closing = "";
-    }
-
-    void proceed (str topic)
+        "top",  "mid",  "bottom",  "der-top",  "der-mid",  "der-bottom",  "rel-top",  "rel-mid",  "rel-bottom",
+        "top1", "mid1", "bottom1", "der-top1", "der-mid1", "der-bottom1", "rel-top1", "rel-mid1", "rel-bottom1",
+        "top2", "mid2", "bottom2", "der-top2", "der-mid2", "der-bottom2", "rel-top2", "rel-mid2", "rel-bottom2",
+        "top3", "mid3", "bottom3", "der-top3", "der-mid3", "der-bottom3", "rel-top3", "rel-mid3", "rel-bottom3", 
+        "top4", "mid4", "bottom4", "der-top4", "der-mid4", "der-bottom4", "rel-top4", "rel-mid4", "rel-bottom4", 
+        "top5", "mid5", "bottom5", "der-top5", "der-mid5", "der-bottom5", "rel-top5", "rel-mid5", "rel-bottom5",
+    }},
+    {   "wiki",
     {
-        stack.emplace("",""); 
+        "wikipedia",
 
-        int p = 0; while (p < topic.size())
-        {
-            int b = p+1 < topic.size() ? topic.find("==== ", str::start_from(p+1)) : str::nope;
-            
-            if (b == str::nope) b = topic.size();
-
-            paragraph = topic.substr(p, b-p); proceed_paragraph ();
-
-            p = b;
-
-            if (stack.size() != 1) dump();
-            output += payload();
-            payload() = "";
-        }
-    }
-
-    void proceed_paragraph ()
-    {
-        int p = 0; while (p < paragraph.size())
-        {
-            int b = paragraph.find("&lt;math&gt;", str::start_from(p)); if (b == str::nope){ break; }
-            int e = paragraph.find("&lt;/math&gt;", str::start_from(b)); if (e == str::nope){ break; }
-
-            proceed_sequence (paragraph.substr(p, b-p));
-
-            payload () += paragraph.substr (b, e-b+13);
-
-            p = e+13;
-        }
-
-        proceed_sequence (paragraph.from(p));
-    }
-
-    void proceed_sequence (str input)
-    {
-        input.replace_all("{{unsupported|{}}","&lbrace;");
-        input.replace_all("{{unsupported|}}}","&rbrace;");
-        input.replace_all("{{unsupported|[}}","&lbrack;");
-        input.replace_all("{{unsupported|]}}","&rbrack;");
-
-        for (char c : input)
-        {
-            switch (c) {
-            case ']':     closing += c; break;
-            case '}':     closing += c; break;
-            case '[': if (closing != "") proceed_closing (); if (payload() == "") opening() += c; else stack.emplace(c, ""); break;
-            case '{': if (closing != "") proceed_closing (); if (payload() == "") opening() += c; else stack.emplace(c, ""); break;
-            default : if (closing != "") proceed_closing ();     payload() += c; break;
-            }
-        }
-        proceed_closing ();
-    }
-
-    void proceed_closing ()
-    {
-        while (closing != "")
-        {
-            str & oo = opening(); auto oooo = [oo](str s) { return oo.ends_with(s); };
-            str & cc = closing;   auto cccc = [cc](str s) { return cc.starts_with(s); };
-
-            str op;
-
-            if (cc == "]"     && oooo ("["  )) op = "["  ; else
-            if (cc == "}"     && oooo ("{"  )) op = "{"  ; else
-            if (cc == "]]"    && oooo ("[[" )) op = "[[" ; else
-            if (cc == "}}"    && oooo ("{{" )) op = "{{" ; else
-            if (cc == "}}}"   && oooo ("{{{")) op = "{{{"; else
-
-            if (cccc ("]}"  ) && oo == "["   ) op = "["  ; else
-            if (cccc ("}]"  ) && oo == "{"   ) op = "{"  ; else
-            if (cccc ("]}"  ) && oooo ("{[" )) op = "["  ; else
-            if (cccc ("}]"  ) && oooo ("[{" )) op = "{"  ; else
-
-            if (cccc ("]]]" ) && oooo ("[[" )) op = "[[" ; else
-            if (cccc ("]]}" ) && oooo ("[[" )) op = "[[" ; else
-            if (cccc ("}}]" ) && oooo ("{{" )) op = "{{" ; else
-
-            if (cccc ("]]]]") && oooo ("[[" )) op = "[[" ; else
-            if (cccc ("}}}]") && oooo ("{{{")) op = "{{{"; else
-
-            if (cccc ("}}}}") && oo == "{{"  ) op = "{{" ; else
-            if (cccc ("}}}}") && oo == "{{{" ) op = "{{{"; else
-
-            { dump(); return; }
-
-            if (op == "["  ) payload() = proceed_brakets   (payload()); else
-            if (op == "{"  ) payload() = proceed_braces    (payload()); else
-            if (op == "[[" ) payload() = proceed_link      (payload()); else
-            if (op == "{{" ) payload() = proceed_template  (payload()); else
-            if (op == "{{{") payload() = proceed_parameter (payload());
-
-            closing.erase (0, op.size());
-            opening().truncate (opening().size() - op.size());
-
-            if (opening() == "") {
-                str s = std::move(payload());
-                stack.pop();
-                payload() += std::move(s);
-            }
-        }
-    }
-
-    std::function<str(str)> proceed_brakets   = [] (str s) { s =   "[" + s + "]";   return s; };
-    std::function<str(str)> proceed_braces    = [] (str s) { s =   "{" + s + "}";   return s; };
-    std::function<str(str)> proceed_link      = [] (str s) { s =  "[[" + s + "]]";  return s; };
-    std::function<str(str)> proceed_template  = [] (str s) { s =  "{{" + s + "}}";  return s; };
-    std::function<str(str)> proceed_parameter = [] (str s) { s = "{{{" + s + "}}}"; return s; };
+        "l", "head", "lb", "plural of"
+    }}
 };
+
+str template_kind (str name)
+{
+    for (const auto & [kind, set] : rejected_templates)
+        if (set.find (name) != set.end())
+            return kind;
+    return "";
+}
 
 Pass <entry, entry> brackets = [](auto & input, auto & output)
 {
     Result result {__FILE__, output, true};
 
+    std::set<str> heads, labels;
+
+    bracketer B;
+    B.proceed_sbrakets  = [&] (str s) { s =   "[" + s + "]";   result.report(s, "["  ); return s; };
+    B.proceed_qbrakets  = [&] (str s) { s =   "{" + s + "}";   result.report(s, "{"  ); return s; };
+    B.proceed_link      = [&] (str s) { s =  "[[" + s + "]]";  result.report(s, "[[" ); return s; };
+    B.proceed_parameter = [&] (str s) { s = "{{{" + s + "}}}"; result.report(s, "{{{"); return s; };
+    B.proceed_template  = [&] (str s)
+    {
+        str name, args; s.split_by("|", name, args); name.strip(" \t\n");
+
+
+        if (name == "head") heads.emplace(s);
+        if (name == "lb" || name == "labels") labels.emplace(s);
+
+    
+        str kind = "{{" + template_kind(name);
+    
+        result.report ("{{" + s + "}}", kind);
+    
+        return kind == "{{" ? "{{" + s + "}}" : "";
+    };
+
     for (auto && [title, topic] : input)
     {
         static int64_t nn = 0; if (++nn % 100'000 == 0) print("brackets  ", nn, " entries ", input.cargo, " cargo ");
 
+        if (nn == 1)
+        {
+            // for (auto & [name, body] : templates)
+            // {
+            //     str report = body;
+            // 
+            //     bracketer b;
+            //     b.proceed_sbrakets  = B.proceed_sbrakets ;
+            //     b.proceed_qbrakets  = B.proceed_qbrakets ;
+            //     b.proceed_link      = B.proceed_link     ;
+            //     b.proceed_template  = B.proceed_template ;
+            //     b.proceed_parameter = B.proceed_parameter;
+            //     b.proceed(body);
+            // 
+            // 
+            //     body = std::move(b.output);
+            // 
+            //     if (report != body) {
+            //         report += "\n====================================\n";
+            //         report += body;
+            //         result.report (entry {name, std::move(report)}, "templates");
+            //     }
+            // 
+            //     if (b.report.size() > 0) result.report(entry {name, str(std::move(b.report))}, "broken brackets (templates)");
+            // }
+            // 
+            // print ("templates preprocessed");
+        }
+
         bracketer b;
-        b.proceed_brakets   = [&] (str s) { s =   "[" + s + "]";   result.report(s, "["  ); return s; };
-        b.proceed_braces    = [&] (str s) { s =   "{" + s + "}";   result.report(s, "{"  ); return s; };
-        b.proceed_link      = [&] (str s) { s =  "[[" + s + "]]";  result.report(s, "[[" ); return s; };
-        b.proceed_template  = [&] (str s) { s =  "{{" + s + "}}";  result.report(s, "{{" ); return s; };
-        b.proceed_parameter = [&] (str s) { s = "{{{" + s + "}}}"; result.report(s, "{{{"); return s; };
-                                                                                         
+        b.proceed_sbrakets  = B.proceed_sbrakets ;
+        b.proceed_qbrakets  = B.proceed_qbrakets ;
+        b.proceed_link      = B.proceed_link     ;
+        b.proceed_template  = B.proceed_template ;
+        b.proceed_parameter = B.proceed_parameter;
         b.proceed(topic);
             
-        if (b.report != "") result.report(entry {title, b.report}, "broken brackets");
-
+        if (b.report.size() > 0) result.report(entry {title, str(std::move(b.report))}, "broken brackets");
+        
         topic = std::move(b.output);
 
         result.accept (entry {std::move(title), std::move(topic)});
     }
+
+    for (auto head : heads) result.report (head, "heads");
+    for (auto head : labels) result.report (head, "labels");
 };
+

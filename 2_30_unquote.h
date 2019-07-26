@@ -9,7 +9,7 @@ Pass <entry, entry> unquote = [](auto & input, auto & output)
 
     for (auto [title, topic] : input)
     {
-        static int64_t nn = 0; if (++nn % 80'000 == 0) print("unquote ", nn, " entries ", input.cargo, " cargo ");
+        static int64_t nn = 0; if (++nn % 100'000 == 0) print("unquote ", nn, " entries ", input.cargo, " cargo ");
 
         std::map<str, array<str>> topics; str kind = "accepted"; int braces = 0;
 
@@ -27,10 +27,15 @@ Pass <entry, entry> unquote = [](auto & input, auto & output)
 
             if (kind == "accepted" && s.starts_with ("#"))
             {
+                str prefix = s.head(15);
+                prefix.replace_all("##", "#");
+                prefix.replace_all("  ", "");
+                prefix.replace_all(" ", "");
+
                 for (str r : rejected)
                 {
-                    if (s.starts_with ("#* " + r) ||
-                        s.starts_with ("##* " + r))
+                    if (prefix.starts_with ("#*" + r) ||
+                        prefix.starts_with ("#:" + r))
                     {
                         kind = r; break;
                     }
@@ -65,6 +70,7 @@ Pass <entry, entry> unquote = [](auto & input, auto & output)
             {
                 str prefix = s.head(15);
                 prefix.replace_all("##", "#");
+                prefix.replace_all("  ", "");
                 prefix.replace_all(" ", "");
 
                 if (prefix.starts_with ("#*:"       )) kind = kind; else

@@ -33,6 +33,6 @@ template <class Entry1, class Entry2> struct Pass
 
 struct nothing {};
 
-Pass <nothing, nothing> terminator = [](auto & input, auto & output)
+inline Pass <nothing, nothing> terminator = [](auto & input, auto & output)
 {
 };

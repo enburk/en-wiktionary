@@ -1,4 +1,5 @@
 #define _CRT_SECURE_NO_DEPRECATE
+#include <set>
 #include <map>
 #include <queue>
 #include <stack>
@@ -16,10 +17,11 @@
 #include <algorithm>
 #include <functional>
 #include <condition_variable>
+#include <unordered_set>
 #include <chrono>
 #include <zlib.h>
 
-std::mutex print_mutex;
+inline std::mutex print_mutex;
 template <typename ... Args> void print (Args... args) {
     std::lock_guard lock{print_mutex};
     ((std::cout << args), ...);
@@ -33,9 +35,9 @@ const bool GENERATE_REPORTS = true;
 #include "_pass.h"
 #include "_result.h"
 
-std::unordered_map<str,str> redirects;
-std::unordered_map<str,str> redirects_templates;
-std::unordered_map<str,str> templates;
+inline std::unordered_map<str,str> redirects;
+inline std::unordered_map<str,str> redirects_templates;
+inline std::unordered_map<str,str> templates;
 
 #include "1.h"
 #include "2.h"
@@ -70,7 +72,7 @@ int main ()
 
     pass2::english >> pass2::headers >> pass2::unquote >> pass2::cleanup >>
 
-    pass3::gather >> pass3::brackets >> pass3::templating >> 
+    pass3::gather >> pass3::brackets >> // pass3::templating >> 
     
     stop >> terminator; return 0;
 }

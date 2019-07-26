@@ -164,6 +164,7 @@
     <ClInclude Include="3.h" />
     <ClInclude Include="3_10_gather.h" />
     <ClInclude Include="3_15_brackets.h" />
+    <ClInclude Include="3_15_brackets_aux.h" />
     <ClInclude Include="3_20_templates.h" />
     <ClInclude Include="3_20_templates_aux.h" />
     <ClInclude Include="_aux.h" />

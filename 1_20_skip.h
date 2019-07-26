@@ -4,7 +4,7 @@ Pass <entry, entry> skip = [](auto & input, auto & output)
 
     for (auto && [title, topic] : input)
     {
-        static int64_t nn = 0; if (++nn % 150'000 == 0) print("skip    ", nn, " entries ", input.cargo, " cargo ");
+        static int64_t nn = 0; if (++nn % 500'000 == 0) print("skip    ", nn, " entries ", input.cargo, " cargo ");
 
         bool accept = true; str report = "";
 
@@ -14,6 +14,7 @@ Pass <entry, entry> skip = [](auto & input, auto & output)
         if (title.starts_with("Wiktionary:")) { report = "meta Wiktionary"; accept = false; } else
         if (title.starts_with("Appendix:"  )) { report = "meta Appendix"  ; accept = false; } else
         if (title.starts_with("Category:"  )) { report = "meta Category"  ; accept = false; } else
+        if (title.starts_with("Module:"    )) { report = "meta Module"    ; accept = false; } else
         if (title.starts_with("Index:"     )) { report = "meta Index"     ; accept = false; } else
         if (title.found      (":"          )) { report = "meta"           ; accept = false; } else
         {

@@ -4,24 +4,25 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="1_10_unxml.h" />
     <ClInclude Include="_pass.h" />
-    <ClInclude Include="1_00_unzip.h" />
     <ClInclude Include="1.h" />
     <ClInclude Include="_aux.h" />
     <ClInclude Include="_ioqueue.h" />
     <ClInclude Include="_result.h" />
     <ClInclude Include="2.h" />
-    <ClInclude Include="2_10_english.h" />
-    <ClInclude Include="2_20_headers.h" />
-    <ClInclude Include="2_40_cleanup.h" />
-    <ClInclude Include="2_30_unquote.h" />
-    <ClInclude Include="1_20_skip.h" />
     <ClInclude Include="3.h" />
-    <ClInclude Include="3_10_gather.h" />
-    <ClInclude Include="1_30_untag.h" />
     <ClInclude Include="3_20_templates.h" />
     <ClInclude Include="3_20_templates_aux.h" />
     <ClInclude Include="3_15_brackets.h" />
+    <ClInclude Include="1_00_unzip.h" />
+    <ClInclude Include="1_10_unxml.h" />
+    <ClInclude Include="1_20_skip.h" />
+    <ClInclude Include="1_30_untag.h" />
+    <ClInclude Include="2_10_english.h" />
+    <ClInclude Include="2_20_headers.h" />
+    <ClInclude Include="2_30_unquote.h" />
+    <ClInclude Include="2_40_cleanup.h" />
+    <ClInclude Include="3_10_gather.h" />
+    <ClInclude Include="3_15_brackets_aux.h" />
   </ItemGroup>
 </Project>

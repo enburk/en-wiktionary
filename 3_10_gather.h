@@ -6,17 +6,11 @@ Pass <pass2::entry, entry> gather = [](auto & input, auto & output)
 
     auto start = std::chrono::high_resolution_clock::now ();
 
-    for (auto && [title, topic_] : input)
+    for (auto && [title, topic] : input)
     {
-        static int64_t nn = 0; if (++nn % 40'000 == 0) print("gather  ", nn, " entries ", input.cargo, " cargo ");
+        static int64_t nn = 0; if (++nn % 100'000 == 0) print("gather  ", nn, " entries ", input.cargo, " cargo ");
 
-        str topic; for (auto s : topic_) {
-            topic += s;
-            topic += '\n';
-        }
-        if (topic != "") topic.pop_back();
-
-        content.emplace_back (std::move(title), std::move(topic));
+        content.emplace_back (std::move(title), std::move(str(topic)));
     }
 
     auto stop  = std::chrono::high_resolution_clock::now ();
