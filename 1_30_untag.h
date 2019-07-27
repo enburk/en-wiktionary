@@ -27,7 +27,7 @@ Pass <entry, entry> untag = [](auto & input, auto & output)
 
     for (auto && [title, topic] : input)
     {
-        static int64_t nn = 0; if (++nn % 100'000 == 0) print("untag   ", nn, " entries ", input.cargo, " cargo ");
+        static int64_t nn = 0; if (++nn % 100'000 == 0) print("untag     ", nn, " entries ", input.cargo, " cargo ");
 
         erase_all (title, topic, "&lt;!--", "--&gt;", "tag xml comments");
 

@@ -166,6 +166,15 @@ struct str : public std::string
         base::erase(std::unique(begin(), end(), [](char c1, char c2){ return c1 == ' ' && c2 == ' '; }), end());
         strip();
     }
+
+    bool ascii_isalnum () const
+    {
+        for (char c : *this)
+            if (c < '0' || c > '9' &&
+                c < 'A' || c > 'Z' &&
+                c < 'a' || c > 'z') return false;
+        return true;
+    }
 };
 
 namespace std

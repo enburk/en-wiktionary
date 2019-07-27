@@ -8,13 +8,10 @@ struct bracketer
     str   closing; 
     str & opening () { return stack.top().first; }
     str & payload () { return stack.top().second; }
-    str paragraph; 
 
     void dump ()
     {
         str repair = closing;
-        report += paragraph;
-        report += "=================================================================";
         report += "CLOSING: " + closing;
         while (stack.size() > 0) { auto [oo, xx] = stack.top(); stack.pop(); repair = oo + xx + repair;
         report += "STACK: " + oo + xx; }
@@ -22,34 +19,15 @@ struct bracketer
         closing = "";
     }
 
-    void proceed (str topic)
+    void proceed (str paragraph)
     {
         output.clear();
         report.clear();
         while (stack.size() > 0) stack.pop();
-        paragraph.clear();
         closing.clear();
 
         stack.emplace("",""); 
 
-        int p = 0; while (p < topic.size())
-        {
-            int b = p+1 < topic.size() ? topic.find("==== ", str::start_from(p+1)) : str::nope;
-            
-            if (b == str::nope) b = topic.size();
-
-            paragraph = topic.substr(p, b-p); proceed_paragraph ();
-
-            p = b;
-
-            if (stack.size() != 1) dump();
-            output += payload();
-            payload() = "";
-        }
-    }
-
-    void proceed_paragraph ()
-    {
         int p = 0; while (p < paragraph.size())
         {
             int b = paragraph.find("&lt;math&gt;", str::start_from(p)); if (b == str::nope){ break; }
@@ -63,6 +41,10 @@ struct bracketer
         }
 
         proceed_sequence (paragraph.from(p));
+
+        if (stack.size() != 1) dump();
+        output += payload();
+        payload() = "";
     }
 
     void proceed_sequence (str input)
@@ -105,6 +87,7 @@ struct bracketer
             if (cccc ("]}"  )  && oooo ("{[" )) op = "["  ; else
             if (cccc ("}]"  )  && oooo ("[{" )) op = "{"  ; else
                                
+            if (cccc ("]]]" )  && oo == "["   ) op = "["  ; else
             if (cccc ("]]]" )  && oooo ("[[" )) op = "[[" ; else
             if (cccc ("]]}" )  && oooo ("[[" )) op = "[[" ; else
             if (cccc ("}}]" )  && oooo ("{{" )) op = "{{" ; else

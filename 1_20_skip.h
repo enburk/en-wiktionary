@@ -4,7 +4,7 @@ Pass <entry, entry> skip = [](auto & input, auto & output)
 
     for (auto && [title, topic] : input)
     {
-        static int64_t nn = 0; if (++nn % 500'000 == 0) print("skip    ", nn, " entries ", input.cargo, " cargo ");
+        static int64_t nn = 0; if (++nn % 500'000 == 0) print("skip      ", nn, " entries ", input.cargo, " cargo ");
 
         bool accept = true; str report = "";
 

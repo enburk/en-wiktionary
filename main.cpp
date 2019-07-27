@@ -31,6 +31,7 @@ template <typename ... Args> void print (Args... args) {
 const bool GENERATE_REPORTS = true;
 
 #include "_aux.h"
+#include "_bracketer.h"
 #include "_ioqueue.h"
 #include "_pass.h"
 #include "_result.h"
@@ -38,6 +39,29 @@ const bool GENERATE_REPORTS = true;
 inline std::unordered_map<str,str> redirects;
 inline std::unordered_map<str,str> redirects_templates;
 inline std::unordered_map<str,str> templates;
+
+std::unordered_set<str> lexical_items
+{
+    "noun", "pronoun", "proper noun", "verb", "adjective", "adverb", "numeral", "number", "article", "particle", 
+    "preposition", "postposition", "determiner", "conjunction", "interjection",
+    "abbreviation", "initialism", "contraction", "acronym", 
+    "letter", "symbol", "punctuation mark", "diacritical mark",
+    "suffix", "prefix", "infix", "affix", "interfix",
+    "phrase", "prepositional phrase", "proverb", 
+};
+std::unordered_set<str> related_items
+{
+    "alternative forms", "abbreviations",
+    "synonyms", "antonyms", "hypernyms", "hyponyms", "meronyms", "holonyms", "troponyms",
+    "derived terms", "related terms", "coordinate terms",
+    "see also", 
+};
+std::unordered_set<str> lexical_notes
+{
+    "pronunciation", "etymology",
+    "usage notes", "trivia",
+};
+
 
 #include "1.h"
 #include "2.h"
@@ -70,9 +94,15 @@ int main ()
 
     pass1::unzip >> pass1::unxml >> pass1::skip >> pass1::untag >>
 
-    pass2::english >> pass2::headers >> pass2::unquote >> pass2::cleanup >>
+    pass2::english >> pass2::headers >> pass2::cleanup >>
 
-    pass3::gather >> pass3::brackets >> // pass3::templating >> 
+    pass3::paragraphs >> pass3::brackets >>
+        
+        // pass3::templating >> 
+
+//  pass3::gather >> 
+
+//  pass2::unquote >> 
     
     stop >> terminator; return 0;
 }

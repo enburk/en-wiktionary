@@ -73,7 +73,7 @@ Pass <str, entry> unxml = [](auto & input, auto & output)
                 i = s.begin() + offset;
             }
 
-            static int64_t nn = 0; if (++nn % 50 == 0) print("unxml   ", nn, " chunks ", input.cargo, " cargo ");
+            static int64_t nn = 0; if (++nn % 50 == 0) print("unxml     ", nn, " chunks ", input.cargo, " cargo ");
 
             str next; if (!input.pop(next)) break; s += next;
             j = s.begin() + offset + (j - i);

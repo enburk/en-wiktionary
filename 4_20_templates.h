@@ -78,3 +78,50 @@ str proceed_template (str title, str callstack, str body, Result<pass3::entry> &
     result.report(report, kind);
     return body;
 }
+
+Pass <entry, entry> templating = [](auto & input, auto & output)
+{
+    Result result {__FILE__, output, true};
+
+    for (auto && [title, topic] : input)
+    {
+        static int64_t nn = 0; if (++nn % 100'000 == 0) print("templates ", nn, " entries ", input.cargo, " cargo ");
+                                                                               
+        if (nn == 1)
+        {
+            // for (auto & [name, body] : templates)
+            // {
+            //     str report = body;
+            // 
+            //     bracketer b;
+            //     b.proceed_sbrakets  = B.proceed_sbrakets ;
+            //     b.proceed_qbrakets  = B.proceed_qbrakets ;
+            //     b.proceed_link      = B.proceed_link     ;
+            //     b.proceed_template  = B.proceed_template ;
+            //     b.proceed_parameter = B.proceed_parameter;
+            //     b.proceed(body);
+            // 
+            // 
+            //     body = std::move(b.output);
+            // 
+            //     if (report != body) {
+            //         report += "\n====================================\n";
+            //         report += body;
+            //         result.report (entry {name, std::move(report)}, "templates");
+            //     }
+            // 
+            //     if (b.report.size() > 0) result.report(entry {name, str(std::move(b.report))}, "broken brackets (templates)");
+            // }
+            // 
+            // print ("templates preprocessed");
+        }
+
+        bracketer b;
+        b.proceed_template = [&](str s) { return proceed_template (title, "/", s, result); };
+        b.proceed(topic);
+
+        topic = std::move(b.output);
+
+        result.accept (entry {std::move(title), std::move(topic)});
+    }
+};
