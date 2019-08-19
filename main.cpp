@@ -36,6 +36,11 @@ const bool GENERATE_REPORTS = true;
 #include "_pass.h"
 #include "_result.h"
 
+str digit = "0123456789";
+str Latin = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+str latin = "abcdefghijklmnopqrstuvwxyz";
+str alnum = Latin + latin + digit;
+
 inline std::unordered_map<str,str> redirects;
 inline std::unordered_map<str,str> redirects_templates;
 inline std::unordered_map<str,str> templates;
@@ -62,6 +67,9 @@ std::unordered_set<str> lexical_notes
     "usage notes", "trivia",
 };
 
+std::unordered_map<str,
+std::unordered_map<str,
+std::unordered_map<str, str>>> formmap;
 
 #include "1.h"
 #include "2.h"
@@ -96,11 +104,9 @@ int main ()
 
     pass2::english >> pass2::headers >> pass2::cleanup >>
 
-    pass3::paragraphs >> pass3::brackets >>
+    pass3::paragraphs >> pass3::brackets >> pass3::forms >>
         
         // pass3::templating >> 
-
-//  pass3::gather >> 
 
 //  pass2::unquote >> 
     

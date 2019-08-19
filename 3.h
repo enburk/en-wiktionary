@@ -47,6 +47,5 @@ namespace pass3
 
     #include "3_10_paragraphs.h"
     #include "3_15_brackets.h"
-    #include "3_20_templates.h"
-    #include "3_30_links.h"
+    #include "3_30_forms.h"
 }

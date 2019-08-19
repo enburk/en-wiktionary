@@ -20,8 +20,8 @@ template<class type> struct array : public std::vector<type>
 
     friend std::ostream & operator << (std::ostream & out, const array & a) { for (const auto & e : a) out << e << std::endl; return out; }
 
-    bool found (const type e) const { return std::find (base::begin(), base::end(), e) != base::end(); }
-    bool binary_found (const type e) const { return std::binary_search (base::begin(), base::end(), e); }
+    bool found (const type & e) const { return std::find (base::begin(), base::end(), e) != base::end(); }
+    bool binary_found (const type & e) const { return std::binary_search (base::begin(), base::end(), e); }
 };
 
 struct str : public std::string
@@ -167,7 +167,7 @@ struct str : public std::string
         strip();
     }
 
-    bool ascii_isalnum () const
+    bool isalnum_ascii () const
     {
         for (char c : *this)
             if (c < '0' || c > '9' &&

@@ -10,7 +10,7 @@ Pass <entry, entry> cleanup = [](auto & input, auto & output)
 
         str header; array<str> paragraph;
 
-        topic += "==== ";
+        topic += "==== "; // ending
 
         for (str & s : topic)
         {
@@ -20,23 +20,20 @@ Pass <entry, entry> cleanup = [](auto & input, auto & output)
             {
                 str kind = "accepted";
 
-                if (related_items.find(header) != related_items.end())
-                {
+                if (related_items.find(header) != related_items.end()) {
                     if (paragraph.size () >= 50) kind = "related items 50+"; else
                 //  if (paragraph.size () >= 40) kind = "related items 40+"; else
                 //  if (paragraph.size () >= 30) kind = "related items 30+"; else
                     {}
                 }
-
-                if (lexical_notes.find(header) != lexical_notes.end())
-                {
+                if (lexical_notes.find(header) != lexical_notes.end()) {
                     if (paragraph.size () >= 50) kind = "lexical notes 50+"; else
                     if (paragraph.size () >= 40) kind = "lexical notes 40+"; else
                 //  if (paragraph.size () >= 30) kind = "lexical notes 30+"; else
                     {}
                 }
 
-                for (auto & ss : paragraph) topics [kind] += std::move(ss);
+                for (auto & line : paragraph) topics [kind] += std::move(line);
 
                 paragraph.clear();
                 header = s.from(5);
