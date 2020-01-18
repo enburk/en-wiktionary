@@ -30,14 +30,23 @@ struct bracketer
 
         int p = 0; while (p < paragraph.size())
         {
-            int b = paragraph.find("&lt;math&gt;", str::start_from(p)); if (b == str::nope){ break; }
-            int e = paragraph.find("&lt;/math&gt;", str::start_from(b)); if (e == str::nope){ break; }
+            //int b = paragraph.find("&lt;math&gt;", str::start_from(p)); if (b == str::nope){ break; }
+            //int e = paragraph.find("&lt;/math&gt;", str::start_from(b)); if (e == str::nope){ break; }
 
-            proceed_sequence (paragraph.substr(p, b-p));
+            //proceed_sequence (paragraph.substr(p, b-p));
 
-            payload () += paragraph.substr (b, e-b+13);
+            //payload () += paragraph.substr (b, e-b+13);
 
-            p = e+13;
+            //p = e+13;
+
+            auto b = paragraph.find("&lt;math&gt;", str::start_from(p)); if (!b) break;
+            auto e = paragraph.find("&lt;/math&gt;", str::start_from(p+b.offset+b.length)); if (!e) break;
+
+            proceed_sequence (paragraph.from(p).upto(b.offset));
+
+            payload () += paragraph.from(b.offset).upto(e.offset + e.length);
+
+            p = e.offset + e.length;
         }
 
         proceed_sequence (paragraph.from(p));
@@ -108,7 +117,8 @@ struct bracketer
             if (op == "{{" ) payload() = proceed_template  (payload()); else
             if (op == "{{{") payload() = proceed_parameter (payload());
 
-            closing.erase (0, op.size());
+            //closing.erase (0, op.size());
+            closing.upto(op.size()).erase();
             opening().truncate (opening().size() - op.size());
 
             if (opening() == "" && stack.size() > 1)

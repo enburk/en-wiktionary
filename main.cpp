@@ -1,95 +1,32 @@
-#define _CRT_SECURE_NO_DEPRECATE
-#include <set>
-#include <map>
-#include <queue>
-#include <stack>
-#include <array>
-#include <vector>
-#include <string>
-#include <variant>
-#include <cassert>   
-#include <iomanip>
-#include <iostream>
-#include <fstream>
-#include <sstream>
-#include <filesystem>
-#include <iterator>
-#include <algorithm>
-#include <functional>
-#include <condition_variable>
-#include <unordered_set>
-#include <chrono>
-#include <zlib.h>
-
-inline std::mutex print_mutex;
-template <typename ... Args> void print (Args... args) {
-    std::lock_guard lock{print_mutex};
-    ((std::cout << args), ...);
-    std::cout << std::endl;
-}
-
-const bool GENERATE_REPORTS = true;
-
-#include "_aux.h"
-#include "_bracketer.h"
-#include "_ioqueue.h"
-#include "_pass.h"
-#include "_result.h"
+#include "main.hpp"
 
 str digit = "0123456789";
 str Latin = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 str latin = "abcdefghijklmnopqrstuvwxyz";
 str alnum = Latin + latin + digit;
 
-inline std::unordered_map<str,str> redirects;
-inline std::unordered_map<str,str> redirects_templates;
-inline std::unordered_map<str,str> templates;
-
-std::unordered_set<str> lexical_items
-{
-    "noun", "pronoun", "proper noun", "verb", "adjective", "adverb", "numeral", "number", "article", "particle", 
-    "preposition", "postposition", "determiner", "conjunction", "interjection",
-    "abbreviation", "initialism", "contraction", "acronym", 
-    "letter", "symbol", "punctuation mark", "diacritical mark",
-    "suffix", "prefix", "infix", "affix", "interfix",
-    "phrase", "prepositional phrase", "proverb", 
-};
-std::unordered_set<str> related_items
-{
-    "alternative forms", "abbreviations",
-    "synonyms", "antonyms", "hypernyms", "hyponyms", "meronyms", "holonyms", "troponyms",
-    "derived terms", "related terms", "coordinate terms",
-    "see also", 
-};
-std::unordered_set<str> lexical_notes
-{
-    "pronunciation", "etymology",
-    "usage notes", "trivia",
-};
-
 std::unordered_map<str,
 std::unordered_map<str,
 std::unordered_map<str, str>>> formmap;
 
-#include "1.h"
-#include "2.h"
-#include "3.h"
+#include "0_00_unzip.h"
+#include "0_10_unxml.h"
+#include "0_20_unuse.h"
+#include "0_30_meta.h"
+#include "0_30_untag.h"
+#include "0_90_sort.h"
 
-Pass <pass3::entry, nothing> stop = [](auto & input, auto & output)
+#include "1_00_unmeta.h"
+#include "1_10_english.h"
+#include "1_20_headers.h"
+#include "1_50_cleanup.h"
+
+Pass <pass1::entry, nothing> stop = [](auto & input, auto &)
 {
-    auto start = std::chrono::high_resolution_clock::now ();
-
-    for (auto && e : input) { ; }
-
-    auto stop  = std::chrono::high_resolution_clock::now ();
-
-    auto duration = stop - start;
-    auto minutes = std::chrono::duration_cast<std::chrono::minutes>(duration); duration -= minutes;
-    auto seconds = std::chrono::duration_cast<std::chrono::seconds>(duration); duration -= seconds;
-
-    std::cout << std::endl << "total: "
-    << minutes.count ()  << " minutes "
-    << seconds.count ()  << " seconds " << std::endl; 
+    Time t0; for (auto && e : input) { ; }
+    Time t1; std::cout
+    << std::endl << "total: " << t1-t0
+    << std::endl; 
 };
 
 int main ()
@@ -100,15 +37,22 @@ int main ()
     /// Gzip it to: enwiktionary-pages-articles.xml.gz
     /// Then run and wait...
 
-    pass1::unzip >> pass1::unxml >> pass1::skip >> pass1::untag >>
+    pass0::unzip >> pass0::unxml >> pass0::unuse >>
+    pass0::meta  >> pass0::untag >> pass0::sort  >> pass0::rezip >> 
 
-    pass2::english >> pass2::headers >> pass2::cleanup >>
+    pass1::unmeta  >> pass1::lineup  >>
+    pass1::english >> pass1::headers >> pass1::cleanup >>
 
-    pass3::paragraphs >> pass3::brackets >> pass3::forms >>
-        
-        // pass3::templating >> 
 
-//  pass2::unquote >> 
+    // pass1::unzip >> pass1::unxml >> pass1::skip >> pass1::untag >>
+    // 
+    // pass2::english >> pass2::headers >> pass2::cleanup >>
+    // 
+    // pass3::paragraphs >> pass3::brackets >> pass3::forms >>
+    //     
+    //     // pass3::templating >> 
+    // 
+    //     //  pass2::unquote >> 
     
     stop >> terminator; return 0;
 }

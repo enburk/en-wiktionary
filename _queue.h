@@ -2,7 +2,6 @@ template <class Task> struct ioqueue
 {
     std::int64_t cargo = 0;
     std::int64_t cargo_upper_bound = 1024*1024;
-    // to do: bandwidth statistics
 
     std::queue<Task> queue;
     std::condition_variable cv;

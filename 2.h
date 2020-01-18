@@ -1,19 +1,40 @@
+#pragma once
+#include "1.h"
 namespace pass2
 {
     inline const auto esc = pass1::esc;
 
-    struct entry { str title; array<str> topic;
+    struct paragraph
+    {
+        str header, content;
     
-        auto size () const { auto n = title.size(); for (const auto & s : topic) n += s.size(); return n; }
+        auto size () const { return header.size() + content.size(); }
 
-        auto empty () const { return title.empty() && topic.empty(); }
+        auto empty () const { return content.empty(); }
+
+        void strip () { content.strip (" \n"); }
+
+        friend std::ostream & operator << (std::ostream & out, const paragraph & paragraph)
+        {
+            out << "==== "
+                << paragraph.header  << std::endl
+                << paragraph.content << std::endl;
+            return out;
+        }
+    };
+
+    struct entry { str title; array<paragraph> topic;
+    
+        auto size () const { auto n = title.size(); for (const auto & p : topic) n += p.size(); return n; }
+
+        auto empty () const { return topic.empty(); }
 
         void canonicalize ()
         {
             for (auto & s : topic) s.strip ();
-            while (!topic.empty() && topic.back() == "") topic.pop_back();
-            topic.erase(topic. begin(), std::find_if(topic. begin(), topic.end (), [](auto & s){ return s != ""; }));
-            topic.erase(std::unique(topic.begin(), topic.end(), [](auto & s1, auto & s2){ return s1 == "" && s2 == ""; }), topic.end());
+            while (!topic.empty() && topic.back().empty()) topic.pop_back();
+            topic.erase(topic.begin(), std::find_if(topic.begin(), topic.end(), [](auto & p){ return !p.empty(); }));
+            topic.erase(std::unique(topic.begin(), topic.end(), [](auto & p1, auto & p2){ return p1.empty() && p2.empty(); }), topic.end());
         }
 
         friend std::ostream & operator << (std::ostream & out, const entry & entry)
@@ -25,8 +46,4 @@ namespace pass2
             return out;
         }
     };
-
-    #include "2_10_english.h"
-    #include "2_20_headers.h"
-    #include "2_40_cleanup.h"
 }

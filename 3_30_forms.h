@@ -73,7 +73,7 @@ str superlative (str s) { if (s.ends_with("y")) { s.truncate(); if (s.ends_with(
 
 str proceed_forms (str title, str & header, str body, Result<entry> & result)
 {
-    str name; if (int n = body.find('|'); n != str::npos) name = body.head(n); else name = body; name.strip(" \t\n");
+    str name; if (auto r = body.find('|'); r) name = body.upto(r.offset); else name = body; name.strip(" \t\n");
 
     auto it = list_of_forms.find(name);
     if (it == list_of_forms.end()) return "{{" + body + "}}";
@@ -150,7 +150,7 @@ str proceed_forms (str title, str & header, str body, Result<entry> & result)
 
 Pass <entry, entry> forms = [](auto & input, auto & output)
 {
-    Result result {__FILE__, output, false};
+    Result result {__FILE__, output, true};
 
     for (auto && [title, topic] : input)
     {

@@ -48,12 +48,12 @@ str proceed_brackets (str title, str header, str body, Result<entry> & result, s
 
     if (o == "[")
     {
-        if (body.found("\n")) { output = ""; kind = "[ multiline ]"; }
-        if (body.found( "|")) { kind = "[ pipe ]"; }
+        if (body.contains("\n")) { output = ""; kind = "[ multiline ]"; }
+        if (body.contains( "|")) { kind = "[ pipe ]"; }
     }
     if (o == "{")
     {
-        if (body.found( "|"))
+        if (body.contains( "|"))
         {
             output = "";
             kind = "{ tables ";
@@ -61,22 +61,22 @@ str proceed_brackets (str title, str header, str body, Result<entry> & result, s
             report = "==== " + title + " ==== " + header + " ==== " + "\n\n" + report;
         }
         else
-        if (body.found("\n")) { output = ""; kind = "{ multiline }"; }
+        if (body.contains("\n")) { output = ""; kind = "{ multiline }"; }
     }
     if (o == "[[")
     {
-        if (body.found("|")) {
+        if (body.contains("|")) {
             auto ss = body.split_by("|");
             if (ss.size() >= 3) kind = "[[ pipe pipe ]]";
             if (ss.size() == 2 &&
-                ss[0].find_first_not_of(alnum + " .,;!?'-") == str::nope &&
-                ss[1].find_first_not_of(alnum + " .,;!?'-") == str::nope ){
+                ss[0].find_first_not_of(alnum + " .,;!?'-") == str::npos &&
+                ss[1].find_first_not_of(alnum + " .,;!?'-") == str::npos ){
                 body = output = "[[" + ss[1] + "]]";
                 kind = "[[ pipe ok ]]"; } else
                 kind = "[[ pipe no ]]";
         }
 
-        if (lexical_items.find(header) != lexical_items.end() && body.isalnum_ascii()) { kind = "[[ ascii ]]"; output = body; } else
+        if (lexical_items.find(header) != lexical_items.end() && body.ascii_isalnum()) { kind = "[[ ascii ]]"; output = body; } else
         {
             if (body.starts_with("Category:")) { output = ""; kind = "[[ Category ]]"; }
             if (body.starts_with("category:")) { output = ""; kind = "[[ Category ]]"; }
@@ -88,7 +88,7 @@ str proceed_brackets (str title, str header, str body, Result<entry> & result, s
     }
     if (o == "{{")
     {
-        str name; if (int n = body.find('|'); n != str::npos) name = body.head(n); else name = body; name.strip(" \t\n");
+        str name; if (auto r = body.find('|'); r) name = body.upto(r.offset); else name = body; name.strip(" \t\n");
 
         for (const auto & [group, set] : rejected_templates)
             if (set.find (name) != set.end()) {
@@ -109,10 +109,10 @@ str proceed_brackets (str title, str header, str body, Result<entry> & result, s
         {}
     }
 
-    if (output.found("\n")) kind +=  " #br#";
-    if (output.found("\n")) report = "==== " + title + " ==== " + header + " ==== " + "\n\n" + report;
-    if (output.found("\n")) output.replace_all("\n", " ");
-    if (output.found( "|")) result.report (output, " - pipe");
+    if (output.contains("\n")) kind +=  " #br#";
+    if (output.contains("\n")) report = "==== " + title + " ==== " + header + " ==== " + "\n\n" + report;
+    if (output.contains("\n")) output.replace_all("\n", " ");
+    if (output.contains( "|")) result.report (output, " - pipe");
     result.report (report, kind);
     return output;
 }
