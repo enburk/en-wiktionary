@@ -6,9 +6,9 @@ namespace pass2
 
     struct paragraph
     {
-        str header, content;
+        str header, forms, content;
     
-        auto size () const { return header.size() + content.size(); }
+        auto size () const { return header.size() + forms.size() + content.size(); }
 
         auto empty () const { return content.empty(); }
 
@@ -17,7 +17,8 @@ namespace pass2
         friend std::ostream & operator << (std::ostream & out, const paragraph & paragraph)
         {
             out << "==== "
-                << paragraph.header  << std::endl
+                << paragraph.header  << " ==== "
+                << paragraph.forms   << std::endl
                 << paragraph.content << std::endl;
             return out;
         }
@@ -46,4 +47,13 @@ namespace pass2
             return out;
         }
     };
+
+    void logout (str pass, int64_t entries, int64_t cargo)
+    {
+        auto c = std::to_string(cargo);
+        auto e = std::to_string(entries);
+        e.insert(0, max(0, 7 - (int)e.size()), ' ');
+        c.insert(0, max(0, 7 - (int)c.size()), ' ');
+        print(pass, " ", e, " entries ", c, " cargo ");
+    }
 }

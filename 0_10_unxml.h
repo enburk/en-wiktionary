@@ -4,7 +4,7 @@ namespace pass0
 {
     Pass<str, entry> unxml = [](auto & input, auto & output)
     {
-        Result result {__FILE__, output, false}; // don't generate reports by default - they are huge
+        Result result {__FILE__, output, UPDATING_REPORTS};
 
         const std::vector<str> tagmap = 
         {

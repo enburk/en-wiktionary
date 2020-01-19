@@ -1,10 +1,5 @@
 #include "main.hpp"
 
-str digit = "0123456789";
-str Latin = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-str latin = "abcdefghijklmnopqrstuvwxyz";
-str alnum = Latin + latin + digit;
-
 std::unordered_map<str,
 std::unordered_map<str,
 std::unordered_map<str, str>>> formmap;
@@ -21,7 +16,11 @@ std::unordered_map<str, str>>> formmap;
 #include "1_20_headers.h"
 #include "1_50_cleanup.h"
 
-Pass <pass1::entry, nothing> stop = [](auto & input, auto &)
+#include "2_00_paragraphs.h"
+#include "2_10_brackets.h"
+#include "2_20_lexforms1.h"
+
+Pass <pass2::entry, nothing> stop = [](auto & input, auto &)
 {
     Time t0; for (auto && e : input) { ; }
     Time t1; std::cout
@@ -32,9 +31,8 @@ Pass <pass1::entry, nothing> stop = [](auto & input, auto &)
 int main ()
 {
     /// Go to: https://dumps.wikimedia.org/enwiktionary/
-    /// Download: enwiktionary-20190320-pages-articles.xml.bz2 (or latest version)
+    /// Download: enwiktionary-20200101-pages-articles.xml.bz2 (or latest version)
     /// Unzip it and rename to: enwiktionary-pages-articles.xml
-    /// Gzip it to: enwiktionary-pages-articles.xml.gz
     /// Then run and wait...
 
     pass0::unzip >> pass0::unxml >> pass0::unuse >>
@@ -43,12 +41,8 @@ int main ()
     pass1::unmeta  >> pass1::lineup  >>
     pass1::english >> pass1::headers >> pass1::cleanup >>
 
+    pass2::paragraphs >> pass2::brackets >>  pass2::lexforms1 >>
 
-    // pass1::unzip >> pass1::unxml >> pass1::skip >> pass1::untag >>
-    // 
-    // pass2::english >> pass2::headers >> pass2::cleanup >>
-    // 
-    // pass3::paragraphs >> pass3::brackets >> pass3::forms >>
     //     
     //     // pass3::templating >> 
     // 

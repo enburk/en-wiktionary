@@ -2,7 +2,7 @@
 #include "main.hpp"
 namespace pass0
 {
-    inline str esc = "#################################################################";
+    inline str esc = "##############################################################";
 
     struct entry { str title; str topic;
     

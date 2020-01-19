@@ -12,13 +12,13 @@ namespace pass1
 
     Pass<entry, entry> english = [](auto & input, auto & output)
     {
-        Result result {__FILE__, output, false};
+        Result result {__FILE__, output, UPDATING_REPORTS};
 
         std::map<str,int> languages, headers, equalequals;
 
         for (auto && [title, topic] : input)
         {
-            static int64_t nn = 0; if (++nn % 200'000 == 0) logout("english", nn, input.cargo);
+            static int64_t nn = 0; if (++nn % 200'000 == 0) logout("english  ", nn, input.cargo);
 
             std::unordered_map<str, array<str>> topics; str kind = "prelude";
 

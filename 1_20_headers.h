@@ -4,7 +4,7 @@ namespace pass1
 {
     Pass<entry, entry> headers = [](auto & input, auto & output)
     {
-        Result result {__FILE__, output, false};
+        Result result {__FILE__, output, true};//UPDATING_REPORTS};
 
         std::unordered_set<str> accepted;
         for (auto h : lexical_items) accepted.emplace(h);
@@ -13,6 +13,7 @@ namespace pass1
 
         std::unordered_set<str> rejected
         {
+            "abbreviation", 
             "conjugation",
             "translations", "descendants",
             "references", "further reading", "quotations", "citations", "external links", "notes",
@@ -23,7 +24,7 @@ namespace pass1
 
         for (auto [title, topic] : input)
         {
-            static int64_t nn = 0; if (++nn % 200'000 == 0) logout("headers", nn, input.cargo);
+            static int64_t nn = 0; if (++nn % 200'000 == 0) logout("headers  ", nn, input.cargo);
 
             std::map<str, array<str>> topics; str kind = "prelude";
 

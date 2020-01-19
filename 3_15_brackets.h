@@ -152,3 +152,17 @@ Pass <entry, entry> brackets = [](auto & input, auto & output)
     }
 };
 
+        std::multimap<int, str, std::greater<int>> templates; int total = 0;
+        for (auto [name, n] : brackets_internal::templates) { templates.emplace(n, name); total += n; }
+        for (auto [n, name] : templates) result.report (std::to_string(n) + " " + name, "templates");
+        result.report ("====================================", "templates");
+        result.report (std::to_string(total >> 00) + " total", "templates");
+        result.report (std::to_string(total >> 10) + " K    ", "templates");
+        result.report (std::to_string(total >> 20) + " M    ", "templates");
+        brackets_internal::templates.clear();
+
+            /// Go to: https://dumps.wikimedia.org/enwiktionary/
+    /// Download: enwiktionary-20190320-pages-articles.xml.bz2 (or latest version)
+    /// Unzip it and rename to: enwiktionary-pages-articles.xml
+    /// Gzip it to: enwiktionary-pages-articles.xml.gz
+    /// Then run and wait...

@@ -1,10 +1,11 @@
 #pragma once
+#define _CRT_SECURE_NO_WARNINGS
+#define _CRT_SECURE_NO_DEPRECATE
 #include "../ae/libraries/cpp/aux_abc.hpp"
 #include "../ae/libraries/cpp/aux_array.hpp"
 #include "../ae/libraries/cpp/aux_string.hpp"
 using namespace aux;
 
-#define _CRT_SECURE_NO_DEPRECATE
 #include <set>
 #include <map>
 #include <queue>
@@ -55,6 +56,7 @@ std::ostream & operator << (std::ostream & out, std::chrono::high_resolution_clo
 }
 
 bool GENERATE_REPORTS = true;
+bool UPDATING_REPORTS = false;
 
 #include "_queue.h"
 #include "_pass.h"

@@ -4,7 +4,7 @@ namespace pass0
 {
     Pass<entry, entry> meta = [](auto & input, auto & output)
     {
-        Result result {__FILE__, output, false};
+        Result result {__FILE__, output, UPDATING_REPORTS};
 
         array<str> forms { "noun", "verb", "adj", "conj", "decl", "pron", "adjectives", "anagram", "convert", "translit" };
 

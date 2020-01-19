@@ -2,33 +2,63 @@
 #include "0.h"
 namespace pass0
 {
+    auto path_raw = "enwiktionary-pages-articles.xml";
     auto path_src = "enwiktionary-pages-articles.xml.gz";
     auto path_dst = "enwiktionary-pages-articles.gz";
 
     Pass <nothing, str> unzip = [](auto &, auto & output)
     {
         if (std::filesystem::exists(path_dst)) return;
-
-        gzFile file = gzopen(path_src, "rb");
-        if (!file) { print("failed to gzopen ", path_src); return; }
-        gzbuffer(file, 1024*1024);
-        std::uintmax_t bytes_said = 0;
-        std::uintmax_t bytes_read = 0;
-        const
-        unsigned int buffer_size = 8*1024*1024;
-        unsigned int bytes;
-        while (true)
+        if (std::filesystem::exists(path_src))
         {
-            str buffer; buffer.resize(buffer_size);
-            bytes = gzread(file, (unsigned char*)buffer.data(), buffer_size);
-            if (bytes == 0) break;
-            buffer.resize (bytes);
-            output.push(std::move(buffer));
+            gzFile file = gzopen(path_src, "rb");
+            if (!file) { print("failed to gzopen ", path_src); return; }
+            gzbuffer(file, 1024*1024);
+            std::uintmax_t bytes_said = 0;
+            std::uintmax_t bytes_read = 0;
+            const
+            unsigned int buffer_size = 8*1024*1024;
+            unsigned int bytes;
+            while (true)
+            {
+                str buffer; buffer.resize(buffer_size);
+                bytes = gzread(file, (unsigned char*)buffer.data(), buffer_size);
+                if (bytes == 0) break;
+                buffer.resize ((int)(bytes));
+                output.push(std::move(buffer));
 
-            bytes_read += bytes; if (bytes_read > bytes_said + 1024*1024*512) {
-            bytes_said = bytes_read; print("unzip ", bytes_read>>20, " MB "); }
+                bytes_read += bytes; if (bytes_read > bytes_said + 1024*1024*512) {
+                bytes_said = bytes_read; print("unzip ", bytes_read>>20, " MB "); }
+            }
+            gzclose(file);
         }
-        gzclose(file);
+        else
+        {
+            FILE*  rfile = fopen (path_raw, "rb");
+            gzFile wfile = gzopen(path_src, "wb");
+            if (!rfile) { print("failed to fopen  ", path_raw); return; }
+            if (!wfile) { print("failed to gzopen ", path_src); return; }
+            gzbuffer(wfile, 64*1024*1024);
+            std::uintmax_t bytes_said = 0;
+            std::uintmax_t bytes_read = 0;
+            const
+            size_t buffer_size = 8*1024*1024;
+            size_t bytes;
+            while (true)
+            {
+                str buffer; buffer.resize(buffer_size);
+                bytes = fread((unsigned char*)buffer.data(), 1, buffer_size, rfile);
+                if (bytes == 0) break;
+                buffer.resize ((int)(bytes));
+                gzwrite(wfile, buffer.c_str(), buffer.size());
+                output.push(std::move(buffer));
+
+                bytes_read += bytes; if (bytes_read > bytes_said + 1024*1024*512) {
+                bytes_said = bytes_read; print("unzip ", bytes_read>>20, " MB "); }
+            }
+            gzclose(wfile);
+            fclose (rfile);
+        }
     };
 
     Pass <entry, entry> rezip = [](auto & input, auto & output)

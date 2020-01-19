@@ -2,7 +2,7 @@
 #include "2.h"
 namespace pass2
 {
-    Pass <pass1::entry, entry> paragraphs = [](auto & input, auto & output)
+    Pass<pass1::entry, entry> paragraphs = [](auto & input, auto & output)
     {
         Result result {__FILE__, output, false};
 
