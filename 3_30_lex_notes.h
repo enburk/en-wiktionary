@@ -37,7 +37,8 @@ namespace pass3
                     if (line.contains(str::one_of("[]{}:#|"))) { complexity = 99; break; }
                 }
 
-                if (complexity == 0 && header == "etymology") complexity = 90;
+                if (complexity == 0 && header == "etymology"    ) complexity = 90;
+                if (complexity <= 2 && header == "pronunciation") complexity = 90;
 
                 str complexity_ = std::to_string(complexity);
                 if (complexity_.size() == 1) complexity_ = "0" + complexity_;
