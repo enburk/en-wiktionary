@@ -4,7 +4,7 @@ namespace pass1
 {
     Pass<entry, entry> headers = [](auto & input, auto & output)
     {
-        Result result {__FILE__, output, true};//UPDATING_REPORTS};
+        Result result {__FILE__, output, UPDATING_REPORTS};
 
         std::unordered_set<str> accepted;
         for (auto h : lexical_items) accepted.emplace(h);

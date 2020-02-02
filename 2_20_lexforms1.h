@@ -6,82 +6,125 @@ namespace pass2
     {
         static std::unordered_map<str, str> list_of_forms =
         {
-            { "en-abbr"                   , "abbreviation"            },
-            { "en-acronym"                , "acronym"                 },
             { "en-adj"                    , "adjective"               },
             { "en-adjective"              , "adjective"               },
             { "en-adv"                    , "adverb"                  },
             { "en-adverb"                 , "adverb"                  },
+            { "en-noun"                   , "noun"                    },
+            { "en-plural noun"            , "noun"                    },
+            { "en-plural-noun"            , "noun"                    },
+            { "en-proper noun"            , "proper noun"             },
+            { "en-proper-noun"            , "proper noun"             },
+            { "en-proper_noun"            , "proper noun"             },
+            { "en-prop"                   , "proper noun"             },
+            { "en-verb"                   , "verb"                    },
+
+            { "en-abbr"                   , "abbreviation"            },
+            { "en-acronym"                , "acronym"                 },
             { "en-con"                    , "conjunction"             },
             { "en-conjunction"            , "conjunction"             },
             { "en-cont"                   , "contraction"             },
             { "en-contraction"            , "contraction"             },
             { "en-det"                    , "determiner"              },
+            { "en-diacritical mark"       , "diacritical mark"        },
+            {"mul-diacritical mark"       , "diacritical mark"        },
             { "en-initialism"             , "initialism"              },
             { "en-intj"                   , "interjection"            },
             { "en-interj"                 , "interjection"            },
             { "en-interjection"           , "interjection"            },
             { "en-letter"                 , "letter"                  },
-            { "en-noun"                   , "noun"                    },
-            { "en-plural noun"            , "noun"                    },
-            { "en-plural-noun"            , "noun"                    },
             { "en-number"                 , "number"                  },
             { "en-particle"               , "particle"                },
             { "en-part"                   , "particle"                },
             { "en-phrase"                 , "phrase"                  },
             { "en-PP"                     , "prepositional phrase"    },
+            { "en-prep phrase"            , "prepositional phrase"    },
             { "en-pnoun"                  , "proper noun"             },
             { "en-prefix"                 , "prefix"                  },
             { "en-prep"                   , "preposition"             },
             { "en-preposition"            , "preposition"             },
             { "en-pron"                   , "pronoun"                 },
             { "en-pronoun"                , "pronoun"                 },
-            { "en-proper noun"            , "proper noun"             },
-            { "en-proper-noun"            , "proper noun"             },
-            { "en-proper_noun"            , "proper noun"             },
-            { "en-prop"                   , "proper noun"             },
             { "en-proverb"                , "proverb"                 },
             { "en-prov"                   , "proverb"                 },
             { "en-punctuation mark"       , "punctuation mark"        },
+            {"mul-punctuation mark"       , "punctuation mark"        },
             { "en-suffix"                 , "suffix"                  },
             { "en-symbol"                 , "symbol"                  },
-            { "en-verb"                   , "verb"                    },
-            { "en-verb form"              , "verb"                    },
+            {"mul-symbol"                 , "symbol"                  },
         };
     }
 
     str proceed_lexforms1 (str title, str header, str & forms, str body, Result<entry> & result)
     {
-        str name; if (auto r = body.find('|'); r)
-            name = body.upto(r.offset); else
-            name = body; name.strip(" \t\n");
+        args args (body);
 
-        auto it = lexforms1_internal::list_of_forms.find(name);
+        auto it = lexforms1_internal::list_of_forms.find(args.name);
         if (it == lexforms1_internal::list_of_forms.end()) return "{{" + body + "}}";
         str lexical_item = it->second;
-        str output = "{{" + body + "}}";
         str report = header;
+        str arg = args.body;
 
-        array<str> args = body.split_by("|"); for (auto & arg : args) arg.strip(" \t\n"); args.erase(args.begin());
-        array<str> unnamed; std::map<str,str> opt;
-        for (str arg : args) { str key, value;
-            if (arg.split_by ("=", key, value)) {
-                if (key == "head") continue;
-                else opt [key] = value; }
-            else unnamed += arg;
+        if (header != lexical_item)
+        {
+            report += " wrong";
         }
-        args = unnamed;
+        else
+        if (header == "adjective" || header == "adverb")
+        {
+            if (arg == "") arg = "+"; forms = arg;
 
-        if (header != lexical_item) report += " wrong"; else
-        {}
+            if (arg == "+"      ) { ; } else
+            if (arg == "-"      ) { ; } else
+            if (arg == "?"      ) { ; } else
+            if (arg == "er"     ) { ; } else
+            if (arg == "more"   ) { ; } else
+            if (arg == "er|more") { ; } else
+            if (arg == "more|er") { ; } else
+                
+                report += " quest"; report = "+ " + report;
+        }
+        else
+        if (header == "noun" || header == "proper noun")
+        {
+            if (arg == "") arg = "+"; forms = arg;
+
+            if (arg == "+"      ) { ; } else
+            if (arg == "-"      ) { ; } else
+            if (arg == "?"      ) { ; } else
+            if (arg == "~"      ) { ; } else
+            if (arg == "s"      ) { ; } else
+            if (arg == "-|s"    ) { ; } else
+
+            if (args.complexity <= 2
+            && (args.complexity <= 2 || args[1].contains_only(str::one_of(alnum+" -'")))
+            && (args.complexity <= 1 || args[0].contains_only(str::one_of(alnum+" -'")))) { ; } else
+                
+                report += " quest"; report = "+ " + report;
+        }
+        else
+        if (header == "verb")
+        {
+            if (arg == "") arg = "+"; forms = arg;
+
+            if (arg == "+"      ) { ; } else
+
+            if (args.complexity <= 4
+            && (args.complexity <= 4 || args[3].contains_only(str::one_of(alnum+" -'")))
+            && (args.complexity <= 3 || args[2].contains_only(str::one_of(alnum+" -'")))
+            && (args.complexity <= 2 || args[1].contains_only(str::one_of(alnum+" -'")))
+            && (args.complexity <= 1 || args[0].contains_only(str::one_of(alnum+" -'")))) { ; } else
+                
+                report += " quest"; report = "+ " + report;
+        }
 
         result.report (title + " ==== " + header + " ==== {{" + body + "}}", report);
-        return output;
+        return "";
     }
 
     Pass<entry, entry> lexforms1 = [](auto & input, auto & output)
     {
-        Result result {__FILE__, output, true};
+        Result result {__FILE__, output, UPDATING_REPORTS};
 
         for (auto && [title, topic] : input)
         {
@@ -112,13 +155,5 @@ namespace pass2
 
             result.accept (entry {std::move(title), std::move(topic)});
         }
-
-        std::multimap<int, str, std::greater<int>> templates; int total = 0;
-        for (auto [name, n] : templates_statistics [__FILE__]) { templates.emplace(n, name); total += n; }
-        for (auto [n, name] : templates) result.report (std::to_string(n) + " " + name, "templates");
-        result.report ("====================================", "templates");
-        result.report (std::to_string(total >> 00) + " total", "templates");
-        result.report (std::to_string(total >> 10) + " K    ", "templates");
-        result.report (std::to_string(total >> 20) + " M    ", "templates");
     };
 }

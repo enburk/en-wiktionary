@@ -37,7 +37,7 @@ namespace pass0
                 if (kind == "") if (topic.contains("===")) kind = "===";
                 if (kind == "") if (topic.contains("==")) kind = "==";
 
-                if (kind == "") { templates [name] = topic;
+                if (kind == "") { Templates [name] = topic;
                 result.accept (entry {std::move(title), std::move(topic)}, "templates", true); } else
                 result.reject (entry {std::move(title), std::move(topic)}, "templates " + kind);
                 continue;
@@ -76,7 +76,7 @@ namespace pass0
 
                 if (kind == "") if (name.ends_with("/documentation")) kind = "documentation";
 
-                if (kind == "") { templates [name] = topic;
+                if (kind == "") { Modules [name] = topic;
                 result.accept (entry {std::move(title), std::move(topic)}, "modules", true); } else
                 result.reject (entry {std::move(title), std::move(topic)}, "modules " + kind);
                 continue;

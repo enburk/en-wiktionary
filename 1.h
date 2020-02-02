@@ -2,7 +2,8 @@
 #include "0.h"
 namespace pass1
 {
-    inline const auto esc = pass0::esc;
+    using pass0::esc;
+    using pass0::logout;
 
     struct entry { str title; array<str> topic;
     
@@ -27,13 +28,4 @@ namespace pass1
             return out;
         }
     };
-
-    void logout (str pass, int64_t entries, int64_t cargo)
-    {
-        auto c = std::to_string(cargo);
-        auto e = std::to_string(entries);
-        e.insert(0, max(0, 7 - (int)e.size()), ' ');
-        c.insert(0, max(0, 7 - (int)c.size()), ' ');
-        print(pass, " ", e, " entries ", c, " cargo ");
-    }
 }

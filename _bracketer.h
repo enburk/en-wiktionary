@@ -31,7 +31,7 @@ struct bracketer
         int p = 0; while (p < paragraph.size())
         {
             auto b = paragraph.find("<math>", str::start_from(p)); if (!b) break;
-            auto e = paragraph.find("</math>", str::start_from(p+b.offset+b.length)); if (!e) break;
+            auto e = paragraph.find("</math>", str::start_from(b.offset+b.length)); if (!e) break;
 
             proceed_sequence (paragraph.from(p).upto(b.offset));
 
@@ -125,4 +125,96 @@ struct bracketer
     std::function<str(str)> proceed_link      = [] (str s) { s =  "[[" + s + "]]";  return s; };
     std::function<str(str)> proceed_template  = [] (str s) { s =  "{{" + s + "}}";  return s; };
     std::function<str(str)> proceed_parameter = [] (str s) { s = "{{{" + s + "}}}"; return s; };
+};
+
+struct args
+{
+    str name, body, lang;
+    array<str> unnamed;
+    std::map<str,str> opt;
+    int complexity = 0;
+
+    str & operator [] (int i) { return unnamed[i]; }
+
+    void ignore (str option) { if (auto it = opt.find(option); it != opt.end()) { opt.erase(it); complexity -= 10; }; }
+    str acquire (str option) { if (auto it = opt.find(option); it != opt.end())
+        { str s = it->second; opt.erase(it); complexity -= 10; return s; };
+        return "";
+    }
+
+    args (str s)
+    {
+        if (auto r = s.find('|'); r)
+            name = s.upto(r.offset); else
+            name = s; name.strip(" \t\n");
+
+        if (auto   it =  redirect_templates.find(name);
+                   it != redirect_templates.end ()) {
+            name = it -> second;
+        }
+
+        std::map<str,str> piped;
+
+        auto proceed = [&piped] (str s)
+        {
+            if (s.contains("|"))
+            {
+                s =   "[" + s + "]";
+                str ss = "#####"+std::to_string(piped.size());
+                piped[ss] = s;
+                s = ss;
+            };
+            return s;
+        };
+
+        bracketer b;
+        b.proceed_sbrakets  = [&piped, proceed] (str s) { return proceed(  "[" + s + "]"  ); };
+        b.proceed_qbrakets  = [&piped, proceed] (str s) { return proceed(  "{" + s + "}"  ); };
+        b.proceed_link      = [&piped, proceed] (str s) { return proceed( "[[" + s + "]]" ); };
+        b.proceed_template  = [&piped, proceed] (str s) { return proceed( "{{" + s + "}}" ); };
+        b.proceed_parameter = [&piped, proceed] (str s) { return proceed("{{{" + s + "}}}"); };
+        b.proceed(s);
+        s = b.output;
+
+        array<str> args = s.split_by("|");
+        for (str & arg : args) arg.strip(" \t\n"); args.erase(args.begin());
+        for (str & arg : args)
+        {
+            if (arg == "en"  && lang == "") { lang = arg; continue; }
+            if (arg == "mul" && lang == "") { lang = arg; continue; }
+
+            str key, value;
+            if (arg.split_by ("=", key, value))
+            {
+                if (key == "head" ) continue;
+                if (key == "lang" ) continue;
+                if (key == "nocat") continue;
+
+                for (auto & p : piped) key.replace_all(p.first, p.second);
+                for (auto & p : piped) value.replace_all(p.first, p.second);
+                body += key + "=" + value + "|";
+
+                if (key == "1")
+                {
+                    unnamed.resize(max(1, unnamed.size()));
+                    unnamed[0] = value;
+                    complexity += 1;
+                }
+                else
+                {
+                    opt [key] = value;
+                    complexity += 10;
+                }
+            }
+            else
+            {
+                for (auto & p : piped) arg.replace_all(p.first, p.second);
+
+                body += arg + "|";
+                unnamed += arg;
+                complexity += 1;
+            }
+        }
+        body.truncate(); //  + "|";
+    }
 };

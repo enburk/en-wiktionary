@@ -57,7 +57,7 @@ namespace pass1
             {
                 title.erase(0); // erase space for sort
                 result.reject (pass0::entry{title, topic}, "templates", true);
-                templates.emplace (std::move(title), std::move(topic));
+                Templates.emplace (std::move(title.from(9)), std::move(topic));
                 continue;
             }
 
@@ -65,7 +65,7 @@ namespace pass1
             {
                 title.erase(0); // erase space for sort
                 result.reject (pass0::entry{title, topic}, "modules", true);
-                modules.emplace (std::move(title), std::move(topic));
+                Modules.emplace (std::move(title.from(7)), std::move(topic));
                 continue;
             }
 

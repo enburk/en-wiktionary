@@ -54,6 +54,33 @@ namespace pass0
             }
         };
 
+        auto erase_tag = [&result](str & title, str & topic, str tag)
+        {
+            str report = "tag "+ tag;
+            for (int z, c, e, a, b = 0; ; )
+            {
+                auto ra = topic.find("<"+tag+">",  str::start_from(b)); a = ra.offset;
+                auto rb = topic.find("<"+tag+" ",  str::start_from(b)); b = rb.offset; if (!ra && !rb) break;
+                if (b > a) { b = a; rb = ra; }
+
+                auto rz = topic.find(">",          str::start_from(b)); z = rz.offset;
+                auto rc = topic.find("/>",         str::start_from(b)); c = rc.offset;
+                auto re = topic.find("</"+tag+">", str::start_from(b)); e = re.offset; if (!rc && !re)
+                {
+                    report += " broken";
+                    result.reject("\n#################################################################\n"
+                        + title + "\n#################################################################\n"
+                        + topic + "\n=================================================================\n"
+                        + topic.from (b), report);
+                    break;
+                }
+                if (e > c && c == z-1) { e = c; re = rc; }
+                auto range = topic.from(b).size(e-b+re.length);
+                result.reject(range, report);
+                range.erase();
+            }
+        };
+
         for (auto && [title, topic] : input)
         {
             static int64_t nn = 0; if (++nn % 200'000 == 0) logout("untag", nn, input.cargo);
@@ -63,12 +90,15 @@ namespace pass0
             unsymbol (title, "symbols 2nd pass title");
             unsymbol (topic, "symbols 2nd pass topic");
 
-            erase_all(title, topic, "<!--", "-->", "tag xml comments 0");
-            erase_all(title, topic, "<!--", "->", "tag xml comments 1");
+            erase_all (title, topic, "<!--", "-->", "xml comments 0");
+            erase_all (title, topic, "<!--", "->",  "xml comments 1");
 
-            erase_all(title, topic, "<ref>", "</ref>", "tag ref");
+            erase_tag (title, topic, "REF");
+            erase_tag (title, topic, "ref");
+            erase_tag (title, topic, "references");
+            erase_tag (title, topic, "gallery");
 
-        //  erase_all(title, topic, "<noinclude>", "</noinclude>", "tag noinclude");
+        //  erase_tag (title, topic, "noinclude"); // parted by templates
 
             result.accept (entry {std::move(title), std::move(topic)}, "", true);
         }

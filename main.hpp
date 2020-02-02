@@ -61,8 +61,8 @@ bool UPDATING_REPORTS = false;
 #include "_queue.h"
 #include "_pass.h"
 #include "_result.h"
-#include "_bracketer.h"
 #include "_common.h"
+#include "_bracketer.h"
 
 
 

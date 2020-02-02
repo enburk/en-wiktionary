@@ -18,9 +18,20 @@ std::unordered_map<str, str>>> formmap;
 
 #include "2_00_paragraphs.h"
 #include "2_10_brackets.h"
+#include "2_15_unlink.h"
 #include "2_20_lexforms1.h"
+#include "2_20_lexforms2.h"
+#include "2_50_templates.h"
+#include "2_70_tags.h"
+#include "2_90_save.h"
 
-Pass <pass2::entry, nothing> stop = [](auto & input, auto &)
+#include "3_00_paragraphs.h"
+#include "3_10_lex_items.h"
+#include "3_20_rel_items.h"
+#include "3_30_lex_notes.h"
+#include "3_50_templates.h"
+
+Pass <pass3::entry, nothing> stop = [](auto & input, auto &)
 {
     Time t0; for (auto && e : input) { ; }
     Time t1; std::cout
@@ -41,12 +52,11 @@ int main ()
     pass1::unmeta  >> pass1::lineup  >>
     pass1::english >> pass1::headers >> pass1::cleanup >>
 
-    pass2::paragraphs >> pass2::brackets >>  pass2::lexforms1 >>
+    pass2::paragraphs >> pass2::brackets  >> pass2::unlink    >>
+    pass2::lexforms1  >> pass2::lexforms2 >> pass2::save >> pass2::templates >> pass2::tags >>
 
-    //     
-    //     // pass3::templating >> 
-    // 
-    //     //  pass2::unquote >> 
-    
+    pass3::paragraphs >> pass3::lex_items >> pass3::rel_items >> pass3::lex_notes >>
+    pass3::templates  >>
+
     stop >> terminator; return 0;
 }

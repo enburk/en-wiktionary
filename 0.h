@@ -28,8 +28,9 @@ namespace pass0
     {
         auto c = std::to_string(cargo);
         auto e = std::to_string(entries);
-        e.insert(0, max(0, 7 - (int)e.size()), ' ');
+        pass += str(' ', max(0, 9 - pass.size()));
         c.insert(0, max(0, 7 - (int)c.size()), ' ');
+        e.insert(0, max(0, 7 - (int)e.size()), ' ');
         print(pass, " ", e, " entries ", c, " cargo ");
     }
 

@@ -20,6 +20,27 @@ namespace pass1
             {
                 if (s == "----") continue;
 
+                if (s.starts_with("[[Category:") && s.ends_with("]]") && !s.from(2).contains('['))
+                { result.reject (std::move(s), "category"); continue; }
+
+                if (s.starts_with("{{") && s.ends_with("}}"))
+                {
+                    str ss = s.from(2); if (!ss.contains("{{"))
+                    {
+                        if (ss.starts_with("morse code audio")) { result.reject (s, "{{morse}}"); continue; }
+                        if (ss.starts_with("mul-morse "      )) { result.reject (s, "{{morse}}"); continue; }
+                        if (ss.starts_with("suffixsee"       )) { result.reject (s, "{{suffixsee}}"); continue; }
+                        if (ss.starts_with("ccTLD"           )) { result.reject (s, "{{ccTLD}}"); continue; }
+                        if (ss.starts_with("taxoninfl"       )) { result.reject (s, "{{taxoninfl}}"); continue; }
+                        if (ss.starts_with("Webster 1913"    )) { result.reject (s, "{{Webster}}"); continue; }
+                        if (ss.starts_with("Wikipedia"       )) { result.reject (s, "{{wikipedia}}"); continue; }
+                        if (ss.starts_with("wikipedia"       )) { result.reject (s, "{{wikipedia}}"); continue; }
+                        if (ss.starts_with("topics|"         )) { result.reject (s, "{{topics}}"); continue; }
+                        if (ss.starts_with("C|"              )) { result.reject (s, "{{c}}"); continue; }
+                        if (ss.starts_with("c|"              )) { result.reject (s, "{{c}}"); continue; }
+                    }
+                }
+
                 if (s.starts_with ("==== "))
                 {
                     str kind = "accepted";

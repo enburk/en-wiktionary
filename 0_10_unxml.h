@@ -68,7 +68,7 @@ namespace pass0
 
             if (found == s.end())
             {
-                j = s.end() - (ss[mode].size() - 1);
+                j = s.end() - min(s.size(), (ss[mode].size() - 1));
 
                 auto offset = i - s.begin();
             

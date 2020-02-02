@@ -5,9 +5,11 @@ namespace pass0
     auto path_raw = "enwiktionary-pages-articles.xml";
     auto path_src = "enwiktionary-pages-articles.xml.gz";
     auto path_dst = "enwiktionary-pages-articles.gz";
+    auto path_end = "enwiktionary-pages-articles.txt";
 
     Pass <nothing, str> unzip = [](auto &, auto & output)
     {
+        if (std::filesystem::exists(path_end)) return;
         if (std::filesystem::exists(path_dst)) return;
         if (std::filesystem::exists(path_src))
         {
@@ -63,6 +65,7 @@ namespace pass0
 
     Pass <entry, entry> rezip = [](auto & input, auto & output)
     {
+        if (std::filesystem::exists(path_end)) return;
         if (std::filesystem::exists(path_dst))
         {
             gzFile file = gzopen(path_dst, "rb");
@@ -91,7 +94,7 @@ namespace pass0
 
                 if (found == s.end())
                 {
-                    j = s.end() - (esc.size() - 1);
+                    j = s.end() - min(s.size(), (esc.size() - 1));
 
                     auto offset = i - s.begin();
             

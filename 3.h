@@ -1,22 +1,32 @@
+#pragma once
+#include "2.h"
 namespace pass3
 {
-    inline const auto esc = pass1::esc;
+    using pass0::esc;
+    using pass0::logout;
 
     struct paragraph
     {
-        str header, content;
+        str header, forms; array<str> content;
     
-        auto size () const { return header.size() + content.size(); }
+        auto size () const { return header.size() + forms.size() + content.size(); }
 
         auto empty () const { return content.empty(); }
 
-        void strip () { content.strip (" \n"); }
+        void strip ()
+        {
+            for (auto & s : content) s.strip ();
+            while (!content.empty() && content.back().empty()) content.pop_back();
+            content.erase(content.begin(), std::find_if(content.begin(), content.end(), [](auto & p){ return !p.empty(); }));
+            content.erase(std::unique(content.begin(), content.end(), [](auto & p1, auto & p2){ return p1.empty() && p2.empty(); }), content.end());
+        }
 
         friend std::ostream & operator << (std::ostream & out, const paragraph & paragraph)
         {
             out << "==== "
-                << paragraph.header  << std::endl
-                << paragraph.content << std::endl;
+                << paragraph.header  << " ==== "
+                << paragraph.forms   << std::endl
+                << paragraph.content;// << std::endl;
             return out;
         }
     };
@@ -29,10 +39,8 @@ namespace pass3
 
         void canonicalize ()
         {
-            for (auto & s : topic) s.strip ();
-            while (!topic.empty() && topic.back().empty()) topic.pop_back();
-            topic.erase(topic.begin(), std::find_if(topic.begin(), topic.end(), [](auto & p){ return !p.empty(); }));
-            topic.erase(std::unique(topic.begin(), topic.end(), [](auto & p1, auto & p2){ return p1.empty() && p2.empty(); }), topic.end());
+            for (auto & p : topic) p.strip ();
+            topic.erase_if([](auto & p){ return p.empty(); });
         }
 
         friend std::ostream & operator << (std::ostream & out, const entry & entry)
@@ -44,8 +52,4 @@ namespace pass3
             return out;
         }
     };
-
-    #include "3_10_paragraphs.h"
-    #include "3_15_brackets.h"
-    #include "3_30_forms.h"
 }

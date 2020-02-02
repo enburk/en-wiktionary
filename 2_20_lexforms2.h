@@ -6,33 +6,62 @@ namespace pass2
     {
         static std::unordered_map<str, str> list_of_forms =
         {
+        {   "abbreviation of"                   , "Abbreviation of"                                                },
+        {   "acronym of"                        , "Acronym of"                                                     },
+        {   "alternative form of"               , "Alternative form of"                                            },
+        {   "alternate form of"                 , "Alternative form of"                                            },
+        {   "alternative name of"               , "Alternative name of"                                            },
+        {   "alternative spelling of"           , "Alternative spelling of"                                        },
+        {   "alternative capitalisation of"     , "Alternative capitalisation of"                                  },
+        {   "alternative capitalization of"     , "Alternative capitalization of"                                  },
+        {   "apocopic form of"                  , "Apocopic form of"                                               },
+        {   "archaic form of"                   , "Archaic form of"                                                },
+        {   "archaic spelling of"               , "Archaic spelling of"                                            },
+        {"en-archaic third-person singular of"  , "Archaic third-person singular simple present indicative form of"},
+        {   "comparative of"                    , "Comparative form of"                                            },
+        {"en-comparative of"                    , "Comparative form of"                                            },
+        {   "contraction of"                    , "Contraction of"                                                 },
+        {   "dated form of"                     , "Dated form of"                                                  },
+        {   "eye dialect of"                    , "Eye dialect spelling of"                                        },
+        {   "initialism of"                     , "Initialism of"                                                  },
+        {   "irregular plural of"               , "Irregular plural of"                                            },
+        {   "irregular simple past of"          , "Simple past of"                                                 },
+        {   "misconstruction of"                , "Common misconstruction of"                                      },
+        {   "misspelling of"                    , "Common misspelling of"                                          },
+        {   "nonstandard spelling of"           , "Nonstandard spelling of"                                        },
+        {   "obsolete form of"                  , "Obsolete form of"                                               },
+        {   "obsolete spelling of"              , "Obsolete spelling of"                                           },
+        {   "past participle of"                , "Past participle of"                                             },
+        {   "past tense of"                     , "Simple past tense of"                                           },
+        {"en-simple past of"                    , "Simple past tense of"                                           },
+        {   "past of"                           , "Simple past tense and past participle of"                       },
+        {"en-past of"                           , "Simple past tense and past participle of"                       },
+        {   "plural of"                         , "Plural form of"                                                 },
+        {   "present participle of"             , "Present participle of"                                          },
+        {   "second-person singular of"         , "Second-person singular simple present form of"                  },
+        {   "simple past of"                    , "Simple past of"                                                 },
+        {   "superlative of"                    , "Superlative form of"                                            },
+        {"en-superlative of"                    , "Superlative form of"                                            },
+        {   "third-person singular of"          , "Third-person singular simple present indicative form of"        },
+        {"en-third-person singular of"          , "Third-person singular simple present indicative form of"        },
         };
     }
 
-    str proceed_lexforms1 (str title, str header, str & forms, str body, Result<entry> & result)
+    str proceed_lexforms2 (str title, str header, str & forms, str body, Result<entry> & result)
     {
-        str name; if (auto r = body.find('|'); r)
-            name = body.upto(r.offset); else
-            name = body; name.strip(" \t\n");
+        args args (body);
 
-        auto it = lexforms2_internal::list_of_forms.find(name);
+        auto it = lexforms2_internal::list_of_forms.find(args.name);
         if (it == lexforms2_internal::list_of_forms.end()) return "{{" + body + "}}";
-        str lexical_item = it->second;
+        str lexical_form = it->second;
         str output = "{{" + body + "}}";
-        str report = header;
+        str report = lexical_form;
 
-        array<str> args = body.split_by("|"); for (auto & arg : args) arg.strip(" \t\n"); args.erase(args.begin());
-        array<str> unnamed; std::map<str,str> opt;
-        for (str arg : args) { str key, value;
-            if (arg.split_by ("=", key, value)) {
-                if (key == "head") continue;
-                else opt [key] = value; }
-            else unnamed += arg;
-        }
-        args = unnamed;
+        str dot = ""; // lexical_form == "Eye dialect spelling of" ? "." : "";
 
-        if (header != lexical_item) report += " wrong"; else
-        {}
+        if (args.complexity != 1) report += " - quest";
+
+        else output = "''" + lexical_form + "'' '''" + args[0] + "'''" + dot;
 
         result.report (title + " ==== " + header + " ==== {{" + body + "}}", report);
         return output;
@@ -40,7 +69,7 @@ namespace pass2
 
     Pass<entry, entry> lexforms2 = [](auto & input, auto & output)
     {
-        Result result {__FILE__, output, true};
+        Result result {__FILE__, output, UPDATING_REPORTS};
 
         for (auto && [title, topic] : input)
         {
@@ -71,13 +100,5 @@ namespace pass2
 
             result.accept (entry {std::move(title), std::move(topic)});
         }
-
-        std::multimap<int, str, std::greater<int>> templates; int total = 0;
-        for (auto [name, n] : templates_statistics [__FILE__]) { templates.emplace(n, name); total += n; }
-        for (auto [n, name] : templates) result.report (std::to_string(n) + " " + name, "templates");
-        result.report ("====================================", "templates");
-        result.report (std::to_string(total >> 00) + " total", "templates");
-        result.report (std::to_string(total >> 10) + " K    ", "templates");
-        result.report (std::to_string(total >> 20) + " M    ", "templates");
     };
 }

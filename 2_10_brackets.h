@@ -10,13 +10,27 @@ namespace pass2
         str output = o + body + c;
         str report = o + body + c;
 
+        if (o == "[" && body.starts_with("http")) { kind = "[ http ]"; output = "[http:]"; } else
+
+        if (o == "[" && body.contains("|")) { kind = "[ pipe ]"; } else
+        if (o == "{" && body.contains("|")) { kind = "{ pipe }"; output = ""; } else
+
         if (o == "[[")
         {
-            if (lexical_items.contains(header) && body.ascii_isalnum())
+            if (lexical_items.contains(header))
             {
-                kind = "[[ ascii ]]"; output = body;
+                auto ll = body.split_by("|");
+
+                if (ll.size() == 1
+                &&  ll[0].ascii_isalnum()) { kind = "[[ ascii ]]"; output = ll[0]; } else
+
+                if (ll.size() == 2 
+                &&  ll[0].ascii_isalnum()
+                &&  ll[1].ascii_isalnum()) { kind = "[[ ascii pipe ]]"; output = ll[1]; } else
+                {}
             }
         }
+        else
         if (o == "{{")
         {
             str name; if (auto r = body.find('|'); r)
@@ -27,13 +41,13 @@ namespace pass2
 
             if (name.starts_with("quote-")) { kind = "{{ quote quote- }}"; output = "{{QUOTE}}"; } else
             if (name.starts_with("cite-" )) { kind = "{{ quote cite-  }}"; output = "{{QUOTE}}"; } else
+            if (name.starts_with("rfdate")) { kind = "{{ quote rfdate }}"; output = "{{rfdate}}"; } else
+            if (name.starts_with("RQ:"   )) { kind = "{{ quote RQ }}";     output = "{{RQ}}"; } else
             {
                 templates_statistics [__FILE__][name]++;
             }
         }
 
-        if (output.contains("\n")) report = "==== " + title + " ==== " + header + " ==== " + "\n\n" + report;
-        if (output.contains("\n")) output.replace_all("\n", " ");
         result.report (report, kind);
         return output;
     }
@@ -74,10 +88,10 @@ namespace pass2
 
         std::multimap<int, str, std::greater<int>> templates; int total = 0;
         for (auto [name, n] : templates_statistics [__FILE__]) { templates.emplace(n, name); total += n; }
-        for (auto [n, name] : templates) result.report (std::to_string(n) + " " + name, "templates");
-        result.report ("====================================", "templates");
-        result.report (std::to_string(total >> 00) + " total", "templates");
-        result.report (std::to_string(total >> 10) + " K    ", "templates");
-        result.report (std::to_string(total >> 20) + " M    ", "templates");
+        for (auto [n, name] : templates) result.report (std::to_string(n) + " " + name, "# templates");
+        result.report ("====================================", "# templates");
+        result.report (std::to_string(total >> 00) + " total", "# templates");
+        result.report (std::to_string(total >> 10) + " K    ", "# templates");
+        result.report (std::to_string(total >> 20) + " M    ", "# templates");
     };
 }
