@@ -6,44 +6,51 @@ namespace pass2
     {
         static std::unordered_map<str, str> list_of_forms =
         {
-        {   "abbreviation of"                   , "Abbreviation of"                                                },
-        {   "acronym of"                        , "Acronym of"                                                     },
-        {   "alternative form of"               , "Alternative form of"                                            },
-        {   "alternate form of"                 , "Alternative form of"                                            },
-        {   "alternative name of"               , "Alternative name of"                                            },
-        {   "alternative spelling of"           , "Alternative spelling of"                                        },
-        {   "alternative capitalisation of"     , "Alternative capitalisation of"                                  },
-        {   "alternative capitalization of"     , "Alternative capitalization of"                                  },
-        {   "apocopic form of"                  , "Apocopic form of"                                               },
-        {   "archaic form of"                   , "Archaic form of"                                                },
-        {   "archaic spelling of"               , "Archaic spelling of"                                            },
-        {"en-archaic third-person singular of"  , "Archaic third-person singular simple present indicative form of"},
-        {   "comparative of"                    , "Comparative form of"                                            },
-        {"en-comparative of"                    , "Comparative form of"                                            },
-        {   "contraction of"                    , "Contraction of"                                                 },
-        {   "dated form of"                     , "Dated form of"                                                  },
-        {   "eye dialect of"                    , "Eye dialect spelling of"                                        },
-        {   "initialism of"                     , "Initialism of"                                                  },
-        {   "irregular plural of"               , "Irregular plural of"                                            },
-        {   "irregular simple past of"          , "Simple past of"                                                 },
-        {   "misconstruction of"                , "Common misconstruction of"                                      },
-        {   "misspelling of"                    , "Common misspelling of"                                          },
-        {   "nonstandard spelling of"           , "Nonstandard spelling of"                                        },
-        {   "obsolete form of"                  , "Obsolete form of"                                               },
-        {   "obsolete spelling of"              , "Obsolete spelling of"                                           },
-        {   "past participle of"                , "Past participle of"                                             },
-        {   "past tense of"                     , "Simple past tense of"                                           },
-        {"en-simple past of"                    , "Simple past tense of"                                           },
-        {   "past of"                           , "Simple past tense and past participle of"                       },
-        {"en-past of"                           , "Simple past tense and past participle of"                       },
-        {   "plural of"                         , "Plural form of"                                                 },
-        {   "present participle of"             , "Present participle of"                                          },
-        {   "second-person singular of"         , "Second-person singular simple present form of"                  },
-        {   "simple past of"                    , "Simple past of"                                                 },
-        {   "superlative of"                    , "Superlative form of"                                            },
-        {"en-superlative of"                    , "Superlative form of"                                            },
-        {   "third-person singular of"          , "Third-person singular simple present indicative form of"        },
-        {"en-third-person singular of"          , "Third-person singular simple present indicative form of"        },
+        {   "abbreviation of"                       , "Abbreviation of"                                                  },
+        {   "acronym of"                            , "Acronym of"                                                       },
+        {   "alternate form of"                     , "Alternative form of"                                              },
+        {   "alternative form of"                   , "Alternative form of"                                              },
+        {   "alternative case form of"              , "Alternative letter-case of"                                       },
+        {   "alternative name of"                   , "Alternative name of"                                              },
+        {   "alternative spelling of"               , "Alternative spelling of"                                          },
+        {   "alternative capitalisation of"         , "Alternative capitalisation of"                                    },
+        {   "alternative capitalization of"         , "Alternative capitalization of"                                    },
+        {   "apocopic form of"                      , "Apocopic form of"                                                 },
+        {   "archaic form of"                       , "Archaic form of"                                                  },
+        {   "archaic spelling of"                   , "Archaic spelling of"                                              },
+        {"en-archaic second-person singular of"     , "(archaic) second-person singular simple present form of"          },
+        {"en-archaic second-person singular past of", "(archaic) second-person singular simple past form of"             },
+        {"en-archaic third-person singular of"      , "(archaic) third-person singular simple present indicative form of"},
+        {   "comparative of"                        , "comparative form of"                                              },
+        {"en-comparative of"                        , "comparative form of"                                              },
+        {   "contraction of"                        , "Contraction of"                                                   },
+        {   "dated form of"                         , "Dated form of"                                                    },
+        {   "eye dialect of"                        , "Eye dialect spelling of"                                          },
+        {   "initialism of"                         , "Initialism of"                                                    },
+        {   "irregular plural of"                   , "plural of"                                                        },
+        {"en-irregular plural of"                   , "plural of"                                                        },
+        {   "irregular simple past of"              , "simple past tense of"                                             },
+        {   "misconstruction of"                    , "Common misconstruction of"                                        },
+        {   "misspelling of"                        , "Common misspelling of"                                            },
+        {   "nonstandard spelling of"               , "Nonstandard spelling of"                                          },
+        {   "obsolete form of"                      , "Obsolete form of"                                                 },
+        {   "obsolete spelling of"                  , "Obsolete spelling of"                                             },
+        {   "obsolete typography of"                , "obsolete typography of"                                           },
+        {   "past participle of"                    , "past participle of"                                               },
+        {   "past tense of"                         , "simple past tense of"                                             },
+        {"en-simple past of"                        , "simple past tense of"                                             },
+        {   "past of"                               , "simple past tense and past participle of"                         },
+        {"en-past of"                               , "simple past tense and past participle of"                         },
+        {   "plural of"                             , "plural of"                                                        },
+        {   "present participle of"                 , "present participle of"                                            },
+        {   "pronunciation spelling of"             , "Pronunciation spelling of"                                        },
+        {   "second-person singular of"             , "second-person singular simple present form of"                    },
+        {   "simple past of"                        , "simple past tense of"                                             },
+        {   "superlative of"                        , "superlative form of"                                              },
+        {"en-superlative of"                        , "superlative form of"                                              },
+        {   "synonym of"                            , "Synonym of"                                                       },
+        {   "third-person singular of"              , "third-person singular simple present indicative form of"          },
+        {"en-third-person singular of"              , "third-person singular simple present indicative form of"          },
         };
     }
 
@@ -57,11 +64,40 @@ namespace pass2
         str output = "{{" + body + "}}";
         str report = lexical_form;
 
-        str dot = ""; // lexical_form == "Eye dialect spelling of" ? "." : "";
+        str opts;
+        str first = lexical_form.upto(1);
+        str from  = args.acquire("from" );
+        str dot   = args.acquire("dot"  );
+        str nodot = args.acquire("nodot"); if (nodot == "yes" || nodot == "y" || nodot == "t" || nodot == "a") nodot = "1";
+        str nocap = args.acquire("nocap"); if (nocap == "yes" || nocap == "y" || nocap == "t" || nocap == "a") nocap = "1";
+        if (dot != "" && dot != "." && dot != "," && dot != ":" && dot != ";") { opts += " - dot"; }
+        if (nodot != "" && nodot != "1") { opts += " - nodot"; }
+        if (nocap != "" && nocap != "1") { opts += " - nocap"; }
+        if (nocap != "") lexical_form.upto(1).replace_by(first.ascii_lowercased());
+        if (dot   == "") dot = first == first.ascii_lowercased() ? "" : ".";
+        if (nodot != "") dot = "";
+        if (opts  != "") report = opts;
+        if (from  != "") report = " - from";
+        if (from  != "") args.complexity += 10;
 
-        if (args.complexity != 1) report += " - quest";
+        str a1, a2, a3;
+        args.ignore("t"); args.ignore("tr"); args.ignore("gloss"); args.ignore("pos"); args.ignore("id");
+        if (args.unnamed.size() > 0 && args[0] != "") a1 = "'''"+args[0]+"'''"; 
+        if (args.unnamed.size() > 1 && args[1] != "") a2 = "'''"+args[1]+"'''"; 
+        if (args.unnamed.size() > 2 && args[2] != "") a3 = "("+oquot+args[2]+cquot+")";
 
-        else output = "''" + lexical_form + "'' '''" + args[0] + "'''" + dot;
+        str out;
+        if (args.complexity == 1 && a1 != "") { out = a1; } else // report += " 1"; } else
+        if (args.complexity == 2 && a2 == "") { out = a1; } else // report += " 2"; } else
+        if (args.complexity == 2 && a2 != "") { out = a2; } else // report += " 2"; } else
+        if (args.complexity == 3 && a1 == "" && a2 != "") { out = a2 + " " + a3; } else // report += " 3"; } else
+        if (args.complexity == 3 && a1 != "" && a2 == "") { out = a1 + " " + a3; } else // report += " 3"; } else
+        if (args.complexity == 3 && a1 != "" && a2 != "") { out = a2 + " " + a3; } else // report += " 3"; } else
+        {}
+
+        if (out != "") output = "''" + lexical_form + "'' " + out + dot;
+
+        else report += " - quest";
 
         result.report (title + " ==== " + header + " ==== {{" + body + "}}", report);
         return output;

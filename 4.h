@@ -1,55 +1,50 @@
 #pragma once
-#include "2.h"
-namespace pass2
+#include "3.h"
+namespace pass4
 {
-    auto path = "enwiktionary-pages-articles.txt";
+    using pass0::esc;
+    using pass0::logout;
 
-    Pass <entry, entry> save = [](auto & input, auto & output)
+    struct paragraph
     {
-        std::ostringstream sstream; 
+        str header, forms; array<str> content;
+    
+        auto size () const { return header.size() + forms.size() + content.size(); }
 
-        for (auto && entry : input) sstream << std::move(entry);
+        auto empty () const { return content.empty(); }
 
-        str s = sstream.str(); if (s != "")
+        void strip ()
         {
-            print("=== save ===");
-            std::ofstream fstream (path);
-            fstream << s << esc;
+            for (auto & s : content) s.strip (" \n");
+            while (!content.empty() && content.back().empty()) content.pop_back();
+            content.erase(content.begin(), std::find_if(content.begin(), content.end(), [](auto & p){ return !p.empty(); }));
+            content.erase(std::unique(content.begin(), content.end(), [](auto & p1, auto & p2){ return p1.empty() && p2.empty(); }), content.end());
         }
+
+        friend std::ostream & operator << (std::ostream & out, const paragraph & p)
         {
-            print("=== read ===");
-            std::ifstream fstream (path);
-            str line; entry e;
+            out << "     == " << p.header  << " == " << p.forms << std::endl; for (auto & s : p.content)
+            out << "        # " << s << std::endl;
+            return out;
+        }
+    };
 
-            while (std::getline(fstream, line))
-            {
-                if (line != "" &&
-                    line.back() == '\r')
-                    line.truncate();
+    struct entry { str title; array<paragraph> topic;
+    
+        auto size () const { auto n = title.size(); for (const auto & p : topic) n += p.size(); return n; }
 
-                if (line == esc)
-                {
-                    if (!e.topic.empty())
-                    {
-                        output.push(std::move(e));
-                        e = entry{};
-                    }
-                }
-                else
-                if (line.starts_with("==== "))
-                {
-                    line = line.from(5);
-                    e.topic += paragraph{};
-                    line.split_by(" ==== ", e.topic.back().header, e.topic.back().forms);
-                    continue;
-                }
-                else
-                {
-                    if (e.title == "") e.title = line; else
-                    if (e.topic.size() == 0) continue; else
-                        e.topic.back().content += line + "\n";
-                }
-            }
-        }        
+        auto empty () const { return topic.empty(); }
+
+        void canonicalize ()
+        {
+            for (auto & p : topic) p.strip ();
+            topic.erase_if([](auto & p){ return p.empty(); });
+        }
+
+        friend std::ostream & operator << (std::ostream & out, const entry & entry)
+        {
+            out << entry.title << std::endl << entry.topic;
+            return out;
+        }
     };
 }

@@ -12,6 +12,10 @@
 9_*/
 enwiktionary-pages-articles.xml
 enwiktionary-pages-articles.txt
+enwiktionary-data.txt
+enwiktionary-forms.txt
+*.txt
+*.xml
 *.gz
 *.bz2
 *.zip

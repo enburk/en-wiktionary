@@ -179,9 +179,10 @@
     <ClInclude Include="3_30_lex_notes.h" />
     <ClInclude Include="3_50_templates.h" />
     <ClInclude Include="4.h" />
-    <ClInclude Include="4_10_gather.h" />
-    <ClInclude Include="4_20_templates.h" />
-    <ClInclude Include="4_30_unquote.h" />
+    <ClInclude Include="4_00_paragraphs.h" />
+    <ClInclude Include="4_10_lexforms1.h" />
+    <ClInclude Include="4_20_lexforms2.h" />
+    <ClInclude Include="4_90_out.h" />
     <ClInclude Include="5_20_templates.h" />
     <ClInclude Include="main.hpp" />
     <ClInclude Include="_bracketer.h" />

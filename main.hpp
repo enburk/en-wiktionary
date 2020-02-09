@@ -1,6 +1,9 @@
 #pragma once
 #define _CRT_SECURE_NO_WARNINGS
 #define _CRT_SECURE_NO_DEPRECATE
+//#include "../ae/library/cpp/aux_abc.hpp"
+//#include "../ae/library/cpp/aux_array.hpp"
+//#include "../ae/library/cpp/aux_string.hpp"
 #include "../ae/libraries/cpp/aux_abc.hpp"
 #include "../ae/libraries/cpp/aux_array.hpp"
 #include "../ae/libraries/cpp/aux_string.hpp"

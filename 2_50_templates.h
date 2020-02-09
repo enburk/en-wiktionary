@@ -161,7 +161,7 @@ namespace pass2
 
     Pass <entry, entry> templates = [](auto & input, auto & output)
     {
-        Result result {__FILE__, output, true};//UPDATING_REPORTS};
+        Result result {__FILE__, output, UPDATING_REPORTS};
 
         for (auto && [title, topic] : input)
         {

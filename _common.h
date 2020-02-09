@@ -60,4 +60,3 @@ array<str> lexical_notes
     "pronunciation", "etymology",
     "usage notes", "trivia",
 };
-
