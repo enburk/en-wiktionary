@@ -1,12 +1,9 @@
 #pragma once
 #define _CRT_SECURE_NO_WARNINGS
 #define _CRT_SECURE_NO_DEPRECATE
-//#include "../ae/library/cpp/aux_abc.hpp"
-//#include "../ae/library/cpp/aux_array.hpp"
-//#include "../ae/library/cpp/aux_string.hpp"
-#include "../ae/libraries/cpp/aux_abc.hpp"
-#include "../ae/libraries/cpp/aux_array.hpp"
-#include "../ae/libraries/cpp/aux_string.hpp"
+#include "aux_abc.h"
+#include "aux_array.h"
+#include "aux_string.h"
 using namespace aux;
 
 #include <set>
@@ -36,7 +33,7 @@ template <typename ... Args> void print (Args... args) {
 template<class T>
 std::ostream & operator << (std::ostream & out, const array<T> & a)
 {
-    for (const auto & e : a) out << e << std::endl; return out;
+    for (const auto & e : a) out << e << "\n"; return out;
 }
 
 struct Time

@@ -23,8 +23,8 @@ namespace pass4
 
         friend std::ostream & operator << (std::ostream & out, const paragraph & p)
         {
-            out << "     == " << p.header  << " == " << p.forms << std::endl; for (auto & s : p.content)
-            out << "        # " << s << std::endl;
+            out << "  == " << p.header  << " == " << p.forms << "\n"; for (auto & s : p.content)
+            out << "     # " << s << std::endl;
             return out;
         }
     };
@@ -43,7 +43,7 @@ namespace pass4
 
         friend std::ostream & operator << (std::ostream & out, const entry & entry)
         {
-            out << entry.title << std::endl << entry.topic;
+            out << entry.title << "\n" << entry.topic;
             return out;
         }
     };

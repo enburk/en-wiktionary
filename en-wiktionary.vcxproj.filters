@@ -43,5 +43,8 @@
     <ClInclude Include="4_90_out.h" />
     <ClInclude Include="4_10_lexforms1.h" />
     <ClInclude Include="4_20_lexforms2.h" />
+    <ClInclude Include="aux_abc.h" />
+    <ClInclude Include="aux_array.h" />
+    <ClInclude Include="aux_string.h" />
   </ItemGroup>
 </Project>

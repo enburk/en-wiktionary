@@ -184,6 +184,9 @@
     <ClInclude Include="4_20_lexforms2.h" />
     <ClInclude Include="4_90_out.h" />
     <ClInclude Include="5_20_templates.h" />
+    <ClInclude Include="aux_abc.h" />
+    <ClInclude Include="aux_array.h" />
+    <ClInclude Include="aux_string.h" />
     <ClInclude Include="main.hpp" />
     <ClInclude Include="_bracketer.h" />
     <ClInclude Include="_common.h" />

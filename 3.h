@@ -25,8 +25,8 @@ namespace pass3
         {
             out << "==== "
                 << paragraph.header  << " ==== "
-                << paragraph.forms   << std::endl
-                << paragraph.content;// << std::endl;
+                << paragraph.forms   << "\n" // std::endl
+                << paragraph.content;
             return out;
         }
     };
@@ -45,10 +45,10 @@ namespace pass3
 
         friend std::ostream & operator << (std::ostream & out, const entry & entry)
         {
-            out << esc         << std::endl 
-                << entry.title << std::endl
-                << esc         << std::endl << std::endl 
-                << entry.topic << std::endl;
+            out << esc         << "\n"   // std::endl 
+                << entry.title << "\n"   // std::endl
+                << esc         << "\n\n" // std::endl << std::endl 
+                << entry.topic << "\n";  // std::endl;
             return out;
         }
     };

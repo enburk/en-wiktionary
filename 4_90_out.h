@@ -17,18 +17,18 @@ namespace pass4
 
             std::ofstream fstream ("enwiktionary-data.txt");
 
-            fstream << sstream.str() << "END" << std::endl;
+            fstream << sstream.str() << "END" << "\n";
         }
         {
             std::ostringstream sstream; 
 
             for (auto [title, forms] : lexforms)
             for (auto [form, ack, word] : forms)
-            sstream << title << " == " << form << " == " << ack << " == " << word << std::endl;
+            sstream << title << " == " << form << " == " << ack << " == " << word << "\n";
 
             std::ofstream fstream ("enwiktionary-forms.txt");
 
-            fstream << sstream.str() << "END" << std::endl;
+            fstream << sstream.str() << "END" << "\n";
         }
     };
 }

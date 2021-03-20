@@ -40,7 +40,7 @@ template <class Entry> struct Result
     outstream & stream (str kind, str filename)
     {
         filename.strip(); filename = filename == "" ? kind : kind + " " + filename;
-        auto [it, inserted] = streams.emplace (filename, outstream{}); if (inserted)
+        auto [it, inserted] = streams.emplace(filename, outstream{}); if (inserted)
         {
             std::filesystem::create_directories(dir);
             it->second = outstream{dir / (filename + ".txt")};

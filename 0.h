@@ -14,10 +14,10 @@ namespace pass0
 
         friend std::ostream & operator << (std::ostream & out, const entry & entry)
         {
-            out << esc         << std::endl 
-                << entry.title << std::endl
-                << esc         << std::endl 
-                << entry.topic << std::endl;
+            out << esc         << "\n"  //std::endl ~ << "\n" << flush() 
+                << entry.title << "\n"  //std::endl
+                << esc         << "\n"  //std::endl 
+                << entry.topic << "\n"; //std::endl;
             return out;
         }
 

@@ -21,10 +21,10 @@ namespace pass1
 
         friend std::ostream & operator << (std::ostream & out, const entry & entry)
         {
-            out << esc         << std::endl 
-                << entry.title << std::endl
-                << esc         << std::endl << std::endl 
-                << entry.topic << std::endl;
+            out << esc         << "\n"   // std::endl 
+                << entry.title << "\n"   // std::endl
+                << esc         << "\n\n" // std::endl << std::endl 
+                << entry.topic << "\n";  // std::endl;
             return out;
         }
     };
