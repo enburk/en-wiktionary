@@ -6,13 +6,15 @@ namespace pass1
     {
         for (auto && [title, topic] : input)
         {
-            output.push(std::move(entry{std::move(title), std::move(topic.split())}));
+            output.push(entry{
+                std::move(title),
+                std::move(topic.split())});
         }
     };
 
     Pass<entry, entry> english = [](auto & input, auto & output)
     {
-        Result result {__FILE__, output, UPDATING_REPORTS};
+        Result result {__FILE__, output};
 
         std::map<str,int> languages, headers, equalequals;
 
@@ -20,7 +22,7 @@ namespace pass1
         {
             static int64_t nn = 0; if (++nn % 200'000 == 0) logout("english  ", nn, input.cargo);
 
-            std::unordered_map<str, array<str>> topics; str kind = "prelude";
+            std::unordered_map<str, array<str>> topics; str kind = "afore";
 
             for (str & s : topic)
             {

@@ -4,7 +4,7 @@ namespace pass1
 {
     Pass<entry, entry> headers = [](auto & input, auto & output)
     {
-        Result result {__FILE__, output, UPDATING_REPORTS};
+        Result result {__FILE__, output};
 
         std::unordered_set<str> accepted;
         for (auto h : lexical_items) accepted.emplace(h);
@@ -16,7 +16,8 @@ namespace pass1
             "abbreviation", 
             "conjugation",
             "translations", "descendants",
-            "references", "further reading", "quotations", "citations", "external links", "notes",
+            "references", "further reading",
+            "quotations", "citations", "external links", "notes",
             "anagrams", "gallery", "statistics",
         };
 
@@ -26,7 +27,7 @@ namespace pass1
         {
             static int64_t nn = 0; if (++nn % 200'000 == 0) logout("headers  ", nn, input.cargo);
 
-            std::map<str, array<str>> topics; str kind = "prelude";
+            std::map<str, array<str>> topics; str kind = "afore";
 
             for (str s : topic)
             {
@@ -40,28 +41,30 @@ namespace pass1
                     if (header.starts_with ("etymology "    )) header = "etymology";
                     if (header.starts_with ("pronunciation ")) header = "pronunciation";
 
-                    if (accepted.find (header) != accepted.end()) kind = "accepted"; else
-                    if (rejected.find (header) != rejected.end()) kind = header; else
+                    if (accepted.contains(header)) kind = "accepted"; else
+                    if (rejected.contains(header)) kind = header; else
 
                     { kind = "zzz other headers"; other_headers [header]++; }
 
                     s = "==== " + header;
                 }
 
-                if (kind == "prelude" && s.starts_with ("{{wiki"  )) topics ["prelude wiki"] += s; else
-                if (kind == "prelude" && s.starts_with ("[[File:" )) topics ["prelude file"] += s; else
-                if (kind == "prelude" && s.starts_with ("[[Image:")) topics ["prelude file"] += s; else
+                if (kind == "afore" && s.starts_with ("{{wiki"  )) topics["afore wiki"] += s; else
+                if (kind == "afore" && s.starts_with ("[[File:" )) topics["afore file"] += s; else
+                if (kind == "afore" && s.starts_with ("[[Image:")) topics["afore file"] += s; else
 
-                topics [kind] += s;
+                topics[kind] += s;
             }
 
             for (auto [kind, body] : topics)
                 if (kind == "accepted")
-                    result.accept (entry {title, std::move(body)}); else
-                    result.reject (entry {title, std::move(body)}, kind);
+                    result.accept(entry{title, std::move(body)}); else
+                    result.reject(entry{title, std::move(body)}, kind);
         }
 
-        for (auto [s, n] : other_headers) result.report (s + " : " + std::to_string(n), "zzz other headers");
+        for (auto [s, n] : other_headers)
+            result.report(s + " : " + std::to_string(n),
+                "zzz other headers");
     };
 }
 

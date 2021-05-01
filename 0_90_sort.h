@@ -18,12 +18,20 @@ namespace pass0
                 title = " " + title;
             }
 
-            entries.emplace(entry{std::move(title), std::move(topic)});
+            entries.emplace(entry{
+                std::move(title),
+                std::move(topic)});
         }
 
-        for (auto && entry : entries)
+        for (auto && [title_, topic] : entries)
         {
-            output.push(std::move(entry));
+            str title = title_;
+            if (title.starts_with(" "))
+                title.erase(0);
+
+            output.push(entry{
+                std::move(title),
+                std::move(topic)});
         }
     };
 }

@@ -5,27 +5,31 @@ namespace pass1
     using pass0::esc;
     using pass0::logout;
 
+    auto path_in  = "data/enwiktionary-pages-articles.txt";
+    auto path_out = "data/enwiktionary-step1.txt";
+
     struct entry { str title; array<str> topic;
     
-        auto size () const { auto n = title.size(); for (const auto & s : topic) n += s.size(); return n; }
+        auto size () const
+        {
+            auto n = title.size();
+            for (const auto & s : topic) n += s.size();
+            return n;
+        }
 
         auto empty () const { return title.empty() && topic.empty(); }
 
-        void canonicalize ()
-        {
-            for (auto & s : topic) s.strip ();
-            while (!topic.empty() && topic.back() == "") topic.pop_back();
-            topic.erase(topic. begin(), std::find_if(topic. begin(), topic.end (), [](auto & s){ return s != ""; }));
-            topic.erase(std::unique(topic.begin(), topic.end(), [](auto & s1, auto & s2){ return s1 == "" && s2 == ""; }), topic.end());
-        }
+        void canonicalize () { strip(topic); }
 
         friend std::ostream & operator << (std::ostream & out, const entry & entry)
         {
-            out << esc         << "\n"   // std::endl 
-                << entry.title << "\n"   // std::endl
-                << esc         << "\n\n" // std::endl << std::endl 
-                << entry.topic << "\n";  // std::endl;
+            out << esc         << "\n"
+                << entry.title << "\n"
+                << esc         << "\n\n"
+                << entry.topic << "\n";
             return out;
         }
+
+		bool operator < (const entry & e) const { return title < e.title; }
     };
 }

@@ -27,37 +27,6 @@ namespace pass2
         {
         }}
     };
-    array<str> label_same =
-    {
-        "countable", "uncountable", "transitive", "intransitive",
-        "archaic", "by extension", "collective", "colloquial", "dated", "derogatory", "dialect", "dialectal",
-        "especially in combination", "figuratively", "humorous", "idiomatic", "informal", "literary", "modal",
-        "nonstandard", "offensive", "obsolete", "poetic", "rare", "regional", "slang", "vulgar",
-
-        "algebra", "anatomy", "architecture", "astronomy", "aviation",
-        "baseball", "basketball", "biblical", "biochemistry", "biology", "botany", "business",
-        "chemistry", "computing", "cricket", "cytology", "electronics", "economy", "economics",
-        "genetics", "geography", "geology", "geometry", "grammar",
-        "finance", "historical", "immunology", "inorganic chemistry", "Internet", "Internet slang", "law", "linguistics",
-        "mathematics", "medicine", "military", "mineralogy", "music", "nautical", "organic chemistry",
-        "pathology", "pharmacology", "philosophy", "physics", "physiology", "politics", "poker", "programming", "psychology",
-        "religion", "rhetoric", "sports", "statistics", "surgery", "telecommunications", "transport", "zoology",
-
-        "Christianity", "Buddhism", "Hinduism", "Islam", "Judaism",
-        "India", "Ireland", "Scotland", "South Africa"
-    };
-    std::map<str,str> label_map =
-    {
-        { "US", "US" },{ "Canada", "Canada" },
-        { "UK", "Britain" }, { "British", "Britain" }, { "Britain", "Britain" },
-        { "AU", "Australia" }, { "Australia", "Australia" },
-        { "NZ", "New Zealand" }, { "New Zealand", "New Zealand" },
-        { "figurative", "figuratively" }, { "jocular", "humorous" }, { "pejorative", "derogatory" },
-        { "internet", "Internet" }, { "internet slang", "Internet slang" }, 
-        { "legal", "law" }, { "math", "mathematics" }, { "maths", "mathematics" }, { "mineral", "mineralogy" }, 
-        { "enzyme", "biochemistry" }, { "protein", "biochemistry" }, { "organic compound", "organic chemistry" },
-    };
-
     str proceed_templates (str title, str header, str body, Result<entry> & result)
     {
         if (body == "QUOTE" || body == "rfdate" || body == "RQ") return "{{" + body + "}}";
@@ -75,24 +44,6 @@ namespace pass2
             }
         }
 
-        static bool first_time = true; if (first_time) { first_time = false;
-            for (str s : label_same) label_map[s] = s;
-        }
-
-        if (name == "label")
-        {
-            bool ok = true;
-            if (args.unnamed.size() >= 1) if (auto it = label_map.find(args[0]); it != label_map.end()) args[0] = it->second; else ok = false;
-            if (args.unnamed.size() >= 2) if (auto it = label_map.find(args[1]); it != label_map.end()) args[1] = it->second; else ok = false;
-            if (args.unnamed.size() >= 3) if (auto it = label_map.find(args[2]); it != label_map.end()) args[2] = it->second; else ok = false;
-            if (args.unnamed.size() >= 4) if (auto it = label_map.find(args[3]); it != label_map.end()) args[3] = it->second; else ok = false;
-            if (args.complexity == 4 && ok) { output = "(''"+args[0]+", "+args[1]+", "+args[2]+", "+args[3]+"'')"; kind += " 4"; } else
-            if (args.complexity == 3 && ok) { output = "(''"+args[0]+", "+args[1]+", "+args[2]+"'')"; kind += " 3"; } else
-            if (args.complexity == 2 && ok) { output = "(''"+args[0]+", "+args[1]+"'')"; kind += " 2"; } else
-            if (args.complexity == 1 && ok) { output = "(''"+args[0]+"'')"; kind += " 1"; } else
-            { kind += " quest"; report += " ==== " + title; }
-        }
-        else
         if (name == "mention")
         {
             str a1, a2, a3;

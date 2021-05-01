@@ -1,9 +1,12 @@
-#pragma once
+﻿#pragma once
 #include "1.h"
 namespace pass2
 {
     using pass0::esc;
     using pass0::logout;
+
+    auto path_in  = "data/enwiktionary-step1.txt";
+    auto path_out = "data/enwiktionary-step2.txt";
 
     struct paragraph
     {
@@ -19,31 +22,38 @@ namespace pass2
         {
             out << "==== "
                 << paragraph.header  << " ==== "
-                << paragraph.forms   << "\n"  // std::endl
-                << paragraph.content << "\n"; // std::endl;
+                << paragraph.forms   << "\n"
+                << paragraph.content << "\n";
             return out;
         }
     };
 
     struct entry { str title; array<paragraph> topic;
     
-        auto size () const { auto n = title.size(); for (const auto & p : topic) n += p.size(); return n; }
+        auto size () const {
+            auto n = title.size();
+            for (const auto & p : topic) n += p.size();
+            return n;
+        }
 
         auto empty () const { return topic.empty(); }
 
         void canonicalize ()
         {
             for (auto & p : topic) p.strip ();
-            topic.erase_if([](auto & p){ return p.empty(); });
+            topic.erase_if([](auto & p){
+                return p.empty(); });
         }
 
         friend std::ostream & operator << (std::ostream & out, const entry & entry)
         {
-            out << esc         << "\n"   // std::endl 
-                << entry.title << "\n"   // std::endl
-                << esc         << "\n\n" // std::endl << std::endl 
-                << entry.topic << "\n";  // std::endl;
+            out << esc         << "\n"
+                << entry.title << "\n"
+                << esc         << "\n\n"
+                << entry.topic << "\n";
             return out;
         }
+
+		bool operator < (const entry & e) const { return title < e.title; }
     };
 }

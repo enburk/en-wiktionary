@@ -5,32 +5,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="_pass.h" />
-    <ClInclude Include="1.h" />
     <ClInclude Include="_result.h" />
-    <ClInclude Include="2.h" />
     <ClInclude Include="3.h" />
     <ClInclude Include="4.h" />
     <ClInclude Include="_bracketer.h" />
-    <ClInclude Include="5_20_templates.h" />
     <ClInclude Include="main.hpp" />
-    <ClInclude Include="_queue.h" />
-    <ClInclude Include="0.h" />
-    <ClInclude Include="0_10_unxml.h" />
-    <ClInclude Include="0_00_unzip.h" />
-    <ClInclude Include="0_20_unuse.h" />
-    <ClInclude Include="0_30_untag.h" />
-    <ClInclude Include="0_30_meta.h" />
-    <ClInclude Include="0_90_sort.h" />
-    <ClInclude Include="1_00_unmeta.h" />
-    <ClInclude Include="1_10_english.h" />
-    <ClInclude Include="1_20_headers.h" />
-    <ClInclude Include="1_50_cleanup.h" />
-    <ClInclude Include="2_00_paragraphs.h" />
     <ClInclude Include="_common.h" />
-    <ClInclude Include="2_10_brackets.h" />
-    <ClInclude Include="2_20_lexforms1.h" />
-    <ClInclude Include="2_20_lexforms2.h" />
-    <ClInclude Include="2_15_unlink.h" />
     <ClInclude Include="2_50_templates.h" />
     <ClInclude Include="2_90_save.h" />
     <ClInclude Include="3_00_paragraphs.h" />
@@ -46,5 +26,85 @@
     <ClInclude Include="aux_abc.h" />
     <ClInclude Include="aux_array.h" />
     <ClInclude Include="aux_string.h" />
+    <ClInclude Include="2_51_template_label.h" />
+    <ClInclude Include="aux_queue.h" />
+    <ClInclude Include="0.h">
+      <Filter>0</Filter>
+    </ClInclude>
+    <ClInclude Include="0_00_unzip.h">
+      <Filter>0</Filter>
+    </ClInclude>
+    <ClInclude Include="0_10_unxml.h">
+      <Filter>0</Filter>
+    </ClInclude>
+    <ClInclude Include="0_20_unuse.h">
+      <Filter>0</Filter>
+    </ClInclude>
+    <ClInclude Include="0_30_unmeta.h">
+      <Filter>0</Filter>
+    </ClInclude>
+    <ClInclude Include="0_50_html.h">
+      <Filter>0</Filter>
+    </ClInclude>
+    <ClInclude Include="0_90_sort.h">
+      <Filter>0</Filter>
+    </ClInclude>
+    <ClInclude Include="0_99_save.h">
+      <Filter>0</Filter>
+    </ClInclude>
+    <ClInclude Include="1.h">
+      <Filter>1</Filter>
+    </ClInclude>
+    <ClInclude Include="1_00_load.h">
+      <Filter>1</Filter>
+    </ClInclude>
+    <ClInclude Include="1_10_redirect.h">
+      <Filter>1</Filter>
+    </ClInclude>
+    <ClInclude Include="1_20_modules.h">
+      <Filter>1</Filter>
+    </ClInclude>
+    <ClInclude Include="1_50_english.h">
+      <Filter>1</Filter>
+    </ClInclude>
+    <ClInclude Include="1_60_headers.h">
+      <Filter>1</Filter>
+    </ClInclude>
+    <ClInclude Include="1_99_save.h">
+      <Filter>1</Filter>
+    </ClInclude>
+    <ClInclude Include="_args.h" />
+    <ClInclude Include="2_00_load.h">
+      <Filter>2</Filter>
+    </ClInclude>
+    <ClInclude Include="2.h">
+      <Filter>2</Filter>
+    </ClInclude>
+    <ClInclude Include="2_10_brackets.h">
+      <Filter>2</Filter>
+    </ClInclude>
+    <ClInclude Include="2_20_lexforms1.h">
+      <Filter>2</Filter>
+    </ClInclude>
+    <ClInclude Include="2_20_lexforms2.h">
+      <Filter>2</Filter>
+    </ClInclude>
+    <ClInclude Include="2_20_lexforms2a.h">
+      <Filter>2</Filter>
+    </ClInclude>
+    <ClInclude Include="2_30_lexforms1n.h">
+      <Filter>2</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="0">
+      <UniqueIdentifier>{d9634f68-4c98-462c-a159-0f481a172bb3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="1">
+      <UniqueIdentifier>{3711f56f-b474-4779-ae3c-f33cbcf4e200}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="2">
+      <UniqueIdentifier>{7b8d89b8-7f10-4638-bca9-36b2d0ce93f6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>

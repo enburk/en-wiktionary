@@ -2,12 +2,12 @@ template <class Entry> struct Result
 {
     std::filesystem::path dir;
     std::filesystem::path passpath; ioqueue<Entry> * output; bool on; Result (
-    std::filesystem::path passpath, ioqueue<Entry> & output, bool on = true) :
+    std::filesystem::path passpath, ioqueue<Entry> & output, bool on = UPDATING_REPORTS) :
     passpath (passpath), output (&output), on (on && GENERATE_REPORTS)
     {
         std::filesystem::path name = passpath.stem();
         if (name.empty()) throw std::logic_error("Result::Result: " + passpath.string());
-        dir = passpath.parent_path() / name;
+        dir = passpath.parent_path() / "data" / name;
         if (std::filesystem::is_directory(dir) && on) { print("remove dir: ", dir);
             std::filesystem::remove_all(dir);
         }

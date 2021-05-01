@@ -47,7 +47,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>ClangCL</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
@@ -140,6 +140,7 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpplatest</LanguageStandard>
+      <PreprocessorDefinitions>_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -155,21 +156,26 @@
     <ClInclude Include="0_00_unzip.h" />
     <ClInclude Include="0_10_unxml.h" />
     <ClInclude Include="0_20_unuse.h" />
-    <ClInclude Include="0_30_meta.h" />
-    <ClInclude Include="0_30_untag.h" />
+    <ClInclude Include="0_30_unmeta.h" />
+    <ClInclude Include="0_50_html.h" />
     <ClInclude Include="0_90_sort.h" />
+    <ClInclude Include="0_99_save.h" />
     <ClInclude Include="1.h" />
-    <ClInclude Include="1_00_unmeta.h" />
-    <ClInclude Include="1_10_english.h" />
-    <ClInclude Include="1_20_headers.h" />
-    <ClInclude Include="1_50_cleanup.h" />
+    <ClInclude Include="1_00_load.h" />
+    <ClInclude Include="1_10_redirect.h" />
+    <ClInclude Include="1_20_modules.h" />
+    <ClInclude Include="1_50_english.h" />
+    <ClInclude Include="1_60_headers.h" />
+    <ClInclude Include="1_99_save.h" />
     <ClInclude Include="2.h" />
-    <ClInclude Include="2_00_paragraphs.h" />
+    <ClInclude Include="2_00_load.h" />
     <ClInclude Include="2_10_brackets.h" />
-    <ClInclude Include="2_15_unlink.h" />
     <ClInclude Include="2_20_lexforms1.h" />
     <ClInclude Include="2_20_lexforms2.h" />
+    <ClInclude Include="2_20_lexforms2a.h" />
+    <ClInclude Include="2_30_lexforms1n.h" />
     <ClInclude Include="2_50_templates.h" />
+    <ClInclude Include="2_51_template_label.h" />
     <ClInclude Include="2_70_tags.h" />
     <ClInclude Include="2_90_save.h" />
     <ClInclude Include="3.h" />
@@ -183,15 +189,15 @@
     <ClInclude Include="4_10_lexforms1.h" />
     <ClInclude Include="4_20_lexforms2.h" />
     <ClInclude Include="4_90_out.h" />
-    <ClInclude Include="5_20_templates.h" />
     <ClInclude Include="aux_abc.h" />
     <ClInclude Include="aux_array.h" />
+    <ClInclude Include="aux_queue.h" />
     <ClInclude Include="aux_string.h" />
     <ClInclude Include="main.hpp" />
+    <ClInclude Include="_args.h" />
     <ClInclude Include="_bracketer.h" />
     <ClInclude Include="_common.h" />
     <ClInclude Include="_pass.h" />
-    <ClInclude Include="_queue.h" />
     <ClInclude Include="_result.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

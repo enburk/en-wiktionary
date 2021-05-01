@@ -4,10 +4,6 @@ namespace pass4
 {
     array<str> vocabulary;
 
-    struct lexform { str form, ack, word; };
-
-    std::map<str, array<lexform>> lexforms;
-
     str suffixed (str word, str suffix)
     {
         if (suffix.starts_with("e"))
@@ -76,7 +72,7 @@ namespace pass4
 
     Pass <entry, entry> lexforms1 = [](auto & input, auto & output)
     {
-        Result result {__FILE__, output, true};//UPDATING_REPORTS};
+        Result result {__FILE__, output, UPDATING_REPORTS};
 
         vocabulary.reserve (1024*1024);
 

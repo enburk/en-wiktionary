@@ -4,13 +4,14 @@
 #include "aux_abc.h"
 #include "aux_array.h"
 #include "aux_string.h"
+#include "aux_queue.h"
 using namespace aux;
 
 #include <set>
 #include <map>
-#include <queue>
 #include <stack>
 #include <array>
+#include <unordered_set>
 #include <cassert>   
 #include <iomanip>
 #include <iostream>
@@ -18,10 +19,8 @@ using namespace aux;
 #include <sstream>
 #include <filesystem>
 #include <iterator>
-#include <condition_variable>
-#include <unordered_set>
 #include <chrono>
-#include <zlib.h>
+#include <codecvt>
 
 std::mutex print_mutex;
 template <typename ... Args> void print (Args... args) {
@@ -58,11 +57,11 @@ std::ostream & operator << (std::ostream & out, std::chrono::high_resolution_clo
 bool GENERATE_REPORTS = true;
 bool UPDATING_REPORTS = false;
 
-#include "_queue.h"
 #include "_pass.h"
 #include "_result.h"
 #include "_common.h"
 #include "_bracketer.h"
+#include "_args.h"
 
 
 
