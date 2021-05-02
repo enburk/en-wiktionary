@@ -19,8 +19,12 @@
 #include "2_10_brackets.h"
 #include "2_20_lexforms1.h"
 #include "2_20_lexforms2.h"
-#include "2_20_lexforms2a.h"
-#include "2_30_lexforms1n.h"
+#include "2_20_lexforms22.h"
+#include "2_99_save.h"
+
+#include "3_00_load.h"
+#include "3_10_lexforms1n.h"
+#include "3_20_lexforms1v.h"
 /*
 #include "2_50_templates.h"
 #include "2_51_template_label.h"
@@ -54,15 +58,18 @@ int main ()
     /// Unzip it and rename to: enwiktionary-pages-articles.xml
     /// Then run and wait...
 
-    pass0::unzip >> pass0::unxml >> pass0::unuse >>  pass0::unmeta >>
-    pass0::html  >> pass0::sort  >> pass0::save  >>
+    pass0::unzip  >> pass0::unxml >> pass0::unuse >>
+    pass0::unmeta >> pass0::html  >> pass0::sort  >> pass0::save  >>
 
     pass1::load >> pass1::redirects >> pass1::modules >>
     pass1::lineup >> pass1::english >> pass1::headers >> pass1::save >>
 
-    pass2::load >> pass2::brackets >>
-    pass2::lexforms1 >> pass2::lexforms2 >> pass2::lexforms2a >>
-    pass2::lexforms1n >> 
+    pass2::load >> pass2::brackets  >>
+    pass2::lexforms1 >> pass2::lexforms2 >> pass2::lexforms22 >> pass2::save >>
+
+    pass3::load >> 
+    pass3::lexforms1n >> pass3::lexforms1v >> 
+
 /*
     pass2::save >>
 

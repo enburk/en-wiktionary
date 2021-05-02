@@ -3,7 +3,7 @@
 #include "2_20_lexforms2.h"
 namespace pass2
 {
-    str lexforms2a_(str title, str header, str & forms, str body, Result<entry> & result)
+    str lexforms22_(str title, str header, str & forms, str body, Result<entry> & result)
     {
         args args (body);
 
@@ -71,7 +71,7 @@ namespace pass2
         return output;
     }
 
-    Pass<entry, entry> lexforms2a = [](auto & input, auto & output)
+    Pass<entry, entry> lexforms22 = [](auto & input, auto & output)
     {
         Result result {__FILE__, output};
 
@@ -80,7 +80,7 @@ namespace pass2
         for (auto && [title, topic] : input)
         {
             static int64_t nn = 0; if (++nn % 200'000 == 0)
-                logout("lexforms2", nn, input.cargo);
+                logout("lexforms22", nn, input.cargo);
 
             for (auto & [header, forms, content] : topic)
             {
@@ -93,7 +93,7 @@ namespace pass2
                 b.proceed_qbrakets  = [&] (str s) { return   "{" + s + "}"  ; };
                 b.proceed_link      = [&] (str s) { return  "[[" + s + "]]" ; };
                 b.proceed_parameter = [&] (str s) { return "{{{" + s + "}}}"; };
-                b.proceed_template  = [&] (str s) { return lexforms2a_(t, h, f, s, result); };
+                b.proceed_template  = [&] (str s) { return lexforms22_(t, h, f, s, result); };
                 b.proceed(content);
         
                 content = std::move(b.output);

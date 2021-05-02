@@ -1,10 +1,10 @@
 #pragma once
-#include "2.h"
-namespace pass2
+#include "3.h"
+namespace pass3
 {
     Pass <entry, entry> lexforms1n = [](auto & input, auto & output)
     {
-        Result result {__FILE__, output, true};
+        Result result {__FILE__, output};
 
         for (auto && [title, topic] : input)
         {
@@ -66,6 +66,12 @@ namespace pass2
                     return " '''" + form + "'''";
                 };
 
+                auto same = [](str s1, str s2) {
+                    return s1.upto(2) == s2.upto(2) or
+                        (s1.starts_with("man") and s2.starts_with("men")) or
+                        (s1.starts_with("goo") and s2.starts_with("gee")) or
+                        false; };
+
                 if (f == "#" and header == "proper noun") f = "";
 
                 if (f.starts_with("##")) {
@@ -86,10 +92,6 @@ namespace pass2
                 if (f == "s"   ) { r += "0 s";  f = "''plural''" + plural(t+"s"); } else
                 if (f == "es"  ) { r += "0 es"; f = "''plural''" + plural(t+"es"); } else
                 if (f == "~"   ) { r += "0 ~";  f = "''countable and uncountable, plural''" + plural(); } else
-                if (f == "~|s" ) { r += "0 ~s"; f = "''countable and uncountable, plural''" + plural(t+"s"); } else
-                if (f == "~|es") { r += "0 ~s"; f = "''countable and uncountable, plural''" + plural(t+"es"); } else
-                if (f == "-|s" ) { r += "0 -s"; f = "''usually uncountable, plural''" + plural(t+"s"); } else
-                if (f == "-|es") { r += "0 -s"; f = "''usually uncountable, plural''" + plural(t+"es"); } else
                 {
                     args args ("noun|"+f);
 
@@ -101,25 +103,61 @@ namespace pass2
                             args[0] == "none" or
                             args[0] == "unc") { r += " uncountable"; f = "''uncountable''"; } else
                         {
-                            if (args[0].upto(2) != t.upto(2)) r += " quest";
+                            if (not same(args[0], t)) r += " quest";
                             f = "''plural''" + plural(args[0], true);
                         }
                     }
                     else
-                    if (args.complexity == 2)
                     {
                         r += "2";
-                        if (args[0] == "~"  && args[1].upto(2) == t.upto(2)) { r += " ~"; f = "''countable and uncountable, plural''" + plural(args[1]); } else
-                        if (args[0] == "-"  && args[1].upto(2) == t.upto(2)) { r += " -"; f = "''usually uncountable, plural''" + plural(args[1]); } else
-                        if (args[0] == "s"  && args[1].upto(2) == t.upto(2)) { r += " s"; f = "''plural''" + plural(t+"s") + " ''or''" + plural(args[1]); } else
-                        if (args[0] == "es" && args[1].upto(2) == t.upto(2)) { r += " s"; f = "''plural''" + plural(t+"es") + " ''or''" + plural(args[1]); } else
-                        if (args[0].upto(2) != t.upto(2)
-                        ||  args[1].upto(2) != t.upto(2)) r += " quest";
-                        else f = "''plural''" +
-                            plural(args[0]) + " ''or''" +
-                            plural(args[1]);
+                        str s; array<str> plurals;
+
+                        if (f.starts_with("-|")) { f.upto(2).erase(); s = "''usually uncountable, plural''"; } else
+                        if (f.starts_with("~|")) { f.upto(2).erase(); s = "''countable and uncountable, plural''"; } else
+                        s = "''plural''";
+
+                        args = ::args("noun|"+f);
+
+                        for (auto arg : args.unnamed)
+                        {
+                            if (arg == "?"  ) ; else
+                            if (arg == "+"  ) plurals += plural(); else
+                            if (arg == "s"  ) plurals += plural(t+"s"); else
+                            if (arg == "es" ) plurals += plural(t+"es"); else
+                            if (same(arg, t)) plurals += plural(arg, true); else
+                            if (not r.contains("quest")) r += " quest";
+                        }
+
+                        int n = plurals.size();
+
+                        for (auto [key, value] : args.opt)
+                        {
+                            if (key == "plqual"  and n >= 1) plurals[0] = " ''("+value+")''" + plurals[0]; else
+                            if (key == "pl1qual" and n >= 1) plurals[0] = " ''("+value+")''" + plurals[0]; else
+                            if (key == "pl2qual" and n >= 2) plurals[1] = " ''("+value+")''" + plurals[1]; else
+                            if (key == "pl3qual" and n >= 3) plurals[2] = " ''("+value+")''" + plurals[2]; else
+                            if (key == "pl4qual" and n >= 4) plurals[3] = " ''("+value+")''" + plurals[3]; else
+                            if (key == "pl5qual" and n >= 5) plurals[4] = " ''("+value+")''" + plurals[4]; else
+                            if (key == "pl6qual" and n >= 6) plurals[5] = " ''("+value+")''" + plurals[5]; else
+                            if (key == "pl7qual" and n >= 7) plurals[6] = " ''("+value+")''" + plurals[6]; else
+                            if (key == "pl8qual" and n >= 8) plurals[7] = " ''("+value+")''" + plurals[7]; else
+                            if (key == "pl9qual" and n >= 9) plurals[8] = " ''("+value+")''" + plurals[8]; else
+                            if (not r.contains("quest")) r += " quest";
+                        }
+
+                        for (int i=0; i<n; i++)
+                        {
+                            s += plurals[i];
+                            if (i <= n-1-2) s += ","; else
+                            if (i == n-1-1) s += " ''or''";
+                        }
+
+                        if (args.complexity >= 10) r += " complex";
+
+                        if (not r.contains("quest")) r += " " + std::to_string(n);
+
+                        f = s;
                     }
-                    else r = "- quest";
                 }
 
                 if (f != "") f = "(" + f + ")";

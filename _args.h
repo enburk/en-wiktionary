@@ -55,16 +55,20 @@ struct args
         for (str & arg : args) arg.strip(" \t\n"); args.erase(args.begin());
         for (str & arg : args)
         {
-            str key, value;
-            if (arg.split_by ("=", key, value))
+            str key, value; if (arg.split_by("=", key, value))
             {
+                for (auto & p : piped) key.replace_all(p.first, p.second);
+                for (auto & p : piped) value.replace_all(p.first, p.second);
+
+                key.strip(); value.strip();
+                key = key.ascii_lowercased();
+
                 if (key == "head" ) continue;
+                if (key == "head2") continue;
                 if (key == "lang" ) continue;
                 if (key == "sort" ) continue;
                 if (key == "nocat") continue;
 
-                for (auto & p : piped) key.replace_all(p.first, p.second);
-                for (auto & p : piped) value.replace_all(p.first, p.second);
                 body += key + "=" + value + "|";
 
                 if (key == "1") { unnamed.resize(max(1, unnamed.size())); unnamed[0] = value; } else
@@ -77,7 +81,7 @@ struct args
                 if (key == "8") { unnamed.resize(max(8, unnamed.size())); unnamed[7] = value; } else
                 if (key == "9") { unnamed.resize(max(9, unnamed.size())); unnamed[8] = value; } else
                 {
-                    opt [key.ascii_lowercased()] = value;
+                    opt [key] = value;
                 }
             }
             else

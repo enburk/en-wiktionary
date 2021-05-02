@@ -4,8 +4,6 @@ namespace pass1
 {
     Pass <pass0::entry, pass0::entry> load = [](auto & input, auto & output)
     {
-        if (std::filesystem::exists(path_out)) return;
-
         bool started = false;
 
         for (auto && entry : input)
@@ -17,6 +15,8 @@ namespace pass1
 
         if (started) return;
             
+        if (std::filesystem::exists(path_out)) return;
+
         print("=== load 1... ===");
 
         try

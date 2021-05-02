@@ -4,39 +4,37 @@ namespace pass1
 {
     Pass <entry, entry> save = [](auto & input, auto & output)
     {
-        std::ostringstream sstream; 
+        bool started = false;
+
+        std::ofstream fstream;
 
         for (auto && entry : input)
         {
-            sstream << entry; output.push(std::move(entry));
+            if (GENERATE_REPORTS and not started)
+            {
+                started = true;
+
+                print("=== save 1... ===");
+
+                fstream = std::ofstream(path_out);
+            }
+
+            if (GENERATE_REPORTS) fstream << entry;
+
+            output.push(std::move(entry));
         }
 
-        str articles = sstream.str();
-        if (articles == "") return;
+        if (started)
+        {
+            fstream << esc;
+            fstream.close();
 
-        print("=== save 1... ===");
+            std::filesystem::path path = path_out;
+            path.replace_extension(".meta.txt");
+            save_meta(std::ofstream(path));
 
-        std::ofstream fstream (path_out);
-
-        for (auto [from, to] : redirect          ) fstream << from << " ====> " << to << "\n"; fstream << esc << "\n";
-        for (auto [from, to] : redirect_templates) fstream << from << " ====> " << to << "\n"; fstream << esc << "\n";
-        for (auto [from, to] : redirect_modules  ) fstream << from << " ====> " << to << "\n"; fstream << esc << "\n";
-
-        for (auto [name, text] : Templates) fstream
-            << esc << "\n" << ("Template:" + name) << "\n"
-            << esc << "\n" << "==== header ==== " << "\n"
-            << text << "\n";
-
-        for (auto [name, text] : Modules  ) fstream
-            << esc << "\n" << ("Module:" + name) << "\n"
-            << esc << "\n" << "==== header ==== " << "\n"
-            << text << "\n";
-
-        fstream << articles;
-        fstream << esc;
-        fstream.close();
-
-        print("=== save 1 ok ===");
+            print("=== save 1 ok ===");
+        }
     };
 }
 

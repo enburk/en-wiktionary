@@ -1,32 +1,14 @@
 #pragma once
-#include "2.h"
-namespace pass2
+#include "3.h"
+namespace pass3
 {
-    Pass<pass1::entry, entry> load = [](auto & input, auto & output)
+    Pass<entry, entry> load = [](auto & input, auto & output)
     {
         bool started = false;
 
-        for (auto && [title, topic] : input)
+        for (auto && e : input)
         {
             started = true;
-
-            entry e; e.title = title; paragraph current;
-
-            topic += "==== "; // ending
-
-            for (str & s : topic)
-            {
-                if (s.starts_with ("==== "))
-                {
-                    current.strip(); if (!current.empty()) e.topic += std::move(current);
-                    current = paragraph{};
-                    current.header = s.from(5);
-                    continue;
-                }
-
-                current.content += std::move(s);
-                current.content += "\n";
-            }
 
             output.push(std::move(e));
         }
@@ -35,7 +17,7 @@ namespace pass2
             
         if (std::filesystem::exists(path_out)) return;
 
-        print("=== load 2... ===");
+        print("=== load 3... ===");
 
         try
         {
@@ -80,6 +62,6 @@ namespace pass2
             print(str("exception: ")
                 + e.what()); }
 
-        print("=== load 2 ok ===");
+        print("=== load 3 ok ===");
     };
 }

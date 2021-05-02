@@ -80,6 +80,108 @@ template<class Entry>  void  dump_templates_statistics (Result<Entry> & result)
     result.report (std::to_string(total >> 20) + " M    ", "# templates statistics");
 }
 
+void logout (str pass, int64_t entries, int64_t cargo)
+{
+    auto c = std::to_string(cargo);
+    auto e = std::to_string(entries);
+    pass += str(' ', max(0, 10 - pass.size()));
+    c.insert(0, max(0, 7 - (int)c.size()), ' ');
+    e.insert(0, max(0, 7 - (int)e.size()), ' ');
+    print(pass, " ", e, " entries ", c, " cargo ");
+}
+
+str esc = "###################################";
+
+void save_meta (std::ofstream && fstream)
+{
+    for (auto [from, to] : redirect          ) fstream << from << " ====> " << to << "\n"; fstream << esc << "\n";
+    for (auto [from, to] : redirect_templates) fstream << from << " ====> " << to << "\n"; fstream << esc << "\n";
+    for (auto [from, to] : redirect_modules  ) fstream << from << " ====> " << to << "\n"; fstream << esc << "\n";
+
+    for (auto [origin, forms] : lexforms)
+		for (auto form : forms)
+			fstream << origin << " ====> "
+			<< form.form << " ## "
+			<< form.ack	 << " ## "
+			<< form.word << "\n";
+	
+	fstream << esc << "\n";
+
+    for (auto [name, txt] : Templates) fstream
+        << esc << "\n" << ("Template:" + name) << "\n"
+        << esc << "\n" << "==== header ==== "  << "\n"
+        << txt << "\n";
+
+    for (auto [name, txt] : Modules  ) fstream
+        << esc << "\n" << ("Module:" + name)  << "\n"
+        << esc << "\n" << "==== header ==== " << "\n"
+        << txt << "\n";
+
+	fstream << esc << "\n";
+}
+void load_meta (std::ifstream && fstream)
+{
+	str line, title, topic;
+
+    while (std::getline(fstream, line))
+    {
+        if (line == esc) break;
+        str from, to; line.split_by(" ====> ", from, to);
+        redirect.emplace(from, to);
+    }
+    while (std::getline(fstream, line))
+    {
+        if (line == esc) break;
+        str from, to; line.split_by(" ====> ", from, to);
+        redirect_templates.emplace(from, to);
+    }
+    while (std::getline(fstream, line))
+    {
+        if (line == esc) break;
+        str from, to; line.split_by(" ====> ", from, to);
+        redirect_modules.emplace(from, to);
+    }
+    while (std::getline(fstream, line))
+    {
+        if (line == esc) break;
+        str orig; line.split_by(" ====> ", orig, line);
+		str form; line.split_by(" ## "   , form, line);
+		str ack;  line.split_by(" ## "   , ack,  line);
+		str word; line.split_by(" ## "   , word, line);
+		lexforms[orig] += lexform{form, ack, word};
+    }
+    while (std::getline(fstream, line))
+    {
+        if (line == esc)
+        {
+			if (title == esc) break;
+            if (topic != "") 
+			{
+                if (title.starts_with("Template:"))
+                    Templates.emplace(title.from(9),
+                        topic);
+                else
+                if (title.starts_with("Module:"))
+                    Modules.emplace(title.from(7),
+                        topic);
+                else
+					throw std::runtime_error
+					("nonsense");
+
+                title = esc;
+				topic = "";
+			}
+        }
+        else
+        {
+            if (title == "" or
+				title == esc)
+				title =  line; else
+                topic += line + "\n";
+        }
+    }
+}
+
 std::map<str, const char8_t*> Symbols
 {
 	{ "AElig", u8"Æ" },

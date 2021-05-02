@@ -1,6 +1,6 @@
 #pragma once
-#include "0.h"
-namespace pass0
+#include "2.h"
+namespace pass2
 {
     Pass <entry, entry> save = [](auto & input, auto & output)
     {
@@ -14,7 +14,7 @@ namespace pass0
             {
                 started = true;
 
-                print("=== save 0... ===");
+                print("=== save 2... ===");
 
                 fstream = std::ofstream(path_out);
             }
@@ -29,9 +29,11 @@ namespace pass0
             fstream << esc;
             fstream.close();
 
-            print("=== save 0 ok ===");
+            std::filesystem::path path = path_out;
+            path.replace_extension(".meta.txt");
+            save_meta(std::ofstream(path));
+
+            print("=== save 2 ok ===");
         }
     };
 }
-
-

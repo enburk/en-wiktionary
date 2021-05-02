@@ -2,9 +2,6 @@
 #include "0.h"
 namespace pass1
 {
-    using pass0::esc;
-    using pass0::logout;
-
     auto path_in  = "data/enwiktionary-pages-articles.txt";
     auto path_out = "data/enwiktionary-step1.txt";
 
