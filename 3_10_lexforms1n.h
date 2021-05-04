@@ -48,6 +48,8 @@ namespace pass3
                             form = form + "s";
                     }
 
+                    std::lock_guard lock{lexforms_mutex};
+
                     bool found = false; str plurals;
                     for (auto & [kind, ack, w] : lexforms[t]) {
                         if (kind == "plural of") plurals += "["+w+"]";

@@ -21,6 +21,7 @@ using namespace aux;
 #include <iterator>
 #include <chrono>
 #include <codecvt>
+#include <regex>
 
 std::mutex print_mutex;
 template <typename ... Args> void print (Args... args) {

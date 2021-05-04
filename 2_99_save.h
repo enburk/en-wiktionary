@@ -31,6 +31,7 @@ namespace pass2
 
             std::filesystem::path path = path_out;
             path.replace_extension(".meta.txt");
+            print("pass2 save ", path.string());
             save_meta(std::ofstream(path));
 
             print("=== save 2 ok ===");

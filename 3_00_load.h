@@ -25,6 +25,7 @@ namespace pass3
 
             std::filesystem::path path = path_in;
             path.replace_extension(".meta.txt");
+            print("pass3 load ", path.string());
             load_meta(std::ifstream(path));
 
             std::ifstream fstream(path_in);

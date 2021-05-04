@@ -178,6 +178,7 @@
     <ClInclude Include="3_00_load.h" />
     <ClInclude Include="3_10_lexforms1n.h" />
     <ClInclude Include="3_20_lexforms1v.h" />
+    <ClInclude Include="3_30_lexforms1a.h" />
     <ClInclude Include="a2_50_templates.h" />
     <ClInclude Include="a2_51_template_label.h" />
     <ClInclude Include="a2_70_tags.h" />

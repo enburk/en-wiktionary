@@ -25,6 +25,7 @@
 #include "3_00_load.h"
 #include "3_10_lexforms1n.h"
 #include "3_20_lexforms1v.h"
+#include "3_30_lexforms1a.h"
 /*
 #include "2_50_templates.h"
 #include "2_51_template_label.h"
@@ -68,7 +69,7 @@ int main ()
     pass2::lexforms1 >> pass2::lexforms2 >> pass2::lexforms22 >> pass2::save >>
 
     pass3::load >> 
-    pass3::lexforms1n >> pass3::lexforms1v >> 
+    pass3::lexforms1n >> pass3::lexforms1v >> pass3::lexforms1a >> 
 
 /*
     pass2::save >>

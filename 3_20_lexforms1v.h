@@ -1,13 +1,37 @@
-#pragma once
+﻿#pragma once
 #include "3.h"
 namespace pass3
 {
+    const str vowels = "aeiouáéíóúàèìòùâêîôûäëïöüæœø";
+	const str VOWELS = "AEIOUÁÉÍÓÚÀÈÌÒÙÂÊÎÔÛÄËÏÖÜÆŒØ";
+    const str Vowels = vowels + VOWELS;
+
+    bool last_cons (str s) {
+	    const std::regex r1("^[Yy][" + vowels + "y]([^A-Z" + vowels + "ywxh])$");
+		const std::regex r2("^[^" + Vowels + "yY]*[" + Vowels + "yY]([^A-Z" + vowels + "ywxh])$");
+        return std::regex_match(s, r1) or
+               std::regex_match(s, r2); }
+
     Pass <entry, entry> lexforms1v = [](auto & input, auto & output)
     {
         Result result {__FILE__, output, true};
 
+        bool first_time = true;
+
         for (auto && [title, topic] : input)
         {
+            if (result.on and
+                first_time) {
+                first_time = false;
+                std::ofstream fstream("data/modules en-.txt");
+                for (auto & [name, text] : Modules) 
+                if (name.starts_with("en-")) { fstream
+                    << esc << "\n" << ("Module:" + name)  << "\n"
+                    << esc << "\n" << text << "\n";
+                    Modules.erase(name);
+                }
+            }
+
             for (auto & [header, forms, content] : topic)
             {
                 if (header != "verb") continue;
@@ -22,21 +46,30 @@ namespace pass3
                         form = t;
                         if (kind == "ing")
                         {
-                            if (form.ends_with("ie")) { form.truncate(); form += "y"; } else
-                            //if (form.ends_with("p" )) { form += form.back(); } else
-                            //if (form.ends_with("t" )) { form += form.back(); } else
-                            //if (form.ends_with("d" )) { form += form.back(); } else
-                            {}; form += "ing";
+                            if (last_cons(form)) form += form.back();
+                            else
+                            if (std::regex_match(form, std::regex("^(.*)ie$"))) {
+                                form.truncate(); form.truncate(); form += "y";
+                            }
+                            else
+                            if (std::regex_match(form, std::regex("^(.*)ue$")) or
+                                std::regex_match(form, std::regex("^(.*[" + Vowels + "yY][^" + vowels + "y]+)e$"))) {
+                                form.truncate();
+                            }
+                            form += "ing";
                         }
                         else
                         if (kind == "ed" or kind == "pp")
                         {
+                            if (last_cons(form)) form += form.back(); else
+                            if (form.ends_with("ay")) { ; } else
+                            if (form.ends_with("ey")) { ; } else
+                            if (form.ends_with("iy")) { ; } else
+                            if (form.ends_with("oy")) { ; } else
+                            if (form.ends_with("uy")) { ; } else
                             if (form.ends_with("y" )) { form.truncate(); form += "i"; } else
-                            if (form.ends_with("e" )) { form.truncate(); } else
-                            //if (form.ends_with("p" )) { form += form.back(); } else
-                            //if (form.ends_with("t" )) { form += form.back(); } else
-                            //if (form.ends_with("d" )) { form += form.back(); } else
-                            {}; form += "ed";
+                            if (form.ends_with("e" )) { form.truncate(); }
+                            form += "ed";
                         }
                         else
                         if (kind == "es")
@@ -63,6 +96,8 @@ namespace pass3
                                 form = form + "s";
                         }
                     }
+
+                    std::lock_guard lock{lexforms_mutex};
 
                     bool found = false; str list;
                     for (auto & [k, ack, w] : lexforms[t]) { bool aha = false

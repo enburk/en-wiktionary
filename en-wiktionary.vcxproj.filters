@@ -109,6 +109,9 @@
     <ClInclude Include="3_20_lexforms1v.h">
       <Filter>3</Filter>
     </ClInclude>
+    <ClInclude Include="3_30_lexforms1a.h">
+      <Filter>3</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="0">

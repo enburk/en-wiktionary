@@ -65,6 +65,8 @@ struct lexform { str form, ack, word; };
 
 std::map<str, array<lexform>> lexforms;
 
+std::mutex lexforms_mutex;
+
 std::map<str, std::map<str, int>> templates_statistics;
 template<class Entry>  void  dump_templates_statistics (Result<Entry> & result)
 {
@@ -94,11 +96,11 @@ str esc = "###################################";
 
 void save_meta (std::ofstream && fstream)
 {
-    for (auto [from, to] : redirect          ) fstream << from << " ====> " << to << "\n"; fstream << esc << "\n";
-    for (auto [from, to] : redirect_templates) fstream << from << " ====> " << to << "\n"; fstream << esc << "\n";
-    for (auto [from, to] : redirect_modules  ) fstream << from << " ====> " << to << "\n"; fstream << esc << "\n";
+    for (auto & [from, to] : redirect          ) fstream << from << " ====> " << to << "\n"; fstream << esc << "\n";
+    for (auto & [from, to] : redirect_templates) fstream << from << " ====> " << to << "\n"; fstream << esc << "\n";
+    for (auto & [from, to] : redirect_modules  ) fstream << from << " ====> " << to << "\n"; fstream << esc << "\n";
 
-    for (auto [origin, forms] : lexforms)
+    for (auto & [origin, forms] : lexforms)
 		for (auto form : forms)
 			fstream << origin << " ====> "
 			<< form.form << " ## "
@@ -107,12 +109,12 @@ void save_meta (std::ofstream && fstream)
 	
 	fstream << esc << "\n";
 
-    for (auto [name, txt] : Templates) fstream
+    for (auto & [name, txt] : Templates) fstream
         << esc << "\n" << ("Template:" + name) << "\n"
         << esc << "\n" << "==== header ==== "  << "\n"
         << txt << "\n";
 
-    for (auto [name, txt] : Modules  ) fstream
+    for (auto & [name, txt] : Modules) fstream
         << esc << "\n" << ("Module:" + name)  << "\n"
         << esc << "\n" << "==== header ==== " << "\n"
         << txt << "\n";
