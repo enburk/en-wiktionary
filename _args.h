@@ -52,7 +52,7 @@ struct args
         s = b.output;
 
         array<str> args = s.split_by("|");
-        for (str & arg : args) arg.strip(" \t\n"); args.erase(args.begin());
+        for (str & arg : args) arg.strip(" \t\n"); if (args.size() > 0) args.erase(args.begin());
         for (str & arg : args)
         {
             str key, value; if (arg.split_by("=", key, value))

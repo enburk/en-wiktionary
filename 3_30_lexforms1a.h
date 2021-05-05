@@ -66,6 +66,14 @@ namespace pass3
                         t + " | " + f + " => " + form,
                         "- unacknowledged " + kind);
 
+                    if (kind == "er")
+                    if (not found and form != t)
+                        lexforms[t] += lexform{"comparative form of", "?", form};
+
+                    if (kind == "est")
+                    if (not found and form != t)
+                        lexforms[t] += lexform{"superlative form of", "?", form};
+
                     return "'''" + form + "'''";
                 };
 

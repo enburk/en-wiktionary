@@ -1,6 +1,6 @@
 #pragma once
-#include "2.h"
-namespace pass2
+#include "3.h"
+namespace pass3
 {
     const std::map<str, std::unordered_set<str>> rejected_templates
     {
@@ -10,12 +10,18 @@ namespace pass2
         }},
         {   "mid",
         {
-            "top",  "mid",  "bottom",  "col-top",  "col-bottom",  "der-top",  "der-mid",  "der-bottom",  "rel-top",  "rel-mid",  "rel-bottom", 
-            "top1", "mid1", "bottom1", "col-top1", "col-bottom1", "der-top1", "der-mid1", "der-bottom1", "rel-top1", "rel-mid1", "rel-bottom1",
-            "top2", "mid2", "bottom2", "col-top2", "col-bottom2", "der-top2", "der-mid2", "der-bottom2", "rel-top2", "rel-mid2", "rel-bottom2",
-            "top3", "mid3", "bottom3", "col-top3", "col-bottom3", "der-top3", "der-mid3", "der-bottom3", "rel-top3", "rel-mid3", "rel-bottom3", 
-            "top4", "mid4", "bottom4", "col-top4", "col-bottom4", "der-top4", "der-mid4", "der-bottom4", "rel-top4", "rel-mid4", "rel-bottom4", 
-            "top5", "mid5", "bottom5", "col-top5", "col-bottom5", "der-top5", "der-mid5", "der-bottom5", "rel-top5", "rel-mid5", "rel-bottom5",
+            "top",  "mid",  "bottom",  "col-top",  "col-bottom", 
+            "top1", "mid1", "bottom1", "col-top1", "col-bottom1",
+            "top2", "mid2", "bottom2", "col-top2", "col-bottom2",
+            "top3", "mid3", "bottom3", "col-top3", "col-bottom3", 
+            "top4", "mid4", "bottom4", "col-top4", "col-bottom4", 
+            "top5", "mid5", "bottom5", "col-top5", "col-bottom5",
+            "der-top",  "der-mid",  "der-bottom",  "rel-top",  "rel-mid",  "rel-bottom", 
+            "der-top1", "der-mid1", "der-bottom1", "rel-top1", "rel-mid1", "rel-bottom1",
+            "der-top2", "der-mid2", "der-bottom2", "rel-top2", "rel-mid2", "rel-bottom2",
+            "der-top3", "der-mid3", "der-bottom3", "rel-top3", "rel-mid3", "rel-bottom3", 
+            "der-top4", "der-mid4", "der-bottom4", "rel-top4", "rel-mid4", "rel-bottom4", 
+            "der-top5", "der-mid5", "der-bottom5", "rel-top5", "rel-mid5", "rel-bottom5",
         }},
         {   "miscellaneous",
         {
@@ -27,7 +33,7 @@ namespace pass2
         {
         }}
     };
-    str proceed_templates (str title, str header, str body, Result<entry> & result)
+    str templates_ (str title, str header, str body, Result<entry> & result)
     {
         if (body == "QUOTE" || body == "rfdate" || body == "RQ") return "{{" + body + "}}";
 
@@ -39,7 +45,8 @@ namespace pass2
 
         for (const auto & [group, set] : rejected_templates) {
             if (set.find (name) != set.end()) {
-                result.reject(report, "{{"+group+"}}");
+                result.reject(report,
+                "{{"+group+"}}");
                 return "";
             }
         }
@@ -112,44 +119,34 @@ namespace pass2
 
     Pass <entry, entry> templates = [](auto & input, auto & output)
     {
-        Result result {__FILE__, output, UPDATING_REPORTS};
+        Result result {__FILE__, output, true};
 
         for (auto && [title, topic] : input)
         {
-            static int64_t nn = 0; if (++nn % 200'000 == 0) logout("templates", nn, input.cargo);
+            static int64_t nn = 0; if (++nn % 100'000 == 0)
+                logout("templates", nn, input.cargo);
 
             for (auto & [header, forms, content] : topic)
             {
+                auto t = title;
+                auto h = header;
+
                 bracketer b;
                 b.proceed_sbrakets  = [&] (str s) { return   "[" + s + "]"  ; };
                 b.proceed_qbrakets  = [&] (str s) { return   "{" + s + "}"  ; };
                 b.proceed_parameter = [&] (str s) { return "{{{" + s + "}}}"; };
                 b.proceed_link      = [&] (str s) { return  "[[" + s + "]]" ; };
-                b.proceed_template  = [&] (str s) { return proceed_templates (title, header, s, result); };
+                b.proceed_template  = [&] (str s) { return templates_ (t, h, s, result); };
                 b.proceed(content);
-            
-                if (b.report.size() > 0)
-                {
-                    entry report;
-                    report.title = title;
-                    report.topic += paragraph {header, forms, content};
-                    report.topic.back().content += "\n==============================================================\n";
-                    report.topic.back().content += str(b.report);
-                    result.report(report, "- broken brackets");
-                }
         
                 content = std::move(b.output);
             }
 
-            result.accept (entry {std::move(title), std::move(topic)});
+            output.push(entry{
+                std::move(title),
+                std::move(topic)});
         }
 
-        std::multimap<int, str, std::greater<int>> templates; int total = 0;
-        for (auto [name, n] : templates_statistics [__FILE__]) { templates.emplace(n, name); total += n; }
-        for (auto [n, name] : templates) result.report (std::to_string(n) + " " + name, "# templates");
-        result.report ("====================================", "# templates");
-        result.report (std::to_string(total >> 00) + " total", "# templates");
-        result.report (std::to_string(total >> 10) + " K    ", "# templates");
-        result.report (std::to_string(total >> 20) + " M    ", "# templates");
+        dump_templates_statistics(result);
     };
 }

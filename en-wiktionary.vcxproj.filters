@@ -77,8 +77,6 @@
     <ClInclude Include="2_20_lexforms22.h">
       <Filter>2</Filter>
     </ClInclude>
-    <ClInclude Include="a2_50_templates.h" />
-    <ClInclude Include="a2_51_template_label.h" />
     <ClInclude Include="a2_70_tags.h" />
     <ClInclude Include="a2_90_save.h" />
     <ClInclude Include="a3.h" />
@@ -92,7 +90,6 @@
     <ClInclude Include="a4_10_lexforms1.h" />
     <ClInclude Include="a4_20_lexforms2.h" />
     <ClInclude Include="a4_90_out.h" />
-    <ClInclude Include="a5_30_untag.h" />
     <ClInclude Include="a5_80_cleanup.h" />
     <ClInclude Include="2_99_save.h">
       <Filter>2</Filter>
@@ -110,6 +107,28 @@
       <Filter>3</Filter>
     </ClInclude>
     <ClInclude Include="3_30_lexforms1a.h">
+      <Filter>3</Filter>
+    </ClInclude>
+    <ClInclude Include="a5_40_altforms.h" />
+    <ClInclude Include="3_50_templates.h">
+      <Filter>3</Filter>
+    </ClInclude>
+    <ClInclude Include="3_51_templates_label.h">
+      <Filter>3</Filter>
+    </ClInclude>
+    <ClInclude Include="3_50_templates_1.h">
+      <Filter>3</Filter>
+    </ClInclude>
+    <ClInclude Include="3_52_templates_mention.h">
+      <Filter>3</Filter>
+    </ClInclude>
+    <ClInclude Include="3_50_multiline1.h">
+      <Filter>3</Filter>
+    </ClInclude>
+    <ClInclude Include="3_50_multiline2.h">
+      <Filter>3</Filter>
+    </ClInclude>
+    <ClInclude Include="3_50_lexitems.h">
       <Filter>3</Filter>
     </ClInclude>
   </ItemGroup>

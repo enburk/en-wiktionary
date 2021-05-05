@@ -65,6 +65,9 @@ namespace pass3
                         t + " | " + f + " => " + form,
                         "- unacknowledged");
 
+                    if (not found and form != t)
+                        lexforms[t] += lexform{"plural of", "?", form};
+
                     return " '''" + form + "'''";
                 };
 

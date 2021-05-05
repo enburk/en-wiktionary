@@ -179,8 +179,13 @@
     <ClInclude Include="3_10_lexforms1n.h" />
     <ClInclude Include="3_20_lexforms1v.h" />
     <ClInclude Include="3_30_lexforms1a.h" />
-    <ClInclude Include="a2_50_templates.h" />
-    <ClInclude Include="a2_51_template_label.h" />
+    <ClInclude Include="3_50_lexitems.h" />
+    <ClInclude Include="3_50_multiline1.h" />
+    <ClInclude Include="3_50_multiline2.h" />
+    <ClInclude Include="3_50_templates.h" />
+    <ClInclude Include="3_50_templates_1.h" />
+    <ClInclude Include="3_51_templates_label.h" />
+    <ClInclude Include="3_52_templates_mention.h" />
     <ClInclude Include="a2_70_tags.h" />
     <ClInclude Include="a2_90_save.h" />
     <ClInclude Include="a3.h" />
@@ -194,7 +199,7 @@
     <ClInclude Include="a4_10_lexforms1.h" />
     <ClInclude Include="a4_20_lexforms2.h" />
     <ClInclude Include="a4_90_out.h" />
-    <ClInclude Include="a5_30_untag.h" />
+    <ClInclude Include="a5_40_altforms.h" />
     <ClInclude Include="a5_80_cleanup.h" />
     <ClInclude Include="aux_abc.h" />
     <ClInclude Include="aux_array.h" />

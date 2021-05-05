@@ -14,7 +14,7 @@ namespace pass3
 
     Pass <entry, entry> lexforms1v = [](auto & input, auto & output)
     {
-        Result result {__FILE__, output, true};
+        Result result {__FILE__, output};
 
         bool first_time = true;
 
@@ -118,6 +118,14 @@ namespace pass3
                     if (not found and form != t and list == "") result.report(
                         t + " | " + f + " => " + form,
                         "- unacknowledged " + kind);
+
+                    if (not found and form != t)
+                        lexforms[t] += lexform{
+                        kind == "es" ? "third-person singular simple present indicative form of":
+                        kind == "ing"? "present participle of":
+                        kind == "ed" ? "simple past tense of":
+                        kind == "pp" ? "past participle of":
+                        "some verb form", "?", form};
 
                     return "'''" + form + "'''";
                 };

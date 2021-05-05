@@ -25,7 +25,8 @@ namespace pass1
 
         for (auto [title, topic] : input)
         {
-            static int64_t nn = 0; if (++nn % 200'000 == 0) logout("headers  ", nn, input.cargo);
+            static int64_t nn = 0; if (++nn % 200'000 == 0)
+                logout("headers  ", nn, input.cargo);
 
             std::map<str, array<str>> topics; str kind = "afore";
 

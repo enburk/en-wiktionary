@@ -26,8 +26,9 @@
 #include "3_10_lexforms1n.h"
 #include "3_20_lexforms1v.h"
 #include "3_30_lexforms1a.h"
+#include "3_50_lexitems.h"
+#include "3_50_multiline1.h"
 /*
-#include "2_50_templates.h"
 #include "2_51_template_label.h"
 #include "2_70_tags.h"
 #include "2_90_save.h"
@@ -40,6 +41,7 @@
 
 #include "4_00_paragraphs.h"
 #include "4_10_lexforms1.h"
+#include "3_40_altforms.h"
 #include "4_20_lexforms2.h"
 #include "4_90_out.h"
 */
@@ -65,16 +67,19 @@ int main ()
     pass1::load >> pass1::redirects >> pass1::modules >>
     pass1::lineup >> pass1::english >> pass1::headers >> pass1::save >>
 
-    pass2::load >> pass2::brackets  >>
-    pass2::lexforms1 >> pass2::lexforms2 >> pass2::lexforms22 >> pass2::save >>
-
-    pass3::load >> 
-    pass3::lexforms1n >> pass3::lexforms1v >> pass3::lexforms1a >> 
-
-/*
+    pass2::load >>
+    pass2::brackets >>
+    pass2::lexforms1 >> pass2::lexforms2 >> pass2::lexforms22 >>
     pass2::save >>
 
-    pass2::templates  >> pass2::template_label >> pass2::tags >>
+    pass3::load >> 
+    pass3::lexforms1n >> pass3::lexforms1v >> pass3::lexforms1a >>
+    pass3::lexitems   >>
+    pass3::multiline1 >>
+
+/*
+    pass3::templates  >> //pass3::templates_label >>
+    pass2::tags >>
 
     pass3::paragraphs >> pass3::lex_items >> pass3::rel_items >> pass3::lex_notes >>
     pass3::templates  >>
