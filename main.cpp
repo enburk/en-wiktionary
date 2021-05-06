@@ -26,27 +26,25 @@
 #include "3_10_lexforms1n.h"
 #include "3_20_lexforms1v.h"
 #include "3_30_lexforms1a.h"
-#include "3_50_lexitems.h"
-#include "3_50_multiline1.h"
-/*
-#include "2_51_template_label.h"
-#include "2_70_tags.h"
-#include "2_90_save.h"
+#include "3_40_multiline.h"
+#include "3_50_lex_items.h"
+#include "3_60_broken.h"
+#include "3_70_tags.h"
 
-#include "3_00_paragraphs.h"
-#include "3_10_lex_items.h"
-#include "3_20_rel_items.h"
-#include "3_30_lex_notes.h"
-#include "3_50_templates.h"
+#include "4_00_load.h"
+#include "4_10_templates.h"
+#include "4_20_templates_label.h"
+#include "4_30_templates_mention.h"
 
-#include "4_00_paragraphs.h"
-#include "4_10_lexforms1.h"
-#include "3_40_altforms.h"
-#include "4_20_lexforms2.h"
-#include "4_90_out.h"
-*/
+#include "5_10_altforms.h"
+#include "5_20_rel_items.h"
+#include "5_30_lex_notes.h"
 
-Pass <pass2::entry, nothing> stop = [](auto & input, auto &)
+#include "6_00_load.h"
+#include "6_10_lexforms.h"
+#include "6_90_out.h"
+
+Pass <pass6::entry, nothing> stop = [](auto & input, auto &)
 {
     Time t0; for (auto && e: input) { (void)e; }
     Time t1; std::cout
@@ -62,30 +60,35 @@ int main ()
     /// Then run and wait...
 
     pass0::unzip  >> pass0::unxml >> pass0::unuse >>
-    pass0::unmeta >> pass0::html  >> pass0::sort  >> pass0::save  >>
+    pass0::unmeta >> pass0::html  >> pass0::sort  >>
+    pass0::save >>
 
     pass1::load >> pass1::redirects >> pass1::modules >>
-    pass1::lineup >> pass1::english >> pass1::headers >> pass1::save >>
+    pass1::lineup >> pass1::english >> pass1::headers >>
+    pass1::save >>
 
     pass2::load >>
     pass2::brackets >>
     pass2::lexforms1 >> pass2::lexforms2 >> pass2::lexforms22 >>
     pass2::save >>
 
-    pass3::load >> 
+    pass3::load >>
     pass3::lexforms1n >> pass3::lexforms1v >> pass3::lexforms1a >>
-    pass3::lexitems   >>
-    pass3::multiline1 >>
+    pass3::multiline  >> pass3::lex_items  >> pass3::broken >>
+    pass3::tags >>
 
-/*
-    pass3::templates  >> //pass3::templates_label >>
-    pass2::tags >>
+    pass4::load >>
+    pass4::templates >>
+    pass4::templates_label >>
+    pass4::templates_mention >>
 
-    pass3::paragraphs >> pass3::lex_items >> pass3::rel_items >> pass3::lex_notes >>
-    pass3::templates  >>
+    pass5::altforms >>
+    pass5::rel_items >>
+    pass5::lex_notes >>
 
-    pass4::paragraphs >> pass4::lexforms1 >> pass4::lexforms2 >> 
-    pass4::out        >>
-*/
+    pass6::load >>
+    pass6::lexforms >> 
+    pass6::out >>
+
     stop >> terminator; return 0;
 }

@@ -2,10 +2,8 @@
 #include "4.h"
 namespace pass4
 {
-    Pass<pass3::entry, entry> paragraphs = [](auto & input, auto & output)
+    Pass<pass3::entry, entry> load = [](auto & input, auto & output)
     {
-        Result result {__FILE__, output, false};
-
         for (auto && [title, topic] : input)
         {
             entry e; e.title = title;
@@ -15,10 +13,10 @@ namespace pass4
                 e.topic += paragraph{};
                 e.topic.back().header  = header;
                 e.topic.back().forms   = forms;
-                e.topic.back().content = content;
+                e.topic.back().content = content.split();
             }
 
-            result.accept (std::move(e));
+            output.push(std::move(e));
         }
     };
 }

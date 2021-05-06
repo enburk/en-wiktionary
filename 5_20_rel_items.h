@@ -1,10 +1,10 @@
 ﻿#pragma once
-#include "3.h"
-namespace pass3
+#include "5.h"
+namespace pass5
 {
     Pass <entry, entry> rel_items = [](auto & input, auto & output)
     {
-        Result result {__FILE__, output, UPDATING_REPORTS};
+        Result result {__FILE__, output};
 
         for (auto && [title, topic] : input)
         {
@@ -64,7 +64,9 @@ namespace pass3
                 content = list;
             }
 
-            result.accept (entry {std::move(title), std::move(topic)});
+            result.accept(entry{
+                std::move(title),
+                std::move(topic)});
         }
     };
 }

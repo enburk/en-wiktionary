@@ -1,11 +1,9 @@
 #pragma once
-#include "3.h"
-namespace pass3
+#include "6.h"
+namespace pass6
 {
-    Pass<pass2::entry, entry> paragraphs = [](auto & input, auto & output)
+    Pass<pass5::entry, entry> load = [](auto & input, auto & output)
     {
-        Result result {__FILE__, output, false};
-
         for (auto && [title, topic] : input)
         {
             entry e; e.title = title;
@@ -15,10 +13,10 @@ namespace pass3
                 e.topic += paragraph{};
                 e.topic.back().header  = header;
                 e.topic.back().forms   = forms;
-                e.topic.back().content = content.split();
+                e.topic.back().content = content;
             }
 
-            result.accept (std::move(e));
+            output.push(std::move(e));
         }
     };
 }

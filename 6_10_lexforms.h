@@ -1,6 +1,6 @@
 #pragma once
-#include "4.h"
-namespace pass4
+#include "6.h"
+namespace pass6
 {
     static std::map<str, str> list_of_forms =
     {
@@ -22,9 +22,9 @@ namespace pass4
         {   "third-person singular simple present indicative form of"          , "third-person"             },
     };
 
-    Pass <entry, entry> lexforms2 = [](auto & input, auto & output)
+    Pass <entry, entry> lexforms = [](auto & input, auto & output)
     {
-        Result result {__FILE__, output, UPDATING_REPORTS};
+        Result result {__FILE__, output, true};
 
         array<entry> entries; entries.reserve (1024*1024);
 
@@ -32,7 +32,7 @@ namespace pass4
 
         for (auto & [title, topic] : entries)
         {
-            static int64_t nn = 0; if (++nn % 100'000 == 0) logout("lexforms2", nn, input.cargo);
+            static int64_t nn = 0; if (++nn % 100'000 == 0) logout("lexforms", nn, input.cargo);
 
             bool complex = false; str report, origin;
 
@@ -66,8 +66,8 @@ namespace pass4
                             for (auto what : whats)
                             {
                                 bool found = false;
-                                auto it = lexforms.find(s);
-                                if (it != lexforms.end())
+                                auto it = ::lexforms.find(s);
+                                if (it != ::lexforms.end())
                                 {
                                     for (auto & [form, ack, word] : it->second)
                                     {
@@ -78,7 +78,7 @@ namespace pass4
                                         }
                                     }
                                 }
-                                if (!found) lexforms[s] += lexform{what, "??", title};
+                                if (!found) ::lexforms[s] += lexform{what, "??", title};
                             }
                         }
                     }
@@ -109,19 +109,19 @@ namespace pass4
             result.accept (entry {std::move(title), std::move(topic)});
         }
 
-        for (auto [title, forms] : lexforms)
-        for (auto [form, ack, word] : forms)
-        {
-            str report = "";
-
-            if (ack == "+") report = "302 found"; else
-            if (!vocabulary.binary_found(title)
-            ||  !vocabulary.binary_found(word)) report = "501 not implemented"; else
-            if (!word.starts_with("more ")
-            &&  !word.starts_with("most ")) report = "404 not found";
-
-            if (report != "") result.report (title + " == " + form + " == " + ack + " == " + word, report);
-        }
+        // for (auto [title, forms] : lexforms)
+        // for (auto [form, ack, word] : forms)
+        // {
+        //     str report = "";
+        // 
+        //     if (ack == "+") report = "302 found"; else
+        //     if (!vocabulary.binary_found(title)
+        //     ||  !vocabulary.binary_found(word)) report = "501 not implemented"; else
+        //     if (!word.starts_with("more ")
+        //     &&  !word.starts_with("most ")) report = "404 not found";
+        // 
+        //     if (report != "") result.report (title + " == " + form + " == " + ack + " == " + word, report);
+        // }
     };
 }
                 

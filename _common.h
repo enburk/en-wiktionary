@@ -92,6 +92,24 @@ void logout (str pass, int64_t entries, int64_t cargo)
     print(pass, " ", e, " entries ", c, " cargo ");
 }
 
+void strip (array<str> & content)
+{
+    for (auto & s : content) s.strip (" \n");
+    
+    while (not
+		content.empty() and
+		content.back().empty())
+		content.pop_back();
+
+    content.erase(content.begin(),
+        std::find_if(content.begin(), content.end(),
+            [](auto & s){ return not s.empty(); }));
+
+    content.erase(std::unique(content.begin(), content.end(),
+        [](auto & s1, auto & s2){ return s1.empty() && s2.empty(); }),
+        content.end());
+}
+
 str esc = "###################################";
 
 void save_meta (std::ofstream && fstream)

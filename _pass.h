@@ -36,18 +36,3 @@ inline Pass <nothing, nothing> terminator = [](auto & input, auto & output)
 {
 };
 
-void strip (array<str> & content)
-{
-    for (auto & s : content) s.strip (" \n");
-    
-    while (not content.empty() and content.back().empty()) content.pop_back();
-
-    content.erase(content.begin(),
-        std::find_if(content.begin(), content.end(),
-            [](auto & s){ return not s.empty(); }));
-
-    content.erase(std::unique(content.begin(), content.end(),
-        [](auto & s1, auto & s2){ return s1.empty() && s2.empty(); }),
-        content.end());
-}
-

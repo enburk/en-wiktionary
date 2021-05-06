@@ -77,20 +77,6 @@
     <ClInclude Include="2_20_lexforms22.h">
       <Filter>2</Filter>
     </ClInclude>
-    <ClInclude Include="a2_70_tags.h" />
-    <ClInclude Include="a2_90_save.h" />
-    <ClInclude Include="a3.h" />
-    <ClInclude Include="a3_00_paragraphs.h" />
-    <ClInclude Include="a3_10_lex_items.h" />
-    <ClInclude Include="a3_20_rel_items.h" />
-    <ClInclude Include="a3_30_lex_notes.h" />
-    <ClInclude Include="a3_50_templates.h" />
-    <ClInclude Include="a4.h" />
-    <ClInclude Include="a4_00_paragraphs.h" />
-    <ClInclude Include="a4_10_lexforms1.h" />
-    <ClInclude Include="a4_20_lexforms2.h" />
-    <ClInclude Include="a4_90_out.h" />
-    <ClInclude Include="a5_80_cleanup.h" />
     <ClInclude Include="2_99_save.h">
       <Filter>2</Filter>
     </ClInclude>
@@ -109,27 +95,56 @@
     <ClInclude Include="3_30_lexforms1a.h">
       <Filter>3</Filter>
     </ClInclude>
-    <ClInclude Include="a5_40_altforms.h" />
-    <ClInclude Include="3_50_templates.h">
+    <ClInclude Include="3_70_tags.h">
       <Filter>3</Filter>
     </ClInclude>
-    <ClInclude Include="3_51_templates_label.h">
+    <ClInclude Include="3_50_lex_items.h">
       <Filter>3</Filter>
     </ClInclude>
-    <ClInclude Include="3_50_templates_1.h">
+    <ClInclude Include="3_40_multiline.h">
       <Filter>3</Filter>
     </ClInclude>
-    <ClInclude Include="3_52_templates_mention.h">
+    <ClInclude Include="3_60_broken.h">
       <Filter>3</Filter>
     </ClInclude>
-    <ClInclude Include="3_50_multiline1.h">
-      <Filter>3</Filter>
+    <ClInclude Include="4.h">
+      <Filter>4</Filter>
     </ClInclude>
-    <ClInclude Include="3_50_multiline2.h">
-      <Filter>3</Filter>
+    <ClInclude Include="4_00_load.h">
+      <Filter>4</Filter>
     </ClInclude>
-    <ClInclude Include="3_50_lexitems.h">
-      <Filter>3</Filter>
+    <ClInclude Include="4_10_templates.h">
+      <Filter>4</Filter>
+    </ClInclude>
+    <ClInclude Include="4_20_templates_label.h">
+      <Filter>4</Filter>
+    </ClInclude>
+    <ClInclude Include="4_30_templates_mention.h">
+      <Filter>4</Filter>
+    </ClInclude>
+    <ClInclude Include="5.h">
+      <Filter>5</Filter>
+    </ClInclude>
+    <ClInclude Include="5_10_altforms.h">
+      <Filter>5</Filter>
+    </ClInclude>
+    <ClInclude Include="5_20_rel_items.h">
+      <Filter>5</Filter>
+    </ClInclude>
+    <ClInclude Include="5_30_lex_notes.h">
+      <Filter>5</Filter>
+    </ClInclude>
+    <ClInclude Include="6.h">
+      <Filter>6</Filter>
+    </ClInclude>
+    <ClInclude Include="6_00_load.h">
+      <Filter>6</Filter>
+    </ClInclude>
+    <ClInclude Include="6_10_lexforms.h">
+      <Filter>6</Filter>
+    </ClInclude>
+    <ClInclude Include="6_90_out.h">
+      <Filter>6</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -144,6 +159,15 @@
     </Filter>
     <Filter Include="3">
       <UniqueIdentifier>{50d63ec6-6432-4b67-b5f5-22eeb8138b47}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="4">
+      <UniqueIdentifier>{439f54e8-a3c6-456d-8345-90479c514b73}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="5">
+      <UniqueIdentifier>{e9ae6715-42bc-4341-990e-e6893b6ade9d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="6">
+      <UniqueIdentifier>{75a0bde0-d844-461f-bf3e-b2f3a34be5f1}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

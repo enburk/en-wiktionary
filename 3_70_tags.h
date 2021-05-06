@@ -1,6 +1,6 @@
 #pragma once
-#include "2.h"
-namespace pass2
+#include "3.h"
+namespace pass3
 {
     void report_broken_tag (str title, str topic, int p, Result<entry> & result)
     {
@@ -12,21 +12,21 @@ namespace pass2
 
     Pass <entry, entry> tags = [](auto & input, auto & output)
     {
-        Result result {__FILE__, output, UPDATING_REPORTS};
+        Result result {__FILE__, output};
 
         for (auto && [title, topic] : input)
         {
-            static int64_t nn = 0; if (++nn % 200'000 == 0) logout("tags", nn, input.cargo);
-
             for (auto & [header, forms, content] : topic)
             {
                 for (int p = 0; ; )
                 {
                     auto ra = content.find("<", str::start_from(p)); int a = ra.offset;
                     auto rb = content.find(">", str::start_from(p)); int b = rb.offset;
-                    if (!ra &&!rb) { break; }
-                    if (!ra && rb ||
-                         ra &&!rb || a > b) { report_broken_tag(title, content, p, result); break; }
+                    if ((!ra &&!rb)) { break; }
+                    if ((!ra && rb) ||
+                        ( ra &&!rb) || a > b) {
+                        report_broken_tag(title, content, p, result);
+                        break; }
 
                     p = b+1;
                     str tag = content.from(a+1).upto(b);
@@ -61,7 +61,8 @@ namespace pass2
                             && !combine.ends_with("<br/>")
                             && !combine.ends_with("<br />"))
                                 combine += "<br>";
-                                combine += line;
+                                
+                            combine += line;
                         }
 
                         content.from(a).upto(p).replace_by(combine); p = a + combine.size();
@@ -73,7 +74,9 @@ namespace pass2
                 }
             }
 
-            result.accept (entry {std::move(title), std::move(topic)});
+            output.push(entry{
+                std::move(title),
+                std::move(topic)});
         }
     };
 }

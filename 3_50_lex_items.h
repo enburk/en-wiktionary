@@ -2,14 +2,14 @@
 #include "3.h"
 namespace pass3
 {
-    Pass <entry, entry> lexitems = [](auto & input, auto & output)
+    Pass <entry, entry> lex_items = [](auto & input, auto & output)
     {
         Result result {__FILE__, output};
 
         for (auto && [title, topic] : input)
         {
             static int64_t nn = 0; if (++nn % 100'000 == 0)
-                logout("lexitems", nn, input.cargo);
+                logout("lex_items", nn, input.cargo);
 
             for (auto & [header, forms, content] : topic)
             {
