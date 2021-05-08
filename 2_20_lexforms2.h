@@ -72,7 +72,10 @@ namespace pass2
             if (out.starts_with("w:")) out.upto(2).erase();
             if (out.starts_with("s:")) out.upto(2).erase();
 
-            output = "''" + lexical_form + "'' " + out;
+            output = out;
+            if (not output.starts_with("'''")) output = "'''" + output;
+            if (not output.ends_with  ("'''")) output = output + "'''";
+            output = "''" + lexical_form + "'' " + output;
 
             str first = lexical_form.upto(1);
             if (first != first.ascii_lowercased())

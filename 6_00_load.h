@@ -8,12 +8,14 @@ namespace pass6
         {
             entry e; e.title = title;
 
+            e.topic.reserve(topic.size());
+
             for (auto && [header, forms, content] : topic)
             {
                 e.topic += paragraph{};
-                e.topic.back().header  = header;
-                e.topic.back().forms   = forms;
-                e.topic.back().content = content;
+                e.topic.back().header  = std::move(header);
+                e.topic.back().forms   = std::move(forms);
+                e.topic.back().content = std::move(content);
             }
 
             output.push(std::move(e));

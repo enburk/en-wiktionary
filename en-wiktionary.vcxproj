@@ -189,12 +189,12 @@
     <ClInclude Include="4_20_templates_label.h" />
     <ClInclude Include="4_30_templates_mention.h" />
     <ClInclude Include="5.h" />
-    <ClInclude Include="5_10_altforms.h" />
     <ClInclude Include="5_20_rel_items.h" />
     <ClInclude Include="5_30_lex_notes.h" />
+    <ClInclude Include="5_50_altforms.h" />
     <ClInclude Include="6.h" />
     <ClInclude Include="6_00_load.h" />
-    <ClInclude Include="6_10_lexforms.h" />
+    <ClInclude Include="6_70_redirects.h" />
     <ClInclude Include="6_90_out.h" />
     <ClInclude Include="aux_abc.h" />
     <ClInclude Include="aux_array.h" />

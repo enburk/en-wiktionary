@@ -125,9 +125,6 @@
     <ClInclude Include="5.h">
       <Filter>5</Filter>
     </ClInclude>
-    <ClInclude Include="5_10_altforms.h">
-      <Filter>5</Filter>
-    </ClInclude>
     <ClInclude Include="5_20_rel_items.h">
       <Filter>5</Filter>
     </ClInclude>
@@ -140,10 +137,13 @@
     <ClInclude Include="6_00_load.h">
       <Filter>6</Filter>
     </ClInclude>
-    <ClInclude Include="6_10_lexforms.h">
+    <ClInclude Include="6_90_out.h">
       <Filter>6</Filter>
     </ClInclude>
-    <ClInclude Include="6_90_out.h">
+    <ClInclude Include="5_50_altforms.h">
+      <Filter>5</Filter>
+    </ClInclude>
+    <ClInclude Include="6_70_redirects.h">
       <Filter>6</Filter>
     </ClInclude>
   </ItemGroup>

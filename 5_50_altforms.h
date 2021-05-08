@@ -4,7 +4,7 @@ namespace pass5
 {
     Pass <entry, entry> altforms = [](auto & input, auto & output)
     {
-        Result result {__FILE__, output, true};
+        Result result {__FILE__, output};
 
         for (auto && [title, topic] : input)
         {

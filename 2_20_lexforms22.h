@@ -37,6 +37,14 @@ namespace pass2
         if (args.unnamed.size() > 1 && args[1] != "") a2 = "'''"+args[1]+"'''"; 
         if (args.unnamed.size() > 2 && args[2] != "") a3 = "("+oquot+args[2]+cquot+")";
 
+        if (a1.starts_with("W:")) a1.upto(2).erase();
+        if (a1.starts_with("w:")) a1.upto(2).erase();
+        if (a1.starts_with("s:")) a1.upto(2).erase();
+
+        if (a2.starts_with("W:")) a2.upto(2).erase();
+        if (a2.starts_with("w:")) a2.upto(2).erase();
+        if (a2.starts_with("s:")) a2.upto(2).erase();
+
         str out;
         if (args.complexity == 1 && a1 != "") { out = a1; report = "1" + opts; } else
         if (args.complexity == 2 && a2 == "") { out = a1; report = "2" + opts; } else
@@ -48,13 +56,12 @@ namespace pass2
 
         if (out != "")
         {
-            output = "''" + lexical_form + "'' " + out + dot;
+            output = out;
+            if (not output.starts_with("'''")) output = "'''" + output;
+            if (not output.ends_with  ("'''")) output = output + "'''";
+            output = "''" + lexical_form + "'' " + output + dot;
 
             out = a2 != "" ? a2 : a1;
-
-            if (out.starts_with("W:")) out.upto(2).erase();
-            if (out.starts_with("w:")) out.upto(2).erase();
-            if (out.starts_with("s:")) out.upto(2).erase();
 
             lexforms[out] += lexform{lexical_form, "-", title};
 

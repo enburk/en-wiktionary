@@ -13,23 +13,23 @@ namespace pass3
 
             for (auto & [header, forms, content] : topic)
             {
-                if (!lexical_items.contains(header)) continue;
-
                 str cap =
                     esc   + "\n" +
                     title + "\n" +
                     esc   + "\n" + "\n" +
                     "==== " + header + " ==== " + forms + "\n";
 
-                int complexity = 0;
                 array<str> accepted;
                 array<str> lines = content.split_by("\n");
 
                 for (str & s : lines)
                 {
                     s.strip();
-                    if (s == "") continue;
+
                     if (s == "----") continue;
+
+                    if (!lexical_notes.contains(header) and
+                        s == "") continue;
 
                     if (s.starts_with("[[Category:") and
                         s.ends_with  ("]]") and not
@@ -60,7 +60,11 @@ namespace pass3
 
                 content = str(accepted); // continue follows
 
+                if (!lexical_items.contains(header)) continue;
+
                 lines = std::move(accepted);
+
+                int complexity = 0;
 
                 for (auto & line : lines)
                     if (not line.starts_with ("# ")

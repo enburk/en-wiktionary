@@ -36,12 +36,12 @@
 #include "4_20_templates_label.h"
 #include "4_30_templates_mention.h"
 
-#include "5_10_altforms.h"
 #include "5_20_rel_items.h"
 #include "5_30_lex_notes.h"
+#include "5_50_altforms.h"
 
 #include "6_00_load.h"
-#include "6_10_lexforms.h"
+#include "6_70_redirects.h"
 #include "6_90_out.h"
 
 Pass <pass6::entry, nothing> stop = [](auto & input, auto &)
@@ -82,12 +82,12 @@ int main ()
     pass4::templates_label >>
     pass4::templates_mention >>
 
-    pass5::altforms >>
     pass5::rel_items >>
     pass5::lex_notes >>
+    pass5::altforms >>
 
     pass6::load >>
-    pass6::lexforms >> 
+    pass6::redirects >> 
     pass6::out >>
 
     stop >> terminator; return 0;
