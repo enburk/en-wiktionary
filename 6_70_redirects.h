@@ -23,7 +23,7 @@ namespace pass6
 
     Pass <entry, entry> redirects = [](auto & input, auto & output)
     {
-        Result result {__FILE__, output, true};
+        Result result {__FILE__, output};
 
         std::map<str, array<paragraph>> entries;
 

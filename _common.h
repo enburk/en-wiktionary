@@ -3,6 +3,7 @@ std::unordered_map<str,str> redirect_modules;
 std::unordered_map<str,str> redirect_templates;
 std::unordered_map<str,str> Templates;
 std::unordered_map<str,str> Modules;
+std::unordered_map<str,lua::syntax::analysis> Repo;
 
 str ellipsis   =  "\xE2" "\x80" "\xA6"; // …
 str mdash      =  "\xE2" "\x80" "\x94"; // m-dash
@@ -127,15 +128,13 @@ void save_meta (std::ofstream && fstream)
 	
 	fstream << esc << "\n";
 
-    for (auto & [name, txt] : Templates) fstream
+    for (auto & [name, text] : Templates) fstream
         << esc << "\n" << ("Template:" + name) << "\n"
-        << esc << "\n" << "==== header ==== "  << "\n"
-        << txt << "\n";
+        << esc << "\n" << text << "\n";
 
-    for (auto & [name, txt] : Modules) fstream
-        << esc << "\n" << ("Module:" + name)  << "\n"
-        << esc << "\n" << "==== header ==== " << "\n"
-        << txt << "\n";
+    for (auto & [name, text] : Modules) fstream
+        << esc << "\n" << ("Module:" + name) << "\n"
+        << esc << "\n" << text << "\n";
 
 	fstream << esc << "\n";
 }

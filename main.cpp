@@ -23,6 +23,8 @@
 #include "2_99_save.h"
 
 #include "3_00_load.h"
+#include "3_01_modules1.h"
+#include "3_02_modules2.h"
 #include "3_10_lexforms1n.h"
 #include "3_20_lexforms1v.h"
 #include "3_30_lexforms1a.h"
@@ -41,6 +43,7 @@
 #include "5_50_altforms.h"
 
 #include "6_00_load.h"
+#include "6_10_unlink.h"
 #include "6_70_redirects.h"
 #include "6_90_out.h"
 
@@ -73,6 +76,8 @@ int main ()
     pass2::save >>
 
     pass3::load >>
+    pass3::modules1 >>
+    pass3::modules2 >>
     pass3::lexforms1n >> pass3::lexforms1v >> pass3::lexforms1a >>
     pass3::multiline  >> pass3::lex_items  >> pass3::broken >>
     pass3::tags >>
@@ -87,6 +92,7 @@ int main ()
     pass5::altforms >>
 
     pass6::load >>
+    pass6::unlink >>
     pass6::redirects >> 
     pass6::out >>
 

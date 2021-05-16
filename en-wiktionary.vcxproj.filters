@@ -146,6 +146,23 @@
     <ClInclude Include="6_70_redirects.h">
       <Filter>6</Filter>
     </ClInclude>
+    <ClInclude Include="3_01_modules1.h">
+      <Filter>3</Filter>
+    </ClInclude>
+    <ClInclude Include="lua.h" />
+    <ClInclude Include="lua_lexica.h" />
+    <ClInclude Include="lua_glyph.h" />
+    <ClInclude Include="lua_syntax.h" />
+    <ClInclude Include="lua_syntax_parser.h" />
+    <ClInclude Include="aux_deque.h" />
+    <ClInclude Include="3_02_modules2.h">
+      <Filter>3</Filter>
+    </ClInclude>
+    <ClInclude Include="lua_syntax_schema.h" />
+    <ClInclude Include="lua_syntax_analysis.h" />
+    <ClInclude Include="6_10_unlink.h">
+      <Filter>6</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="0">

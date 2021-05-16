@@ -16,22 +16,8 @@ namespace pass3
     {
         Result result {__FILE__, output};
 
-        bool first_time = true;
-
         for (auto && [title, topic] : input)
         {
-            if (result.on and
-                first_time) {
-                first_time = false;
-                std::ofstream fstream("data/modules en-.txt");
-                for (auto & [name, text] : Modules) 
-                if (name.starts_with("en-")) { fstream
-                    << esc << "\n" << ("Module:" + name)  << "\n"
-                    << esc << "\n" << text << "\n";
-                    Modules.erase(name);
-                }
-            }
-
             for (auto & [header, forms, content] : topic)
             {
                 if (header != "verb") continue;

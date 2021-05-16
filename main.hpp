@@ -5,7 +5,11 @@
 #include "aux_array.h"
 #include "aux_string.h"
 #include "aux_queue.h"
+#include "aux_deque.h"
 using namespace aux;
+
+#include "lua_lexica.h"
+#include "lua_syntax_analysis.h"
 
 #include <set>
 #include <map>

@@ -2,39 +2,14 @@
 #include "4.h"
 namespace pass4
 {
-    array<str> label_same =
+    struct lbl
     {
-        "countable", "uncountable", "transitive", "intransitive",
-        "archaic", "by extension", "collective", "colloquial", "dated", "derogatory", "dialect", "dialectal",
-        "especially in combination", "figuratively", "humorous", "idiomatic", "informal", "literary", "modal",
-        "nonstandard", "offensive", "obsolete", "poetic", "rare", "regional", "slang", "vulgar",
-
-        "algebra", "anatomy", "architecture", "astrology", "astronomy", "astrophysics", "aviation",
-        "baseball", "basketball", "biblical", "biochemistry", "biology", "botany", "business",
-        "chemistry", "computing", "computer graphics", "cosmology", "cricket", "cryptography", "cytology",
-        "electronics", "economy", "economics",
-        "genetics", "geography", "geology", "geometry", "grammar",
-        "finance", "historical", "immunology", "inorganic chemistry", "Internet", "Internet slang", "law", "linguistics",
-        "mathematics", "medicine", "meteorology", "military", "mineralogy", "music", "nautical", "organic chemistry",
-        "pathology", "pharmacology", "philosophy", "physics", "physiology",
-        "politics", "poker", "probability theory", "programming", "psychology",
-        "religion", "rhetoric", "sports", "statistics", "surgery",
-        "telecommunications", "transport", "video games", "zoology",
-
-        "Christianity", "Buddhism", "Hinduism", "Islam", "Judaism",
-        "India", "Ireland", "Scotland", "South Africa"
+        str display, language;
+        bool omit_preComma = false;
+        bool omit_postComma = false;
     };
-    std::map<str,str> label_map =
-    {
-        { "US", "US" },{ "Canada", "Canada" },
-        { "UK", "Britain" }, { "British", "Britain" }, { "Britain", "Britain" },
-        { "AU", "Australia" }, { "Australia", "Australia" },
-        { "NZ", "New Zealand" }, { "New Zealand", "New Zealand" },
-        { "figurative", "figuratively" }, { "jocular", "humorous" }, { "pejorative", "derogatory" },
-        { "internet", "Internet" }, { "internet slang", "Internet slang" }, 
-        { "legal", "law" }, { "math", "mathematics" }, { "maths", "mathematics" }, { "medical", "medicine" }, { "mineral", "mineralogy" }, 
-        { "enzyme", "biochemistry" }, { "protein", "biochemistry" }, { "organic compound", "organic chemistry" }, { "star", "astronomy" },
-    };
+    std::map<str, lbl> labels_labels;
+    std::map<str, str> labels_aliases;
 
     str templates_label_ (str title, str header, str body, Result<entry> & result)
     {
@@ -44,41 +19,135 @@ namespace pass4
         str report = "{{" + body + "}}";
         str kind   = "{{" + name + "}}";
 
-        static bool first_time = true; if (first_time) { first_time = false;
-            for (str s : label_same) label_map[s] = s;
+        if (name != "label") return output; output = "";
+
+        str complexity = std::to_string(min(args.complexity, 9));
+        if (complexity.size() == 1) complexity = "0" + complexity;
+        str complexity_plus = "";
+
+        bool OMIT_postComma = true;
+
+        for (auto arg : args.unnamed)
+        {
+            str out = arg; bool alias = false;
+            if (labels_aliases.contains(arg)) {
+                out = labels_aliases[arg];
+                alias = true;
+            }
+
+            bool omit_preComma = false;
+            bool omit_postComma = false;
+
+            auto it = labels_labels.find(out);
+            if (it != labels_labels.end()) {
+
+                if (it->second.language == "" or
+                    it->second.language == "en")
+                {
+                    omit_preComma  = it->second.omit_preComma;
+                    omit_postComma = it->second.omit_postComma;
+                    out =
+                        it->second.display != "" ?
+                        it->second.display : out;
+                }
+                else if (alias) out = arg;
+            }
+
+            if (not omit_preComma and
+                not OMIT_postComma)
+                output += ",";
+
+            else if (output != "") complexity_plus = "+";
+
+            if (output != "")
+                output += " ";
+
+            output += out;
+
+            OMIT_postComma = omit_postComma;
         }
 
-        if (name == "label")
-        {
-            bool ok = true;
-            if (args.unnamed.size() >= 1) { if (auto it = label_map.find(args[0]); it != label_map.end()) args[0] = it->second; else ok = false; }
-            if (args.unnamed.size() >= 2) { if (auto it = label_map.find(args[1]); it != label_map.end()) args[1] = it->second; else ok = false; }
-            if (args.unnamed.size() >= 3) { if (auto it = label_map.find(args[2]); it != label_map.end()) args[2] = it->second; else ok = false; }
-            if (args.unnamed.size() >= 4) { if (auto it = label_map.find(args[3]); it != label_map.end()) args[3] = it->second; else ok = false; }
-            if (args.complexity == 4 && ok) { output = "(''"+args[0]+", "+args[1]+", "+args[2]+", "+args[3]+"'')"; kind += " 4"; } else
-            if (args.complexity == 3 && ok) { output = "(''"+args[0]+", "+args[1]+", "+args[2]+"'')"; kind += " 3"; } else
-            if (args.complexity == 2 && ok) { output = "(''"+args[0]+", "+args[1]+"'')"; kind += " 2"; } else
-            if (args.complexity == 1 && ok) { output = "(''"+args[0]+"'')"; kind += " 1"; } else
-            { kind += " quest"; report += " ==== " + title; }
-        }
-        else
-        {
-            kind = "{{}}"; templates_statistics [__FILE__][name]++;
-        }
-
-        if (output.contains("\n")) kind +=  " #br#";
-        if (output.contains("\n")) report = "==== " + title + " ==== " + header + " ==== " + "\n\n" + report;
-        if (output.contains("\n")) output.replace_all("\n", " ");
-        result.report (report, kind);
-        return output;
+        complexity += complexity_plus;
+        result.report (report + " => " + output, complexity);
+        return "(''"+output+"'')";
     }
 
     Pass <entry, entry> templates_label = [](auto & input, auto & output)
     {
         Result result {__FILE__, output};
 
+        bool first_time = true;
+
         for (auto && [title, topic] : input)
         {
+            if (first_time) {
+                first_time = false;
+            
+                for (auto & [name, analysis] : Repo)
+                {
+                    if (not name.starts_with("label"))
+                        continue;
+
+                    for (auto & cluster : analysis.clusters)
+                    {
+                        auto ee = cluster.elements;
+                        auto cc = cluster.clusters;
+
+                        if (ee.size() == 4
+                        and ee[0].token
+                        and ee[0].token->text == "aliases"
+                        and ee[1].elements.size() == 1
+                        and ee[1].elements[0].elements.size() == 1
+                        and ee[1].elements[0].elements[0].token
+                        and ee[3].token) { str to =
+                            ee[3].token->text; str from = 
+                            ee[1].elements[0].elements[0].token->text;
+                            from.upto(1).erase(); from.truncate();
+                            to.upto(1).erase(); to.truncate();
+                            result.report(from + " => " + to, "aliases");
+                            labels_aliases[from] = to;
+                        }
+
+                        if (ee.size() == 4
+                        and ee[0].token
+                        and ee[0].token->text == "labels"
+                        and ee[1].elements.size() == 1
+                        and ee[1].elements[0].elements.size() == 1
+                        and ee[1].elements[0].elements[0].token)
+                        {
+                            lbl l; str from = 
+                            ee[1].elements[0].elements[0].token->text;
+                            from.upto(1).erase(); from.truncate();
+
+                            for (auto & pp : ee[3].elements)
+                            {
+                                auto & p = pp.elements;
+                                if (p.size() == 3
+                                and p[0].token
+                                and p[2].token)
+                                {
+                                    str x = p[0].token->text;
+                                    str y = p[2].token->text;
+                                    if (y != "true") y.upto(1).erase();
+                                    if (y != "true") y.truncate();
+
+                                    if (x == "display" ) l.display  = y;
+                                    if (x == "language") l.language = y;
+                                    if (x == "omit_preComma" ) l.omit_preComma  = y == "true";
+                                    if (x == "omit_postComma") l.omit_postComma = y == "true";
+                                }
+                            }
+
+                            str report = "labels";
+                            if (l.omit_preComma ) report += " omit-pre-comma";
+                            if (l.omit_postComma) report += " omit-post-comma";
+                            result.report(from + " => " + l.display, report);
+                            labels_labels[from] = l;
+                        }
+                    }
+                }
+            }
+
             for (auto & [header, forms, content] : topic)
             {
                 auto t = title;

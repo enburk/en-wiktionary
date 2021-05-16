@@ -2,7 +2,7 @@
 #include "2.h"
 namespace pass2
 {
-    str brackets_ (str title, str header, str body, Result<entry> & result, str o, str c)
+    str brackets_(str title, str header, str body, Result<entry> & result, str o, str c)
     {
         str kind   = o;
         str output = o + body + c;
@@ -96,7 +96,7 @@ namespace pass2
         for (auto && [title, topic] : input)
         {
             static int64_t nn = 0; if (++nn % 200'000 == 0)
-                logout("brackets ", nn, input.cargo);
+                logout("brackets", nn, input.cargo);
 
             for (auto & [header, forms, content] : topic)
             {

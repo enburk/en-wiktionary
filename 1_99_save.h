@@ -13,9 +13,11 @@ namespace pass1
             if (GENERATE_REPORTS and not started)
             {
                 started = true;
-
                 print("=== save 1... ===");
-
+                std::filesystem::path path = path_out;
+                path.replace_extension(".meta.txt");
+                print("pass1 save ", path.string());
+                save_meta(std::ofstream(path));
                 fstream = std::ofstream(path_out);
             }
 
@@ -28,12 +30,6 @@ namespace pass1
         {
             fstream << esc;
             fstream.close();
-
-            std::filesystem::path path = path_out;
-            path.replace_extension(".meta.txt");
-            print("pass1 save ", path.string());
-            save_meta(std::ofstream(path));
-
             print("=== save 1 ok ===");
         }
     };
