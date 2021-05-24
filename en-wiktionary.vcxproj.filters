@@ -98,9 +98,6 @@
     <ClInclude Include="3_70_tags.h">
       <Filter>3</Filter>
     </ClInclude>
-    <ClInclude Include="3_50_lex_items.h">
-      <Filter>3</Filter>
-    </ClInclude>
     <ClInclude Include="3_40_multiline.h">
       <Filter>3</Filter>
     </ClInclude>
@@ -162,6 +159,15 @@
     <ClInclude Include="lua_syntax_analysis.h" />
     <ClInclude Include="6_10_unlink.h">
       <Filter>6</Filter>
+    </ClInclude>
+    <ClInclude Include="3_50_unquot.h">
+      <Filter>3</Filter>
+    </ClInclude>
+    <ClInclude Include="5_10_lex_items.h">
+      <Filter>5</Filter>
+    </ClInclude>
+    <ClInclude Include="5_05_lex_links.h">
+      <Filter>5</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

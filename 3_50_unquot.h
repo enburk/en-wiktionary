@@ -2,14 +2,14 @@
 #include "3.h"
 namespace pass3
 {
-    Pass <entry, entry> lex_items = [](auto & input, auto & output)
+    Pass <entry, entry> unquot = [](auto & input, auto & output)
     {
         Result result {__FILE__, output};
 
         for (auto && [title, topic] : input)
         {
             static int64_t nn = 0; if (++nn % 100'000 == 0)
-                logout("lex_items", nn, input.cargo);
+                logout("unquot", nn, input.cargo);
 
             for (auto & [header, forms, content] : topic)
             {
@@ -122,6 +122,7 @@ namespace pass3
                         if (l.starts_with ("#*:"   )) { if (state == "def") complex(10); } else
 
                         if (l.starts_with ("#*'''"     )) { state = "date"; complex(11); } else
+                        if (l.starts_with ("#* '''"    )) { state = "date"; complex(11); } else
                         if (l.starts_with ("#*ca.'''"  )) { state = "date"; complex(12); } else
                         if (l.starts_with ("#*{{rfdate")) { state = "date"; complex(13); } else
 
@@ -151,62 +152,6 @@ namespace pass3
                      complexity_);
 
                 content = str(accepted);
-            }
-
-            for (auto & [header, forms, content] : topic)
-            {
-                if (!lexical_items.contains(header)) continue;
-
-                bool stars = false;
-                bool sharp = true;
-
-                auto lines = content.split_by("\n");
-
-                for (auto & line : lines)
-                {
-                    str prefix;
-                    while (true)
-                    {
-                        line.strip();
-                        if (line.starts_with("#")
-                        ||  line.starts_with(":")
-                        ||  line.starts_with("*"))
-                        {
-                            if (line[0] == '*') stars = true;
-                            prefix += line[0];
-                            prefix += " ";
-                            line.erase(0);
-                        }
-                        else break;
-                    }
-
-                    if (prefix.starts_with ("# "))
-                        prefix.upto(2).erase();
-                    else
-                    {
-                        sharp = false;
-                        result.report(prefix + line,
-                        "complexity unbelievable (lines)");
-                    }
-
-                    line = prefix + line;
-                }
-
-                str complexity_;
-                if (stars) complexity_ = "stars";
-                if (!sharp) complexity_ = "unbelievable";
-                if (complexity_ == "") continue;
-
-                str cap =
-                    esc   + "\n" +
-                    title + "\n" +
-                    esc   + "\n" + "\n" +
-                    "==== " + header + " ==== " + forms + "\n";
-
-                result.report (cap + content + "\n",
-                    "complexity "+ complexity_);
-
-                content = str(lines);
             }
 
             result.accept(entry{

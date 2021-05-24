@@ -14,7 +14,7 @@ namespace pass3
 
     Pass <entry, entry> lexforms1v = [](auto & input, auto & output)
     {
-        Result result {__FILE__, output};
+        Result result {__FILE__, output, true};
 
         for (auto && [title, topic] : input)
         {
@@ -26,8 +26,12 @@ namespace pass3
                 str & f = forms;
                 str & t = title;
 
+                str original_forms = forms;
+
                 auto suffix = [&] (str kind, str form="", bool full=false)
                 {
+                    form.replace_all("~", t);
+
                     if (form == "") {
                         form = t;
                         if (kind == "ing")
@@ -113,7 +117,7 @@ namespace pass3
                         kind == "pp" ? "past participle of":
                         "some verb form", "?", form};
 
-                    return "'''" + form + "'''";
+                    return form;
                 };
 
                 auto es  = [&](str form="", bool full=false){ return suffix("es" , form, full); };
@@ -125,57 +129,248 @@ namespace pass3
                     if (s1.contains("<")) return false;
                     if (s1.contains(">")) return false;
                     return s1.upto(2) == s2.upto(2) or
+                        (s2.starts_with("be") and s1.starts_with("ba")) or
+                        (s2.starts_with("be") and s1.starts_with("bo")) or
+                        (s2.starts_with("bi") and s1.starts_with("bo")) or
+                        (s2.starts_with("bu") and s1.starts_with("bo")) or
+                        (s2.starts_with("di") and s1.starts_with("du")) or
+                        (s2.starts_with("do") and s1.starts_with("di")) or
+                        (s2.starts_with("ea") and s1.starts_with("ate")) or
+                        (s2.starts_with("ge") and s1.starts_with("go")) or
+                        (s2.starts_with("go") and s1.starts_with("went")) or
+                        (s2.starts_with("gi") and s1.starts_with("ga")) or
+                        (s2.starts_with("gi") and s1.starts_with("go")) or
+                        (s2.starts_with("gi") and s1.starts_with("gu")) or
+                        (s2.starts_with("fa") and s1.starts_with("fe")) or
+                        (s2.starts_with("fi") and s1.starts_with("fo")) or
+                        (s2.starts_with("la") and s1.starts_with("lo")) or
+                        (s2.starts_with("ly") and s1.starts_with("la")) or
+                        (s2.starts_with("ma") and s1.starts_with("mi")) or
+                        (s2.starts_with("ri") and s1.starts_with("ra")) or
+                        (s2.starts_with("ri") and s1.starts_with("ro")) or
+                        (s2.starts_with("ri") and s1.starts_with("ru")) or
+                        (s2.starts_with("se") and s1.starts_with("sa")) or
+                        (s2.starts_with("se") and s1.starts_with("so")) or
+                        (s2.starts_with("si") and s1.starts_with("sa")) or
+                        (s2.starts_with("si") and s1.starts_with("su")) or
+                        (s2.starts_with("ta") and s1.starts_with("to")) or
+                        (s2.starts_with("te") and s1.starts_with("to")) or
+                        (s2.starts_with("ye") and s1.starts_with("yo")) or
+                        (s2.starts_with("yi") and s1.starts_with("ya")) or
+                        (s2.starts_with("we") and s1.starts_with("wo")) or
+                        (s2.starts_with("wi") and s1.starts_with("wo")) or
                         false; };
 
-                if (f == ""  ) { r += "0"; } else
-                if (f == "#" ) { r += "0 #";  f = "("+es()      +"; "+ing()+"; "+ed()+"; "+pp()+")"; } else
-//                if (f == "es") { r += "0 es"; f = "("+es(t+"es")+"; "+ing()+"; "+ed()+"; "+pp()+")"; } else
-                {
-                    args args ("verb|"+f);
-
-                    if (args.complexity == 1)
-                    {
-                        r += "1";
-                        if (not same(args[0], t)) r += " quest";
-                        else f = "(" + 
-                        es (args[0]+"es" ) + "; " + 
-                        ing(args[0]+"ing") + "; " + 
-                        ed (args[0]+"ed" ) + "; " + 
-                        pp (args[0]+"ed" ) + ")";
-                    }
-                    else
-                    if (args.complexity == 3)
-                    {
-                        r += "3";
-                        if (not same(args[0], t)
-                        or  not same(args[1], t)
-                        or  not same(args[2], t)) r += " quest";
-                        else f = "(" + 
-                        es (args[0], true) + "; " + 
-                        ing(args[1], true) + "; " + 
-                        ed (args[2], true) + "; " + 
-                        pp (args[2], true) + ")";
-                    }
-                    else
-                    if (args.complexity == 4)
-                    {
-                        r += "4";
-                        if (not same(args[0], t)
-                        or  not same(args[1], t)
-                        or  not same(args[2], t)
-                        or  not same(args[3], t)) r += " quest";
-                        else f = "(" + 
-                        es (args[0], true) + "; " + 
-                        ing(args[1], true) + "; " + 
-                        ed (args[2], true) + "; " + 
-                        pp (args[3], true) + ")";
-                    }
-                    else report = "quest";
+                if (f == ""  ) {
+                    result.report (t + " == ", "-");
+                    continue;
                 }
 
-                if (f != "") f = "(" + f + ")";
+                args args ("verb|"+f);
 
-                result.report (t + " == " + header + " == " + f, r);
+                str es_= args.acquire("pres_3sg_qual");
+                str ng_= args.acquire("pres_ptc_qual");
+                str ed_= args.acquire("past_qual");
+                str pp_= args.acquire("past_ptc_qual");
+
+                array<str> ess, ngs, eds, pps;
+
+                auto add = [&r, &args, t, same](array<str> & forms, str kind)
+                {
+                    str s, q;
+                    s = args.acquire(kind); 
+                    q = args.acquire(kind + "_qual");
+                    s.replace_all("~", t);
+                    if (q != "" and s == "") r = "problem";
+                    if (s != "" and not same(s, t)) r = "problem";
+                    if (q != "" and s != "") s = "'''(''" + q + "'')''' " + s;
+                    if (s != "") forms += s;
+                };
+
+                add(ess, "pres_3sg2");
+                add(ngs, "pres_ptc2");
+                add(ngs, "pres_ptc3");
+                add(eds, "past2");
+                add(eds, "past3");
+                add(eds, "past4");
+                add(pps, "past_ptc2");
+                add(pps, "past_ptc3");
+                add(pps, "past_ptc4");
+                add(pps, "past_ptc5");
+
+                str v1, v2, v3, v4;
+
+                f = str(args.unnamed, "|");
+
+                if (f == "#" )
+                {
+                    r += "0 #";
+                    v1 = es ();
+                    v2 = ing();
+                    v3 = ed ();
+                    v4 = pp ();
+                }
+                else
+                if (f == "++")
+                {
+                    r += "0 ++";
+                    v1 = t.ends_with("s") ? t + "ses" :
+                         t.ends_with("z") ? t + "zes" : es();
+                    v2 = t + t.back() + "ing";
+                    v3 = t + t.back() + "ed";
+                    v4 = t + t.back() + "ed";
+                    
+                }
+                else
+                if (f == "*" )
+                {
+                    r += "0 star";
+                    str v, s; t.split_by(" ", v, s);
+                    if (v != "" and s != "") {
+                        str tt = t; t = v;
+                        v1 = es () + " " + s;
+                        v2 = ing() + " " + s;
+                        v3 = ed () + " " + s;
+                        v4 = pp () + " " + s;
+                        t = tt;
+                    }
+                }
+                else
+                if (f == "++*")
+                {
+                    r += "0 ++";
+                    str v, s; t.split_by(" ", v, s);
+                    if (v != "" and s != "") {
+                        str tt = t; t = v;
+                        v1 = v.ends_with("s") ? v + "ses " + s :
+                             v.ends_with("z") ? v + "zes " + s : es() + " " + s;
+                        v2 = v + v.back() + "ing" + " " + s;
+                        v3 = v + v.back() + "ed"  + " " + s;
+                        v4 = v + v.back() + "ed"  + " " + s;
+                        t = tt;
+                    }
+                }
+                else
+                if (args.complexity == 0)
+                {
+                    r += "0";
+                    v1 = es ();
+                    v2 = ing();
+                    v3 = ed ();
+                    v4 = pp ();
+                }
+                else
+                if (args.complexity == 1)
+                {
+                    r += "1";
+                    str v, s; f.split_by(" ", v, s);
+                    if (v == "get<,,got,got[UK]:gotten[US]>"){
+                        r += "get";
+                        v1 = "gets " + s;
+                        v2 = "getting " + s;
+                        v3 = "got " + s;
+                        v4 = "'''(''UK'')''' got " + s + ", " +
+                                "'''(''US'')''' gotten " + s;
+                    }
+                    else
+                    if (v == "beat<,,beat,beaten:beat[colloquial]>"){
+                        r += "beat";
+                        v1 = "beats " + s;
+                        v2 = "beating " + s;
+                        v3 = "beat " + s;
+                        v4 = "beaten " + s + ", " +
+                                "'''(''colloquial'')''' beat " + s;
+                    }
+                    else
+                    if (v.ends_with(">") and not
+                        s.contains ("<") and not
+                        v.contains ("[")) {
+                        r += "1";
+                        v.truncate();
+                        str x; v.split_by("<", v, x);
+                        auto xx = x.split_by(",");
+                        if (xx.size() == 4) {
+                            str tt = t; t = v;
+                            v1 = (xx[0] == "" ? es () : xx[0]) + " " + s;
+                            v2 = (xx[1] == "" ? ing() : xx[1]) + " " + s;
+                            v3 = (xx[2] == "" ? ed () : xx[2]) + " " + s;
+                            v4 = (xx[3] == "" ? pp () : xx[3]) + " " + s;
+                            t = tt;
+                        }
+                        if (xx.size() == 3) {
+                            str tt = t; t = v;
+                            v1 = (xx[0] == "" ? es () : xx[0]) + " " + s;
+                            v2 = (xx[1] == "" ? ing() : xx[1]) + " " + s;
+                            v3 = (xx[2] == "" ? ed () : xx[2]) + " " + s;
+                            v4 = (xx[2] == "" ? pp () : xx[2]) + " " + s;
+                            t = tt;
+                        }
+                    }
+                }
+                else
+                if (args.complexity == 3)
+                {
+                    r += "3";
+                    if (same(args[0], t)
+                    and same(args[1], t)
+                    and same(args[2], t)) {
+                    v1 = es (args[0], true);
+                    v2 = ing(args[1], true);
+                    v3 = ed (args[2], true);
+                    v4 = pp (args[2], true); }
+                }
+                else
+                if (args.complexity == 4)
+                {
+                    r += "4";
+                    if (same(args[0], t)
+                    and same(args[1], t)
+                    and same(args[2], t)
+                    and same(args[3], t)) {
+                    v1 = es (args[0], true);
+                    v2 = ing(args[1], true);
+                    v3 = ed (args[2], true);
+                    v4 = pp (args[3], true); }
+                    else {
+                        r += "4";
+                        if (same(args[0], "")
+                        and same(args[1], "")
+                        and same(args[2], "")
+                        and same(args[3], t)) {
+                        v1 = es ();
+                        v2 = ing();
+                        v3 = ed ();
+                        v4 = pp (args[3], true); }
+                    }
+                }
+
+                if (v1 != "" and v1 != "" and v3 != "" and v4 != "")
+                {
+                    if (not ngs.empty() or
+                        not eds.empty() or
+                        not pps.empty()) r = "complex1";
+
+                    if (es_ != "" or
+                        ng_ != "" or
+                        ed_ != "" or
+                        pp_ != "") r = "complex2";
+
+                    if (es_ != "") v1 = "'''(''" + es_ + "'')''' " + v1;
+                    if (ng_ != "") v2 = "'''(''" + ng_ + "'')''' " + v2;
+                    if (ed_ != "") v3 = "'''(''" + ed_ + "'')''' " + v3;
+                    if (pp_ != "") v4 = "'''(''" + pp_ + "'')''' " + v4;
+
+                    for (str s : ess) v1 += ", " + s;
+                    for (str s : ngs) v2 += ", " + s;
+                    for (str s : eds) v3 += ", " + s;
+                    for (str s : pps) v4 += ", " + s;
+                }
+
+                if (v1 != "" and v1 != "" and v3 != "" and v4 != "")
+                f = "('''" + v1 + "; " + v2 + "; " + v3 + "; " + v4 + "''')";
+                else r += " quest";
+
+                result.report (t + " == " + original_forms + " == " + f, r);
             }
 
             output.push(entry{

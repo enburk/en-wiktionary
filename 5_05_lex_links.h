@@ -1,8 +1,10 @@
 #pragma once
-#include "6.h"
-namespace pass6
+#include "5.h"
+namespace pass5
 {
-    str unlink_(str title, str header, str body, Result<entry> & result, str line)
+    // neded for lex_items and lex_notes
+
+    str lex_links_(str title, str header, str body, Result<entry> & result, str line)
     {
         str kind   = "";
         str output = "[[" + body + "]]";
@@ -53,33 +55,32 @@ namespace pass6
 
             output = "[["+y1+"]]";
         }
-        else
-            output = body;
 
         result.report (report, kind);
         return output;
     }
 
-    Pass <entry, entry> unlink = [](auto & input, auto & output)
+    Pass <entry, entry> lex_links = [](auto & input, auto & output)
     {
         Result result {__FILE__, output};
 
         for (auto && [title, topic] : input)
         {
-            static int64_t nn = 0; if (++nn % 200'000 == 0)
-                logout("unlink", nn, input.cargo);
-
             for (auto & [header, forms, content] : topic)
             {
                 auto t = title;
                 auto h = header;
+
+                if (not lexical_items.contains(header) and
+                    not lexical_notes.contains(header))
+                    continue;
 
                 for (auto & line : content)
                 {
                     if (line == "") continue;
 
                     bracketer b;
-                    b.proceed_link = [&] (str s) { return unlink_(t, h, s, result, line); };
+                    b.proceed_link = [&] (str s) { return lex_links_(t, h, s, result, line); };
                     b.proceed(line);
             
                     line = std::move(b.output);

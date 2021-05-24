@@ -14,22 +14,56 @@ namespace pass2
         str report = lexical_form;
 
         str opts;
-        str first = lexical_form.upto(1);
-        str dot   = args.acquire("dot"  );
-        str nodot = args.acquire("nodot"); if (nodot == "yes" || nodot == "y" || nodot == "t" || nodot == "a") nodot = "1";
-        str nocap = args.acquire("nocap"); if (nocap == "yes" || nocap == "y" || nocap == "t" || nocap == "a") nocap = "1";
+        str first  = lexical_form.upto(1);
+        str dot    = args.acquire("dot");
+        str cap    = args.acquire("cap"); // ignore it
+        str ending = args.acquire("ending"); // ignore it
+        str nodot  = args.acquire("nodot"); if (nodot == "yes" || nodot == "y" || nodot == "t" || nodot == "a") nodot = "1";
+        str nocap  = args.acquire("nocap"); if (nocap == "yes" || nocap == "y" || nocap == "t" || nocap == "a") nocap = "1";
+
+        if (cap    != "") { opts += " - cap"; }
+        if (ending != "") { opts += " - ending"; }
         if (dot != "" && dot != "." && dot != "," && dot != ":" && dot != ";") { opts += " - dot"; }
         if (nodot != "" && nodot != "1") { opts += " - nodot"; }
         if (nocap != "" && nocap != "1") { opts += " - nocap"; }
+
         if (nocap != "") lexical_form.upto(1).replace_by(first.ascii_lowercased());
         if (dot   == "") dot = first == first.ascii_lowercased() ? "" : ".";
         if (nodot != "") dot = "";
 
         if (opts  != "") report = opts;
 
-        str from  = args.acquire("from" );
-        if (from  != "") report = " - from";
-        if (from  != "") args.complexity += 10;
+        array<str> froms; str
+        from = args.acquire("from" ); if (from != "") froms += from.split_by(", ");
+        from = args.acquire("from2"); if (from != "") froms += from.split_by(", ");
+        from = args.acquire("from3"); if (from != "") froms += from.split_by(", ");
+        from = args.acquire("from4"); if (from != "") froms += from.split_by(", ");
+        from = args.acquire("from5"); if (from != "") froms += from.split_by(", ");
+        from = args.acquire("from6"); if (from != "") froms += from.split_by(", ");
+
+        str extra;
+        if (not froms.empty())
+        {
+            for (str from : froms) {
+                if (from == "AU") from = "Australia";
+                if (from == "NZ") from = "New Zealand";
+                if (from == "UK") from = "Britain";
+                if (from == "AAVE") from = "African-American Vernacular English";
+                if (from == "American") from = "American English";
+                if (from == "Caribbean") from = "Caribbean English";
+                if (from == "colloquial") from = "colloquial English";
+                if (from == "dialect") from = "dialect English";
+                if (from == "dialectal") from = "dialect English";
+                if (from == "NYC") from = "New York City English";
+                if (from == "Non-Oxford") from = "Non-Oxford British English";
+                if (from == "southern US black") from = "southern US black English";
+                if (from.ends_with(" in")) from += " English";
+                if (extra != "")
+                    extra += ", ";
+                extra += from;
+            }
+            extra = ", ''representing " + extra + "''";
+        }
 
         str a1, a2, a3;
         args.ignore("t"); args.ignore("tr"); args.ignore("gloss"); args.ignore("pos"); args.ignore("id");
@@ -54,12 +88,16 @@ namespace pass2
         if (args.complexity == 3 && a1 != "" && a2 != "") { out = a2 + " " + a3; report = "3" + opts; } else
         {}
 
+        if (not froms.empty()) report = " - from " + std::to_string(froms.size());
+
         if (out != "")
         {
             output = out;
             if (not output.starts_with("'''")) output = "'''" + output;
             if (not output.ends_with  ("'''")) output = output + "'''";
             output = "''" + lexical_form + "'' " + output + dot;
+            if (extra != "" and output.ends_with(".")) output.truncate();
+            output += extra;
 
             out = a2 != "" ? a2 : a1;
 

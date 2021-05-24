@@ -123,8 +123,10 @@ namespace aux
         bool split_by (pattern pattern, start start, str& str1, str& str2, delimiter delimiter = delimiter::exclude) const
         {
             auto range = find (pattern, start); int n = range.offset; int m = range.length;
-            str1 = m > 0 ? upto (n     + (delimiter == delimiter::to_the_left  ? m : 0)) : *this;
-            str2 = m > 0 ? from (n + m - (delimiter == delimiter::to_the_right ? m : 0)) : str{};
+            str str1_ = m > 0 ? upto (n     + (delimiter == delimiter::to_the_left  ? m : 0)) : *this;
+            str str2_ = m > 0 ? from (n + m - (delimiter == delimiter::to_the_right ? m : 0)) : str{};
+            str1 = std::move(str1_);
+            str2 = std::move(str2_);
             return m > 0;
         }
         bool split_by (pattern pattern, str& str1, str& str2, delimiter delimiter = delimiter::exclude) const

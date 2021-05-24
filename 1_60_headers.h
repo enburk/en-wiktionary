@@ -34,10 +34,12 @@ namespace pass1
             {
                 if (s.starts_with ("=="))
                 {
-                    str prefix, header; s.split_by (" ", prefix, header);
-                
+                    str
+                    header = s;
+                    header.strip("= ");
                     header = header.ascii_lowercased();
 
+                    // etymology 1, etymology 2, etc.
                     if (header.starts_with ("noun "         )) header = "noun";
                     if (header.starts_with ("etymology "    )) header = "etymology";
                     if (header.starts_with ("pronunciation ")) header = "pronunciation";

@@ -182,7 +182,7 @@
     <ClInclude Include="3_20_lexforms1v.h" />
     <ClInclude Include="3_30_lexforms1a.h" />
     <ClInclude Include="3_40_multiline.h" />
-    <ClInclude Include="3_50_lex_items.h" />
+    <ClInclude Include="3_50_unquot.h" />
     <ClInclude Include="3_60_broken.h" />
     <ClInclude Include="3_70_tags.h" />
     <ClInclude Include="4.h" />
@@ -191,6 +191,8 @@
     <ClInclude Include="4_20_templates_label.h" />
     <ClInclude Include="4_30_templates_mention.h" />
     <ClInclude Include="5.h" />
+    <ClInclude Include="5_05_lex_links.h" />
+    <ClInclude Include="5_10_lex_items.h" />
     <ClInclude Include="5_20_rel_items.h" />
     <ClInclude Include="5_30_lex_notes.h" />
     <ClInclude Include="5_50_altforms.h" />

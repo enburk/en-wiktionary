@@ -29,7 +29,7 @@
 #include "3_20_lexforms1v.h"
 #include "3_30_lexforms1a.h"
 #include "3_40_multiline.h"
-#include "3_50_lex_items.h"
+#include "3_50_unquot.h"
 #include "3_60_broken.h"
 #include "3_70_tags.h"
 
@@ -38,6 +38,8 @@
 #include "4_20_templates_label.h"
 #include "4_30_templates_mention.h"
 
+#include "5_05_lex_links.h"
+#include "5_10_lex_items.h"
 #include "5_20_rel_items.h"
 #include "5_30_lex_notes.h"
 #include "5_50_altforms.h"
@@ -79,7 +81,7 @@ int main ()
     pass3::modules1 >>
     pass3::modules2 >>
     pass3::lexforms1n >> pass3::lexforms1v >> pass3::lexforms1a >>
-    pass3::multiline  >> pass3::lex_items  >> pass3::broken >>
+    pass3::multiline  >> pass3::unquot     >> pass3::broken >>
     pass3::tags >>
 
     pass4::load >>
@@ -87,6 +89,8 @@ int main ()
     pass4::templates_label >>
     pass4::templates_mention >>
 
+    pass5::lex_links >>
+    pass5::lex_items >>
     pass5::rel_items >>
     pass5::lex_notes >>
     pass5::altforms >>
