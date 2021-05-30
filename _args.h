@@ -7,13 +7,21 @@ struct args
 
     str & operator [] (int i) { return unnamed[i]; }
 
-    void ignore (str option) { if (auto it = opt.find(option); it != opt.end())
-        { opt.erase(it); complexity -= 10; }
-    }
-    str acquire (str option) { if (auto it = opt.find(option); it != opt.end())
-        { str s = it->second; opt.erase(it); complexity -= 10; return s; };
+    str acquire (str option)
+    {
+        if (auto
+            it = opt.find(option);
+            it != opt.end())
+        {
+            str s = it->second;
+            opt.erase(it);
+            complexity -= 10;
+            return s;
+        };
         return "";
     }
+    void ignore (str option) { acquire (option); }
+    void ignore_all () { complexity -= 10 * opt.size(); opt.clear(); }
 
     args (str s)
     {
@@ -63,11 +71,15 @@ struct args
                 key.strip(); value.strip();
                 key = key.ascii_lowercased();
 
-                if (key == "head" ) continue;
-                if (key == "head2") continue;
-                if (key == "lang" ) continue;
-                if (key == "sort" ) continue;
-                if (key == "nocat") continue;
+                if (key == "head"  ) continue;
+                if (key == "head2" ) continue;
+                if (key == "gloss" ) continue;
+                if (key == "gloss1") continue;
+                if (key == "gloss2") continue;
+                if (key == "lang"  ) continue;
+                if (key == "lang1" ) continue;
+                if (key == "sort"  ) continue;
+                if (key == "nocat" ) continue;
 
                 body += key + "=" + value + "|";
 

@@ -33,6 +33,27 @@ struct bracketer
             auto b = paragraph.find("<math>", str::start_from(p)); if (!b) break;
             auto e = paragraph.find("</math>", str::start_from(b.offset+b.length)); if (!e) break;
 
+            proceed_nowiki (paragraph.from(p).upto(b.offset));
+
+            payload () += paragraph.from(b.offset).upto(e.offset + e.length);
+
+            p = e.offset + e.length;
+        }
+
+        proceed_nowiki (paragraph.from(p));
+
+        if (stack.size() != 1) dump();
+        output += payload();
+        payload() = "";
+    }
+
+    void proceed_nowiki (str paragraph)
+    {
+        int p = 0; while (p < paragraph.size())
+        {
+            auto b = paragraph.find("<nowiki>", str::start_from(p)); if (!b) break;
+            auto e = paragraph.find("</nowiki>", str::start_from(b.offset+b.length)); if (!e) break;
+
             proceed_sequence (paragraph.from(p).upto(b.offset));
 
             payload () += paragraph.from(b.offset).upto(e.offset + e.length);
@@ -41,10 +62,6 @@ struct bracketer
         }
 
         proceed_sequence (paragraph.from(p));
-
-        if (stack.size() != 1) dump();
-        output += payload();
-        payload() = "";
     }
 
     void proceed_sequence (str input)

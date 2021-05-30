@@ -1,12 +1,22 @@
-#pragma once
+﻿#pragma once
 #include "4.h"
 namespace pass4
 {
     const std::map<str, std::unordered_set<str>> rejected_templates
     {
-        {   "rf",
+        {   "requests",
         {
-            "rfquotek",
+            "rfe", // request for etymology
+            "rfi", // (Image requested)
+            "rfdef", // (definition required, request for definition, required definition)
+            "rfquotek", "rfap", "rfex", "rfp", "rfap", "rfquote-sense", "rfv-etym",
+            "rfc-sense", "rfv-sense", "rfc", "rfclarify", "rfd-sense", "rfv-pron",
+            "rfref", "rfquote", "rfscript", "rfd-redundant", "rfm-sense",
+            "rfd", "rfm", "rfv" //, "rfdate"
+        }},
+        {   "pronunciation",
+        {
+            "audio", "rhymes", "enPR", // non IPA pronunciation
         }},
         {   "mid",
         {
@@ -26,7 +36,7 @@ namespace pass4
         {   "miscellaneous",
         {
             "Letter", "multiple images", "picdic", "projectlinks",
-            "examples", "examples-right",
+            "examples", "examples-right", "broken ref",
             "en-decades",
         }},
         {   "TEST",
@@ -35,7 +45,7 @@ namespace pass4
     };
     str templates_ (str title, str header, str body, Result<entry> & result)
     {
-        args args (body); str name = args.name; str arg = args.body;
+        args args (body); str name = args.name; str arg = args.body;  auto & a = args;
 
         str output = "{{" + body + "}}";
         str report = "{{" + body + "}}";
@@ -49,55 +59,166 @@ namespace pass4
             }
         }
 
-        if (name == "non-gloss definition")
+        if (name == "IPA")
         {
-            if (args.complexity == 1) { output = "''"+args[0]+"''"; } else
-            { kind += " quest"; report += " ==== " + title; }
+            a.ignore("nocount");
+            a.ignore("n"); a.ignore("n1"); a.ignore("n2"); a.ignore("n3"); a.ignore("n4"); a.ignore("n5"); str
+            q = a.acquire("qual" ); if (q != "" and a.unnamed.size() >= 1) a[0] = " (''" + q + "'') " + a[0];
+            q = a.acquire("qual1"); if (q != "" and a.unnamed.size() >= 1) a[0] = " (''" + q + "'') " + a[0];
+            q = a.acquire("qual2"); if (q != "" and a.unnamed.size() >= 2) a[1] = " (''" + q + "'') " + a[1];
+            q = a.acquire("qual3"); if (q != "" and a.unnamed.size() >= 3) a[2] = " (''" + q + "'') " + a[2];
+            q = a.acquire("qual4"); if (q != "" and a.unnamed.size() >= 4) a[3] = " (''" + q + "'') " + a[3];
+            q = a.acquire("qual5"); if (q != "" and a.unnamed.size() >= 5) a[4] = " (''" + q + "'') " + a[4];
+            q = a.acquire("qual6"); if (q != "" and a.unnamed.size() >= 6) a[5] = " (''" + q + "'') " + a[5];
+            q = a.acquire("qual7"); if (q != "" and a.unnamed.size() >= 7) a[6] = " (''" + q + "'') " + a[6];
+            if (a.complexity == 1) { output = a[0]; kind += " 1"; } else
+            if (a.complexity == 2) { output = a[0]+", "+a[1]; kind += " 2"; } else
+            if (a.complexity == 3) { output = a[0]+", "+a[1]+", "+a[2]; kind += " 6"; } else
+            if (a.complexity == 4) { output = a[0]+", "+a[1]+", "+a[2]+", "+a[3]; kind += " 6"; } else
+            if (a.complexity == 5) { output = a[0]+", "+a[1]+", "+a[2]+", "+a[3]+", "+a[4]; kind += " 6"; } else
+            if (a.complexity == 6) { output = a[0]+", "+a[1]+", "+a[2]+", "+a[3]+", "+a[4]+", "+a[5]; kind += " 6"; } else
+            if (a.complexity == 7) { output = a[0]+", "+a[1]+", "+a[2]+", "+a[3]+", "+a[4]+", "+a[5]+", "+a[6]; kind += " 6"; } else
+            if (a.complexity == 8) { output = a[0]+", "+a[1]+", "+a[2]+", "+a[3]+", "+a[4]+", "+a[5]+", "+a[6]+", "+a[7]; kind += " 6"; } else
+            kind += " quest";
         }
         else
-        if (name == "sense")
+        if (name == "non-gloss definition")
         {
-            if (args.complexity == 6) { output = "(''"+args[0]+", "+args[1]+", "+args[2]+", "+args[3]+", "+args[4]+", "+args[5]+"''):"; kind += " 6"; } else
-            if (args.complexity == 5) { output = "(''"+args[0]+", "+args[1]+", "+args[2]+", "+args[3]+", "+args[4]+"''):"; kind += " 6"; } else
-            if (args.complexity == 4) { output = "(''"+args[0]+", "+args[1]+", "+args[2]+", "+args[3]+"''):"; kind += " 6"; } else
-            if (args.complexity == 3) { output = "(''"+args[0]+", "+args[1]+", "+args[2]+"''):"; kind += " 6"; } else
-            if (args.complexity == 2) { output = "(''"+args[0]+", "+args[1]+"''):"; kind += " 2"; } else
-            if (args.complexity == 1) { output = "(''"+args[0]+"''):"; kind += " 1"; } else
-            { kind += " quest"; report += " ==== " + title; }
+            if (a.complexity == 1) { output = "''"+a[0]+"''"; } else
+            kind += " quest";
+        }
+        else
+        if (name == "ux") // usex, eg, example
+        {
+            a.ignore("inline"); str
+            q = a.acquire("q");      if (q != "") a[0] += " (''" + q + "'')";
+            q = a.acquire("footer"); if (q != "") a[0] += " (''" + q + "'')";
+            if (a.complexity == 1) { output = "''"+a[0]+"''"; kind += " 1"; } else
+            if (a.complexity == 2) { output = "''"+a[0]+"'' ― ''"+a[1]+"''"; kind += " 2"; } else
+            { output = ""; kind += " skip"; }
+        }
+        else
+        if (name == "prefixusex")
+        {
+            a.ignore_all();
+            if (a.complexity == 2) { output = "''"+title+"'' + ''"+a[0]+"'' → ''"+a[1]+"''"; } else
+            kind += " quest";
+        }
+        else
+        if (name == "accent" // a
+        or  name == "qualifier" // qua, i, q, qf, qual
+        or  name == "sense")
+        {
+            if (name == "accent") for (str & arg : a.unnamed) {
+                if (arg == "GA"    ) arg = "General American";
+                if (arg == "GenAm" ) arg = "General American";
+                if (arg == "RP"    ) arg = "Received Pronunciation";
+                if (arg == "AU"    ) arg = "General Australian";
+                if (arg == "AuE"   ) arg = "General Australian";
+                if (arg == "Aus"   ) arg = "General Australian";
+                if (arg == "AusE"  ) arg = "General Australian";
+                if (arg == "GenAus") arg = "General Australian";
+                if (arg == "CA"    ) arg = "Canada";
+                if (arg == "NZ"    ) arg = "General New Zealand";
+                if (arg == "cot–caught"          ) arg = "</i>cot–caught<i> merger";
+                if (arg == "pin-pen"             ) arg = "</i>pin-pen<i> merger";
+                if (arg == "father-bother"       ) arg = "</i>father-bother<i> merger";
+                if (arg == "wine/whine"          ) arg = "without the </i>wine-whine<i> merger";
+                if (arg == "horse-hoarse"        ) arg = "without the </i>horse–hoarse<i> merger";
+                if (arg == "Mary-marry-merry"    ) arg = "</i>Mary–marry–merry<i> merger";
+                if (arg == "non-Mary-marry-merry") arg = "</i>Mary–marry–merry<i> distinction";
+            }
+            if (a.complexity == 6) { output = "(''"+a[0]+", "+a[1]+", "+a[2]+", "+a[3]+", "+a[4]+", "+a[5]+"''):"; kind += " 6"; } else
+            if (a.complexity == 5) { output = "(''"+a[0]+", "+a[1]+", "+a[2]+", "+a[3]+", "+a[4]+"''):"; kind += " 6"; } else
+            if (a.complexity == 4) { output = "(''"+a[0]+", "+a[1]+", "+a[2]+", "+a[3]+"''):"; kind += " 6"; } else
+            if (a.complexity == 3) { output = "(''"+a[0]+", "+a[1]+", "+a[2]+"''):"; kind += " 6"; } else
+            if (a.complexity == 2) { output = "(''"+a[0]+", "+a[1]+"''):"; kind += " 2"; } else
+            if (a.complexity == 1) { output = "(''"+a[0]+"''):"; kind += " 1"; } else
+            { output = ""; kind += " skip"; }
+        }
+        else
+        if (name == "suffix")
+        {
+            if (a.lang != "") { a.unnamed = a.lang + a.unnamed; a.complexity++; }; str
+            q = a.acquire("alt1"); if (q != "" and a.unnamed.size() >= 2) { a[1] = q; }//kind = "{{suffix}} alt"; }
+            q = a.acquire("alt2"); if (q != "" and a.unnamed.size() >= 3) { a[2] = q; }//kind = "{{suffix}} alt"; }
+            q = a.acquire("alt3"); if (q != "" and a.unnamed.size() >= 4) { a[3] = q; }//kind = "{{suffix}} alt"; }
+            if (a.unnamed.size() >= 3 and a[2] != "" and not a[2].starts_with("-")) a[2] = "-" + a[2];
+            if (a.unnamed.size() >= 4 and a[3] != "" and not a[3].starts_with("-")) a[3] = "-" + a[3];
+            if (a.unnamed.size() >= 2 and a[1] != "") a[1] = "''" + a[1] + "''";
+            if (a.unnamed.size() >= 3 and a[2] != "") a[2] = "''" + a[2] + "''";
+            if (a.unnamed.size() >= 4 and a[3] != "") a[3] = "''" + a[3] + "''";
+            q = a.acquire("t1" ); if (q != "" and a.unnamed.size() >= 2) { a[1] += " (“"+q+"”)"; }//kind = "{{suffix}} trans"; }
+            q = a.acquire("t2" ); if (q != "" and a.unnamed.size() >= 3) { a[2] += " (“"+q+"”)"; }//kind = "{{suffix}} trans"; }
+            q = a.acquire("t3" ); if (q != "" and a.unnamed.size() >= 4) { a[3] += " (“"+q+"”)"; }//kind = "{{suffix}} trans"; }
+            q = a.acquire("lit"); if (q != "" and a.unnamed.size() >= 2) { a[1] += " (literally “"+q+"”)"; }
+            a.ignore_all();
+            if (a.complexity == 5) a.complexity = 4;
+            if (a.complexity == 3 and a[2] != "" and a[1] == "") { output = a[2]; kind += " 1"; } else
+            if (a.complexity == 3 and a[2] != "" and a[1] != "") { output = a[1]+" + "+a[2]; kind += " 2"; }  else
+            if (a.complexity == 4 and a[3] == "" and a[2] != "" and a[1] == "") { output = a[2]; kind += " 3"; }  else
+            if (a.complexity == 4 and a[3] == "" and a[2] != "" and a[1] != "") { output = a[1]+" + "+a[2]; kind += " 3"; }  else
+            if (a.complexity == 4 and a[3] != "" and a[2] != "" and a[1] == "") { output = a[2]+" + "+a[3]; kind += " 3"; }  else
+            if (a.complexity == 4 and a[3] != "" and a[2] != "" and a[1] != "") { output = a[1]+" + "+a[2]+" + "+a[3]; kind += " 4"; }  else
+            kind += " quest";
         }
         else
         if (name == "taxlink")
         {
-            args.ignore("noshow"); args.ignore("nomul"); args.ignore("ver");
-            str sname; if (args.unnamed.size() >= 1) sname = args.unnamed[0];
-            str taxon; if (args.unnamed.size() >= 2) taxon = args.unnamed[1];
+            const array<str> ignored = {
+            "entry", "i", "noi", "noshow", "nowshow", "nosohw", "noshhow", "boshow",
+            "nomul", "nospe", "obs", "source", "status", "pedia", "pedia\\",
+            "ber", "nover", "ver", "vere", "vr", "wplink", "wplnk", "wslink", };
+            for (auto ignore : ignored) a.ignore(ignore);
+
+            str sname; if (a.unnamed.size() >= 1) sname = a.unnamed[0];
+            str taxon; if (a.unnamed.size() >= 2) taxon = a.unnamed[1];
             str genus, species; sname.split_by(" ", genus, species);
             const array<str> taxons = { "division", "taxon",
                 "superkingdom", "kingdom", "subkingdom", "infrakingdom",
-                "superphylum", "phylum", "subphylum", "class", "subclass", "infraclass",
+                "superphylum", "phylum", "subphylum", "subspecies",
+                "superclass", "class", "subclass", "infraclass",
                 "superorder", "order", "suborder", "infraorder",
                 "superfamily", "family",  "subfamily", "tribe" };
-            if (args.complexity == 2 && taxons.contains(taxon) && species == "") { output = "["  +sname+  "]"; kind += " 1 taxon";   } else
-            if (args.complexity == 2 && taxon == "genus"       && species == "") { output = "[''"+sname+"'']"; kind += " 1 genus";   } else
-            if (args.complexity == 2 && taxon == "species"                     ) { output = "[''"+sname+"'']"; kind += " 1 species"; } else
-            if (args.complexity == 2                                           ) { output = "[''"+sname+"'']"; kind += " 2"; } else
-            { kind += " quest"; report += " ==== " + title; }
+            bool is_taxon   = taxons.contains(taxon) && species == "";
+            bool is_genus   = taxon == "genus"       && species == "";
+            bool is_scepies = taxon == "species";
+            if (a.complexity == 2 && is_taxon  ) { output = "["  + sname +  "]"; kind += " 1 taxon";   } else
+            if (a.complexity == 2 && is_genus  ) { output = "[''"+ sname +"'']"; kind += " 1 genus";   } else
+            if (a.complexity == 2 && is_scepies) { output = "[''"+ sname +"'']"; kind += " 1 species"; } else
+            if (a.complexity == 2              ) { output = "[''"+ sname +"'']"; kind += " 2"; } else
+            if (a.complexity == 3              ) { output = "[''"+ a[2]  +"'']"; kind += " 3"; } else
+            if (a.complexity == 4              ) { output = "[''"+ a[2]  +"'']"; kind += " 4"; } else
+            kind += " quest";
+        }
+        else
+        if (name.ends_with(" Hypernyms"))
+        {
+            kind = " Hypernyms";
+            output = Templates[name];
+            output.replace_all("\n", " ");
+            output.strip();
+            bracketer b;
+            b.proceed_template = [&](str s){ return templates_(title, header, s, result); };
+            b.proceed(output);
+            output = b.output;
         }
         else
         {
             kind = "{{}}"; templates_statistics [__FILE__][name]++;
         }
 
+        if (kind.contains(" quest")) kind += " !!!!!";
         if (output.contains("\n")) kind +=  " #br#";
         if (output.contains("\n")) report = "==== " + title + " ==== " + header + " ==== " + "\n\n" + report;
         if (output.contains("\n")) output.replace_all("\n", " ");
-        result.report (report, kind);
+        result.report (report + " => " + output + " == " + title, kind);
         return output;
     }
 
     Pass <entry, entry> templates = [](auto & input, auto & output)
     {
-        Result result {__FILE__, output};
+        Result result {__FILE__, output, true};
 
         for (auto && [title, topic] : input)
         {

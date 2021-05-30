@@ -72,10 +72,19 @@ std::map<str, std::map<str, int>> templates_statistics;
 template<class Entry>  void  dump_templates_statistics (Result<Entry> & result)
 {
     std::multimap<int, str, std::greater<int>> templates; int total = 0;
-    for (auto [name, n] : templates_statistics [result.passpath.string()])
+    for (auto & [name, n] : templates_statistics [result.passpath.string()])
 	{ templates.emplace(n, name); total += n; }
-    
-	for (auto [n, name] : templates)
+
+	for (auto & [n, name] : templates)
+	{
+		array<str> redirs;
+		for (auto [from, to] : redirect_templates)
+			if (to == name) redirs += from;
+		if (not redirs.empty())
+			name += " (" + str(redirs, ", ") + ")";
+	}
+
+	for (auto & [n, name] : templates)
 	result.report (std::to_string(n) + " " + name        , "# templates statistics");
     result.report ("====================================", "# templates statistics");
     result.report (std::to_string(total >> 00) + " total", "# templates statistics");

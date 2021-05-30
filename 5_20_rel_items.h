@@ -4,7 +4,7 @@ namespace pass5
 {
     Pass <entry, entry> rel_items = [](auto & input, auto & output)
     {
-        Result result {__FILE__, output};
+        Result result {__FILE__, output, true};
 
         for (auto && [title, topic] : input)
         {
@@ -24,6 +24,28 @@ namespace pass5
 
                 for (str line : content) if (line != "")
                 {
+                    str pre, post;
+
+                    if (line.starts_with("* ("))
+                    {
+                        complexity = 50;
+                        line.split_by(")", pre, line, str::delimiter::to_the_left);
+                        line.strip();
+                        pre.upto(2).erase();
+                        if (line.starts_with(":")) {
+                            line.upto(1).erase();
+                            line.strip();
+                            pre += ":";
+                        }
+                        line = "* " + line;
+                    }
+
+                    if (line.ends_with(")"))
+                    {
+                        complexity = 60;
+                        line.split_by("(", str::start_from_end(), line, post, str::delimiter::to_the_right);
+                    }
+
                     if (!line.starts_with ("*" )) { complexity = 99; break; } else line = line.from(1); line.strip();
                     if (!line.starts_with ("[[")) { complexity = 99; break; } else line = line.from(2); line.strip();
                     if (!line.ends_with   ("]]")) { complexity = 99; break; } else line = line.upto(line.size()-2);
@@ -50,6 +72,9 @@ namespace pass5
                     ) { complexity = max(10, complexity); continue; }
 
                     if (line.contains(str::one_of("[]{}:#|"))) { complexity = 99; break; }
+
+                    if (pre  != "") line = pre + " " + line;
+                    if (post != "") line += " " + post;
 
                     list += line;
                 }

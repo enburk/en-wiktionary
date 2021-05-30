@@ -2,9 +2,10 @@
 #include "5.h"
 namespace pass5
 {
-    // neded for lex_items and lex_notes
+    // needed for lex_items and lex_notes
 
-    str lex_links_(str title, str header, str body, Result<entry> & result, str line)
+    template<class entry>
+    str unlink_(str title, str header, str body, Result<entry> & result, str line)
     {
         str kind   = "";
         str output = "[[" + body + "]]";
@@ -12,32 +13,70 @@ namespace pass5
 
         auto ll = body.split_by("|");
 
+        for (str & l : ll)
+        {
+            if (l.starts_with(":" )) l.upto(1).erase();
+            if (l.starts_with("W:")) l.upto(2).erase();
+            if (l.starts_with("w:")) l.upto(2).erase();
+            if (l.starts_with("s:")) l.upto(2).erase();
+            if (l.starts_with("Wikipedia:") or
+                l.starts_with("wikipedia:"))
+                l.upto(10).erase();
+            if (l.starts_with("Citations:") or
+                l.starts_with("citations:"))
+                l.upto(10).erase();
+            if (l.starts_with("Thesaurus:") or
+                l.starts_with("thesaurus:"))
+                l.upto(10).erase();
+            if (l.starts_with("Appendix:") or
+                l.starts_with("appendix:"))
+                l.upto(9).erase();
+
+            str anchor;
+            l.split_by("#A", l, anchor);
+            l.split_by("#E", l, anchor);
+            l.split_by("#I", l, anchor);
+            l.split_by("#O", l, anchor);
+            l.split_by("#P", l, anchor);
+            l.split_by("#U", l, anchor);
+            l.split_by("##", l, anchor);
+        }
+
+        if (ll.size() == 1 and
+           (ll[0].starts_with("https:") or
+            ll[0].starts_with("http:"))) {
+            kind = "http";
+            output = "";
+        }
+        else
+        if (ll.size() == 1 and
+           (ll[0].starts_with("Category:") or
+            ll[0].starts_with("category:"))) {
+            kind = "category";
+            output = "";
+        }
+        else
         if (ll.size() == 1
-        &&  ll[0].contains_only(str::one_of(alnum))) {
+        and ll[0].contains_only(str::one_of(alnum))) {
             kind = "[[ascii]]";
             output = ll[0];
         }
         else
         if (ll.size() == 1
-        &&  ll[0].contains_only(str::one_of(ALNUM))) {
+        and ll[0].contains_only(str::one_of(ALNUM))) {
             kind = "[[ascii+]]";
             output = ll[0];
         }
         else
         if (ll.size() == 2 
-        &&  ll[0].contains_only(str::one_of(ALNUM))
-        &&  ll[1].contains_only(str::one_of(ALNUM))) {
+        and ll[0].contains_only(str::one_of(ALNUM))
+        and ll[1].contains_only(str::one_of(ALNUM))) {
             kind = "[[ascii+ pipe]]";
             output = ll[1];
         }
         else
         if (ll.size() == 2)
         {
-            if (ll[0].starts_with("wikipedia:")) ll[0].upto(10).erase();
-            if (ll[0].starts_with("W:"        )) ll[0].upto( 2).erase();
-            if (ll[0].starts_with("w:"        )) ll[0].upto( 2).erase();
-            if (ll[0].starts_with("s:"        )) ll[0].upto( 2).erase();
-
             str x0 = ll[0];
             str y0 = ll[1];
             str x1 = x0; x1.replace_all("\n", " "); x1.canonicalize();
@@ -55,8 +94,14 @@ namespace pass5
 
             output = "[["+y1+"]]";
         }
+        else
+            output = body;
 
-        result.report (report, kind);
+        if (output.contains(":")) kind = "quest"; else
+        if (report.contains("#")) kind += " complex2"; else
+        if (report.contains(":")) kind += " complex1";
+
+        result.report (report + " => " + output, kind);
         return output;
     }
 
@@ -80,7 +125,7 @@ namespace pass5
                     if (line == "") continue;
 
                     bracketer b;
-                    b.proceed_link = [&] (str s) { return lex_links_(t, h, s, result, line); };
+                    b.proceed_link = [&] (str s) { return unlink_(t, h, s, result, line); };
                     b.proceed(line);
             
                     line = std::move(b.output);

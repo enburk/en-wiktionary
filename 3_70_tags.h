@@ -14,10 +14,55 @@ namespace pass3
     {
         Result result {__FILE__, output};
 
+        auto erase_tag = [&result](const str & title, str & Topic, str tag)
+        {
+            tag = tag.ascii_lowercased();
+            str report = "- tag "+ tag;
+            for (int z, c, e, a, b = 0; ; )
+            {
+                str topic = Topic.ascii_lowercased();
+
+                auto ra = topic.find("<"+tag+">",  str::start_from(b)); a = ra.offset;
+                auto rb = topic.find("<"+tag+" ",  str::start_from(b)); b = rb.offset; if (!ra && !rb) break;
+                if (b > a) { b = a; rb = ra; }
+
+                auto rz = topic.find(">",          str::start_from(b)); z = rz.offset;
+                auto rc = topic.find("/>",         str::start_from(b)); c = rc.offset;
+                auto re = topic.find("</"+tag+">", str::start_from(b)); e = re.offset; if (!rc && !re)
+                {
+                    report += " broken";
+                    result.reject("\n#################################################################\n"
+                        + title + "\n#################################################################\n"
+                        + Topic + "\n=================================================================\n"
+                        + Topic.from (b), report);
+                    break;
+                }
+                if (e > c && c == z-1) { e = c; re = rc; }
+                auto range = Topic.from(b).size(e-b+re.length);
+                result.reject(range, report);
+                range.erase();
+            }
+        };
+
+        bool first_time = true;
+
         for (auto && [title, topic] : input)
         {
+            if (first_time) {
+                first_time = false;
+
+                for (auto & [name, value] : Templates) {
+                   erase_tag(name, value, "noinclude");
+                }
+            }
+
             for (auto & [header, forms, content] : topic)
             {
+                erase_tag(title, content, "REF");
+                erase_tag(title, content, "ref");
+                erase_tag(title, content, "references");
+                erase_tag(title, content, "gallery");
+
                 for (int p = 0; ; )
                 {
                     auto ra = content.find("<", str::start_from(p)); int a = ra.offset;

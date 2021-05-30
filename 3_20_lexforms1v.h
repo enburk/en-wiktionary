@@ -14,7 +14,7 @@ namespace pass3
 
     Pass <entry, entry> lexforms1v = [](auto & input, auto & output)
     {
-        Result result {__FILE__, output, true};
+        Result result {__FILE__, output};
 
         for (auto && [title, topic] : input)
         {
@@ -360,14 +360,14 @@ namespace pass3
                     if (ed_ != "") v3 = "'''(''" + ed_ + "'')''' " + v3;
                     if (pp_ != "") v4 = "'''(''" + pp_ + "'')''' " + v4;
 
-                    for (str s : ess) v1 += ", " + s;
-                    for (str s : ngs) v2 += ", " + s;
-                    for (str s : eds) v3 += ", " + s;
-                    for (str s : pps) v4 += ", " + s;
+                    for (str s : ess) v1 += "''',''' " + s;
+                    for (str s : ngs) v2 += "''',''' " + s;
+                    for (str s : eds) v3 += "''',''' " + s;
+                    for (str s : pps) v4 += "''',''' " + s;
                 }
 
                 if (v1 != "" and v1 != "" and v3 != "" and v4 != "")
-                f = "('''" + v1 + "; " + v2 + "; " + v3 + "; " + v4 + "''')";
+                f = "('''" + v1 + "''';''' " + v2 + "''';''' " + v3 + "''';''' " + v4 + "''')";
                 else r += " quest";
 
                 result.report (t + " == " + original_forms + " == " + f, r);

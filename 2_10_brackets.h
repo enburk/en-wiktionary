@@ -16,7 +16,9 @@ namespace pass2
         if (o == "[[") // unlinking needed before lexforms
         {
             if (body.starts_with("File:" )) { output = ""; kind = "[[File]]"; } else
+            if (body.starts_with("file:" )) { output = ""; kind = "[[File]]"; } else
             if (body.starts_with("Image:")) { output = ""; kind = "[[Image]]"; } else
+            if (body.starts_with("image:")) { output = ""; kind = "[[Image]]"; } else
             if (lexical_items.contains(header) or
                 lexical_notes.contains(header))
             {

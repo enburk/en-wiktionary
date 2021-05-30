@@ -4,7 +4,7 @@ namespace pass5
 {
     Pass <entry, entry> lex_notes = [](auto & input, auto & output)
     {
-        Result result {__FILE__, output};
+        Result result {__FILE__, output, true};
 
         for (auto && [title, topic] : input)
         {
@@ -27,6 +27,14 @@ namespace pass5
                     line.replace_all("[[", "");
                     line.replace_all("]]", "");
 
+                    if (header == "pronunciation") {
+                        while (line.starts_with("*")) {
+                            line.upto(1).erase();
+                            line.triml();
+                        }
+                        line.replace_all(") , /", ") /"); // {{enPR}}, {{IPA}}
+                    }
+
                     if (!line.contains_only(str::one_of(alnum))) complexity = max(0+1, complexity);
                     if (!line.contains_only(str::one_of(Alnum))) complexity = max(1+1, complexity);
                     if (!line.contains_only(str::one_of(ALnum))) complexity = max(2+1, complexity);
@@ -34,7 +42,7 @@ namespace pass5
                     if (!line.contains_only(str::one_of(ALNUm))) complexity = max(4+1, complexity);
                     if (!line.contains_only(str::one_of(ALNUM))) complexity = max(5+1, complexity);
 
-                    if (line.contains(str::one_of("[]{}:#|"))) { complexity = 99; break; }
+                    if (line.contains(str::one_of("[]{}#|<>"))) { complexity = 99; break; }
                 }
 
                 if (complexity == 0 && header == "etymology"    ) complexity = 90;
