@@ -43,9 +43,9 @@ namespace pass4
         {
         }}
     };
-    str templates_ (str title, str header, str body, Result<entry> & result)
+    str templates_(str title, str header, str body, Result<entry> & result)
     {
-        args args (body); str name = args.name; str arg = args.body;  auto & a = args;
+        args args (body); str name = args.name; str arg = args.body; auto & a = args;
 
         str output = "{{" + body + "}}";
         str report = "{{" + body + "}}";
@@ -98,13 +98,6 @@ namespace pass4
             { output = ""; kind += " skip"; }
         }
         else
-        if (name == "prefixusex")
-        {
-            a.ignore_all();
-            if (a.complexity == 2) { output = "''"+title+"'' + ''"+a[0]+"'' → ''"+a[1]+"''"; } else
-            kind += " quest";
-        }
-        else
         if (name == "accent" // a
         or  name == "qualifier" // qua, i, q, qf, qual
         or  name == "sense")
@@ -135,32 +128,6 @@ namespace pass4
             if (a.complexity == 2) { output = "(''"+a[0]+", "+a[1]+"''):"; kind += " 2"; } else
             if (a.complexity == 1) { output = "(''"+a[0]+"''):"; kind += " 1"; } else
             { output = ""; kind += " skip"; }
-        }
-        else
-        if (name == "suffix")
-        {
-            if (a.lang != "") { a.unnamed = a.lang + a.unnamed; a.complexity++; }; str
-            q = a.acquire("alt1"); if (q != "" and a.unnamed.size() >= 2) { a[1] = q; }//kind = "{{suffix}} alt"; }
-            q = a.acquire("alt2"); if (q != "" and a.unnamed.size() >= 3) { a[2] = q; }//kind = "{{suffix}} alt"; }
-            q = a.acquire("alt3"); if (q != "" and a.unnamed.size() >= 4) { a[3] = q; }//kind = "{{suffix}} alt"; }
-            if (a.unnamed.size() >= 3 and a[2] != "" and not a[2].starts_with("-")) a[2] = "-" + a[2];
-            if (a.unnamed.size() >= 4 and a[3] != "" and not a[3].starts_with("-")) a[3] = "-" + a[3];
-            if (a.unnamed.size() >= 2 and a[1] != "") a[1] = "''" + a[1] + "''";
-            if (a.unnamed.size() >= 3 and a[2] != "") a[2] = "''" + a[2] + "''";
-            if (a.unnamed.size() >= 4 and a[3] != "") a[3] = "''" + a[3] + "''";
-            q = a.acquire("t1" ); if (q != "" and a.unnamed.size() >= 2) { a[1] += " (“"+q+"”)"; }//kind = "{{suffix}} trans"; }
-            q = a.acquire("t2" ); if (q != "" and a.unnamed.size() >= 3) { a[2] += " (“"+q+"”)"; }//kind = "{{suffix}} trans"; }
-            q = a.acquire("t3" ); if (q != "" and a.unnamed.size() >= 4) { a[3] += " (“"+q+"”)"; }//kind = "{{suffix}} trans"; }
-            q = a.acquire("lit"); if (q != "" and a.unnamed.size() >= 2) { a[1] += " (literally “"+q+"”)"; }
-            a.ignore_all();
-            if (a.complexity == 5) a.complexity = 4;
-            if (a.complexity == 3 and a[2] != "" and a[1] == "") { output = a[2]; kind += " 1"; } else
-            if (a.complexity == 3 and a[2] != "" and a[1] != "") { output = a[1]+" + "+a[2]; kind += " 2"; }  else
-            if (a.complexity == 4 and a[3] == "" and a[2] != "" and a[1] == "") { output = a[2]; kind += " 3"; }  else
-            if (a.complexity == 4 and a[3] == "" and a[2] != "" and a[1] != "") { output = a[1]+" + "+a[2]; kind += " 3"; }  else
-            if (a.complexity == 4 and a[3] != "" and a[2] != "" and a[1] == "") { output = a[2]+" + "+a[3]; kind += " 3"; }  else
-            if (a.complexity == 4 and a[3] != "" and a[2] != "" and a[1] != "") { output = a[1]+" + "+a[2]+" + "+a[3]; kind += " 4"; }  else
-            kind += " quest";
         }
         else
         if (name == "taxlink")
@@ -205,14 +172,14 @@ namespace pass4
         }
         else
         {
-            kind = "{{}}"; templates_statistics [__FILE__][name]++;
+            kind = "{{}}"; templates_statistics[__FILE__][name]++;
         }
 
         if (kind.contains(" quest")) kind += " !!!!!";
         if (output.contains("\n")) kind +=  " #br#";
         if (output.contains("\n")) report = "==== " + title + " ==== " + header + " ==== " + "\n\n" + report;
         if (output.contains("\n")) output.replace_all("\n", " ");
-        result.report (report + " => " + output + " == " + title, kind);
+        if (kind != "{{}}") result.report (report + " => " + output + " == " + title, kind);
         return output;
     }
 
@@ -223,7 +190,7 @@ namespace pass4
         for (auto && [title, topic] : input)
         {
             static int64_t nn = 0; if (++nn % 100'000 == 0)
-                logout("templates", nn, input.cargo);
+                logout("templates1", nn, input.cargo);
 
             for (auto & [header, forms, content] : topic)
             {

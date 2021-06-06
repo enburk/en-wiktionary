@@ -2,11 +2,11 @@
 #include "3.h"
 namespace pass3
 {
-    Pass <entry, entry> modules1 = [](auto & input, auto & output)
+    Pass <entry, entry> meta = [](auto & input, auto & output)
     {
         Result result {__FILE__, output};
 
-        array<str> groups = {"en-", "label"};
+        array<str> groups = {"en-"};
 
         bool first_time = true;
 

@@ -1,9 +1,10 @@
-﻿std::unordered_map<str,str> redirect;
-std::unordered_map<str,str> redirect_modules;
-std::unordered_map<str,str> redirect_templates;
-std::unordered_map<str,str> Templates;
-std::unordered_map<str,str> Modules;
-std::unordered_map<str,lua::syntax::analysis> Repo;
+﻿std::map<str,str> redirect;
+std::map<str,str> redirect_modules;
+std::map<str,str> redirect_templates;
+std::map<str,str> Templates;
+std::map<str,str> Modules;
+std::map<str,str> Languages;
+std::map<str,lua::syntax::analysis> Repo;
 
 str ellipsis   =  "\xE2" "\x80" "\xA6"; // …
 str mdash      =  "\xE2" "\x80" "\x94"; // m-dash

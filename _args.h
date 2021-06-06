@@ -1,6 +1,7 @@
 struct args
 {
-    str name, body, lang;
+    str name, body;
+    str lang, lang1, lang2;
     array<str> unnamed;
     std::map<str,str> opt;
     int complexity = 0;
@@ -23,7 +24,7 @@ struct args
     void ignore (str option) { acquire (option); }
     void ignore_all () { complexity -= 10 * opt.size(); opt.clear(); }
 
-    args (str s)
+    args (str s, bool ignore_en = true)
     {
         if (auto r = s.find('|'); r)
             name = s.upto(r.offset); else
@@ -76,8 +77,9 @@ struct args
                 if (key == "gloss" ) continue;
                 if (key == "gloss1") continue;
                 if (key == "gloss2") continue;
-                if (key == "lang"  ) continue;
-                if (key == "lang1" ) continue;
+                if (key == "lang"  ) { lang1 = value; continue; }
+                if (key == "lang1" ) { lang1 = value; continue; }
+                if (key == "lang2" ) { lang2 = value; continue; }
                 if (key == "sort"  ) continue;
                 if (key == "nocat" ) continue;
 
@@ -106,11 +108,14 @@ struct args
         }
         body.truncate(); //  + "|";
 
-        auto i = unnamed.begin(); for (auto j = unnamed.begin(); j != unnamed.end(); j++)
+        if (ignore_en)
         {
-            if ((*j == "en" || *j == "mul") && lang == "") lang = *j; else std::swap(*i++, *j);
+            auto i = unnamed.begin(); for (auto j = unnamed.begin(); j != unnamed.end(); j++)
+            {
+                if ((*j == "en" || *j == "mul") && lang == "") lang = *j; else std::swap(*i++, *j);
+            }
+            unnamed.erase(i, unnamed.end());
         }
-        unnamed.erase(i, unnamed.end());
 
         complexity = (int)(unnamed.size() + 10 * opt.size());
     }

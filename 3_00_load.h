@@ -4,18 +4,11 @@ namespace pass3
 {
     Pass<entry, entry> load = [](auto & input, auto & output)
     {
-        bool started = false;
+        bool live = false;
 
-        for (auto && e : input)
-        {
-            started = true;
+        for (auto && e : input) { live = true; output.push(std::move(e)); }
 
-            output.push(std::move(e));
-        }
-
-        if (started) return;
-            
-        if (std::filesystem::exists(path_out)) return;
+        if (live or std::filesystem::exists(path_out)) return;
 
         print("=== load 3... ===");
 
@@ -34,8 +27,7 @@ namespace pass3
             {
                 if (line == esc)
                 {
-                    if (!e.topic.empty())
-                    {
+                    if (not e.topic.empty()) {
                         output.push(std::move(e));
                         e = entry{};
                     }

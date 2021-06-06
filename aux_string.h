@@ -29,6 +29,19 @@ namespace aux
             if (size() > 0) truncate(size() - delimiter.size());
         }
 
+        static str list(array<str> lines) {
+            if (lines.size() == 0) return "";
+            if (lines.size() == 1) return lines[0];
+            str s = lines[0];
+            for (int i=1; i<lines.size()-1; i++) {
+                s += ", ";
+                s += lines[i];
+            }
+            s += " or ";
+            s += lines.back();
+            return s;
+        }
+
         void operator += (      char   c) { std::string::operator+=(c); }
         void operator += (const char * s) { std::string::operator+=(s); }
         void operator += (const str  & s) { base::operator+=(s); }

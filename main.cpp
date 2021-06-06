@@ -23,8 +23,7 @@
 #include "2_99_save.h"
 
 #include "3_00_load.h"
-#include "3_01_modules1.h"
-#include "3_02_modules2.h"
+#include "3_01_meta.h"
 #include "3_10_lexforms1n.h"
 #include "3_20_lexforms1v.h"
 #include "3_30_lexforms1a.h"
@@ -32,11 +31,16 @@
 #include "3_50_unquot.h"
 #include "3_60_broken.h"
 #include "3_70_tags.h"
+#include "3_99_save.h"
 
 #include "4_00_load.h"
+#include "4_01_meta1.h"
+#include "4_02_meta2.h"
 #include "4_10_templates.h"
 #include "4_20_templates_label.h"
 #include "4_30_templates_mention.h"
+#include "4_50_templates_xfix.h"
+#include "4_90_templates_z.h"
 
 #include "5_05_lex_links.h"
 #include "5_10_lex_items.h"
@@ -78,23 +82,27 @@ int main ()
     pass2::save >>
 
     pass3::load >>
-    pass3::modules1 >>
-    pass3::modules2 >>
+    pass3::meta >>
     pass3::lexforms1n >> pass3::lexforms1v >> pass3::lexforms1a >>
     pass3::multiline  >> pass3::unquot     >> pass3::broken >>
     pass3::tags >>
+    pass3::save >>
 
     pass4::load >>
+    pass4::meta1 >>
+    pass4::meta2 >>
     pass4::templates >>
     pass4::templates_label >>
     pass4::templates_mention >>
+    pass4::templates_xfix >>
+    pass4::templates_z >>
 
     pass5::lex_links >>
     pass5::lex_items >>
     pass5::rel_items >>
     pass5::lex_notes >>
-    pass5::altforms >>
-
+    pass5::altforms  >>
+    
     pass6::load >>
     pass6::unlink >>
     pass6::redirects >> 

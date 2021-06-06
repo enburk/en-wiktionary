@@ -1,10 +1,10 @@
 ﻿#pragma once
-#include "3.h"
-namespace pass3
+#include "4.h"
+namespace pass4
 {
-    Pass <entry, entry> modules2 = [](auto & input, auto & output)
+    Pass <entry, entry> meta2 = [](auto & input, auto & output)
     {
-        Result result {__FILE__, output};
+        Result result {__FILE__, output, true};
 
         bool first_time = true;
 
@@ -15,7 +15,12 @@ namespace pass3
 
                 for (auto & [name, text] : Modules)
                 {
-                    if (name.starts_with("label"))
+                    if (false or
+                        name.starts_with("label/data") or
+                        name.starts_with("families/data") or
+                        name.starts_with("etymology languages/data") or
+                        name.starts_with("languages/code to canonical name") or
+                        false)
                     {
                         str report = name;
                         report.replace_all("/", "~");

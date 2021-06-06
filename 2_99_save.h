@@ -14,10 +14,6 @@ namespace pass2
             {
                 started = true;
                 print("=== save 2... ===");
-                std::filesystem::path path = path_out;
-                path.replace_extension(".meta.txt");
-                print("pass2 save ", path.string());
-                save_meta(std::ofstream(path));
                 fstream = std::ofstream(path_out);
             }
 
@@ -30,6 +26,11 @@ namespace pass2
         {
             fstream << esc;
             fstream.close();
+            // only now (meta could be modified)
+            std::filesystem::path path = path_out;
+            path.replace_extension(".meta.txt");
+            print("pass2 save ", path.string());
+            save_meta(std::ofstream(path));
             print("=== save 2 ok ===");
         }
     };

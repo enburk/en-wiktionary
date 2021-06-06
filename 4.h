@@ -2,6 +2,9 @@
 #include "3.h"
 namespace pass4
 {
+    auto path_in  = "data/enwiktionary-step3.txt";
+    auto path_out = "data/enwiktionary-step4.txt";
+
     struct paragraph
     {
         str header, forms; array<str> content;

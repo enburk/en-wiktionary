@@ -176,8 +176,7 @@
     <ClInclude Include="2_99_save.h" />
     <ClInclude Include="3.h" />
     <ClInclude Include="3_00_load.h" />
-    <ClInclude Include="3_01_modules1.h" />
-    <ClInclude Include="3_02_modules2.h" />
+    <ClInclude Include="3_01_meta.h" />
     <ClInclude Include="3_10_lexforms1n.h" />
     <ClInclude Include="3_20_lexforms1v.h" />
     <ClInclude Include="3_30_lexforms1a.h" />
@@ -185,11 +184,16 @@
     <ClInclude Include="3_50_unquot.h" />
     <ClInclude Include="3_60_broken.h" />
     <ClInclude Include="3_70_tags.h" />
+    <ClInclude Include="3_99_save.h" />
     <ClInclude Include="4.h" />
     <ClInclude Include="4_00_load.h" />
+    <ClInclude Include="4_01_meta1.h" />
+    <ClInclude Include="4_02_meta2.h" />
     <ClInclude Include="4_10_templates.h" />
     <ClInclude Include="4_20_templates_label.h" />
     <ClInclude Include="4_30_templates_mention.h" />
+    <ClInclude Include="4_50_templates_xfix.h" />
+    <ClInclude Include="4_90_templates_z.h" />
     <ClInclude Include="5.h" />
     <ClInclude Include="5_05_lex_links.h" />
     <ClInclude Include="5_10_lex_items.h" />

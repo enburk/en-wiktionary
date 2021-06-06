@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "4.h"
 namespace pass4
 {
@@ -6,30 +6,63 @@ namespace pass4
     {
         if (body == "QUOTE" || body == "rfdate" || body == "RQ") return "{{" + body + "}}";
 
-        args args (body); str name = args.name; str arg = args.body;
+        args args(body, false); str name = args.name; str arg = args.body; auto & a = args;
 
         str output = "{{" + body + "}}";
         str report = "{{" + body + "}}";
         str kind   = "{{" + name + "}}";
 
-        if (name == "mention")
+        if (name == "etyl")
         {
-            str a1, a2, a3;
-            args.ignore("t"); args.ignore("tr"); args.ignore("gloss"); args.ignore("pos");
-            if (args.lang != "") { args.unnamed.insert(0, args.lang); args.lang = ""; args.complexity++; }
-            if (args.unnamed.size() > 1 && args[1] != "") a1 = "[[''"+args[1]+"'']]"; 
-            if (args.unnamed.size() > 2 && args[2] != "") a2 = "[[''"+args[2]+"'']]"; 
-            if (args.unnamed.size() > 3 && args[3] != "") a3 = "("+oquot+args[3]+cquot+")"; a3.replace_all("\n", " ");
-            if (args.complexity == 1) { output = ""; kind += " 0"; report += " ==== " + title; } else
-            if (args.complexity == 2) { output = a1; kind += " 1"; } else
-            if (args.complexity == 3 && a1 == "" && a2 != "") { output = a2; kind += " 2-x"; } else
-            if (args.complexity == 3 && a1 != "" && a2 == "") { output = a1; kind += " 2x-"; } else
-            if (args.complexity == 3 && a1 != "" && a2 != "") { output = a2; kind += " 2xx"; } else
-            if (args.complexity == 4 && a1 != "" && a2 == "" && a3 != "") { output = a1 + a3; kind += " 3x-x"; } else
-            if (args.complexity == 4 && a1 != "" && a2 != "" && a3 != "") { output = a2 + a3; kind += " 3xxx"; } else
-            if (args.complexity == 4 && a1 == "" && a2 != "" && a3 != "") { output = a2 + a3; kind += " 3-xx"; } else
-            if (args.acquire("sc") != "") { kind += " sc"; report += " ==== " + title; }
-            { kind += " quest"; report += " ==== " + title; }
+            if (a.complexity >= 1)
+            {
+                if (Languages.contains(a[0])) {
+                    output = Languages[a[0]];
+                    kind += " 1"; } else
+                    kind += " quest 1";
+            }
+            else kind += " quest 2";
+        }
+        else
+        if (name == "mention"   or
+            name == "borrowed"  or
+            name == "derived"   or
+            name == "inherited" or
+            name == "cognate")
+        {
+            bool duo =
+                name == "borrowed" or
+                name == "derived"  or
+                name == "inherited";
+        //  if (a.unnamed.size() > 0 and duo and a[0] != "en" and a[0] != "mul") kind += " quest lang";
+            if (a.unnamed.size() > 0 and duo) { a.unnamed.erase(0); a.complexity--; }
+
+            str alt = a.acquire("alt");
+            if (alt != "" and a.unnamed.size() > 1) {
+                a[1] = alt; //kind += " alt";
+            }
+            if (a.unnamed.size() > 0 and not Languages.contains(a[0])) kind += " quest lang";
+            if (a.unnamed.size() > 2 and a[2] != "") { output = "''"+a[2]+"''"; kind += " 2"; } else
+            if (a.unnamed.size() > 1 and a[1] != "") { output = "''"+a[1]+"''"; kind += " 1"; } else
+                                                     { output = "''(?)''";      kind += " 0"; }
+            if (a.unnamed.size() > 0 and duo) output = Languages[a[0]] + " " + output;
+            a.ignore("g"); a.ignore("g1"); a.ignore("g2"); // gender
+            a.ignore("sc"); // script
+            a.ignore("id");
+            a.ignore("pos"); str q;
+            str tr = a.acquire("tr"); // transcript
+            str tt = a.acquire("t"); // translation
+            q = a.acquire("ts"); if (q != "") tr = q;
+            if (a.unnamed.size() >= 4 and a[3] != "") tt = a[3];
+            if (tr == "-") tr = "";
+            if (tt == "-") tt = "";
+            if (tr != "") tr = "''"+tr+"''";
+            if (tt != "") tt = "“" +tt+ "”";
+            q = a.acquire("lit"); if (q != "") tt = "literally “" +q+ "”";
+            if (a.complexity >= 5) kind += " quest";
+            if (tr == "" and tt != "") { output += " ("+tt+")"; kind += "t"; } else
+            if (tr != "" and tt == "") { output += " ("+tr+")"; kind += "t"; } else
+            if (tr != "" and tt != "") { output += " ("+tr+", "+tt+")"; kind += "t"; }
         }
         else
         {
@@ -39,16 +72,114 @@ namespace pass4
         if (output.contains("\n")) kind +=  " #br#";
         if (output.contains("\n")) report = "==== " + title + " ==== " + header + " ==== " + "\n\n" + report;
         if (output.contains("\n")) output.replace_all("\n", " ");
-        result.report (report, kind);
+        if (kind != "{{}}") result.report (report + " => " + output + " == " + title, kind);
         return output;
     }
 
     Pass <entry, entry> templates_mention = [](auto & input, auto & output)
     {
-        Result result {__FILE__, output};
+        Result result {__FILE__, output, true};
+
+        bool first_time = true;
 
         for (auto && [title, topic] : input)
         {
+            static int64_t nn = 0; if (++nn % 100'000 == 0)
+                logout("templates3", nn, input.cargo);
+
+            if (first_time) {
+                first_time = false;
+            
+                for (auto & [name, analysis] : Repo)
+                {
+                    if (name.starts_with("languages/code"))
+                    {
+                        for (auto & cluster : analysis.clusters)
+                        {
+                            auto ee = cluster.elements;
+                            auto cc = cluster.clusters;
+
+                            if (ee.size() == 2
+                            and ee[0].token
+                            and ee[0].token->text == "return")
+                            for (auto & e : ee[1].elements)
+                            {
+                                if (e.elements.size() == 3
+                                and e.elements[0].elements.size() == 1
+                                and e.elements[0].elements[0].elements.size() == 1
+                                and e.elements[0].elements[0].elements[0].token
+                                and e.elements[2].token)
+                                {
+                                    str abbr = e.elements[0].elements[0].elements[0].token->text;
+                                    str full = e.elements[2].token->text;
+                                    abbr.strip("\"");
+                                    full.strip("\"");
+                                    result.report(abbr + " = " + full, "languages");
+                                    Languages[abbr] = full;
+                                }
+                            }
+                        }
+                    }
+                    if (name.starts_with("families/data") or
+                        name.starts_with("etymology languages/data"))
+                    {
+                        for (auto & cluster : analysis.clusters)
+                        {
+                            auto ee = cluster.elements;
+                            auto cc = cluster.clusters;
+
+                            if (ee.size() == 5
+                            and ee[0].token
+                            and ee[0].token->text == "m"
+                            and ee[1].elements.size() == 1
+                            and ee[1].elements[0].elements.size() == 1
+                            and ee[1].elements[0].elements[0].token
+                            and ee[3].token
+                            and ee[3].token->text == "m"
+                            and ee[4].elements.size() == 1
+                            and ee[4].elements[0].elements.size() == 1
+                            and ee[4].elements[0].elements[0].token
+                            ) {
+                                str abbr = ee[1].elements[0].elements[0].token->text;
+                                str full = ee[4].elements[0].elements[0].token->text;
+                                abbr.strip("\"");
+                                full.strip("\"");
+                                Languages[abbr] = Languages[full];
+                                result.report(abbr + " = " + full +
+                                    " = " + Languages[full],
+                                    "languages etyl");
+                            }
+
+                            if (ee.size() == 4
+                            and ee[0].token
+                            and ee[0].token->text == "m"
+                            and ee[1].elements.size() == 1
+                            and ee[1].elements[0].elements.size() == 1
+                            and ee[1].elements[0].elements[0].token)
+                            {
+                                str abbr = ee[1].elements[0].elements[0].token->text;
+                                abbr.strip("\"");
+
+                                for (auto & pp : ee[3].elements)
+                                {
+                                    auto & p = pp.elements;
+                                    if (p.size() == 3
+                                    and p[0].token
+                                    and p[0].token->text == "canonicalName"
+                                    and p[2].token)
+                                    {
+                                        str full = p[2].token->text;
+                                        full.strip("\"");
+                                        result.report(abbr + " = " + full, "languages etyl");
+                                        Languages[abbr] = full;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
             for (auto & [header, forms, content] : topic)
             {
                 auto t = title;
@@ -67,7 +198,5 @@ namespace pass4
                 std::move(title),
                 std::move(topic)});
         }
-
-        dump_templates_statistics(result);
     };
 }

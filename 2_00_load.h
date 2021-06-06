@@ -4,11 +4,11 @@ namespace pass2
 {
     Pass<pass1::entry, entry> load = [](auto & input, auto & output)
     {
-        bool started = false;
+        bool live = false;
 
         for (auto && [title, topic] : input)
         {
-            started = true;
+            live = true;
 
             entry e; e.title = title; paragraph current;
 
@@ -31,9 +31,7 @@ namespace pass2
             output.push(std::move(e));
         }
 
-        if (started) return;
-            
-        if (std::filesystem::exists(path_out)) return;
+        if (live or std::filesystem::exists(path_out)) return;
 
         print("=== load 2... ===");
 
@@ -52,8 +50,7 @@ namespace pass2
             {
                 if (line == esc)
                 {
-                    if (!e.topic.empty())
-                    {
+                    if (not e.topic.empty()) {
                         output.push(std::move(e));
                         e = entry{};
                     }
