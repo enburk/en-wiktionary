@@ -181,6 +181,15 @@
     <ClInclude Include="4_50_templates_xfix.h">
       <Filter>4</Filter>
     </ClInclude>
+    <ClInclude Include="4_40_templates_taxon.h">
+      <Filter>4</Filter>
+    </ClInclude>
+    <ClInclude Include="4_35_templates_names.h">
+      <Filter>4</Filter>
+    </ClInclude>
+    <ClInclude Include="4_89_templates_zz.h">
+      <Filter>4</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="0">

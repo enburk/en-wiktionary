@@ -29,15 +29,15 @@ namespace aux
             if (size() > 0) truncate(size() - delimiter.size());
         }
 
-        static str list(array<str> lines) {
+        static str list(array<str> lines, str del1 = ", ", str del2 = " or ") {
             if (lines.size() == 0) return "";
             if (lines.size() == 1) return lines[0];
             str s = lines[0];
             for (int i=1; i<lines.size()-1; i++) {
-                s += ", ";
+                s += del1;
                 s += lines[i];
             }
-            s += " or ";
+            s += del2;
             s += lines.back();
             return s;
         }

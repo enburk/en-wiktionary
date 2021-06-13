@@ -24,16 +24,23 @@ namespace pass4
             else kind += " quest 2";
         }
         else
-        if (name == "mention"   or
-            name == "borrowed"  or
-            name == "derived"   or
-            name == "inherited" or
-            name == "cognate")
+        if (name == "link"       or
+            name == "mention"    or
+            name == "borrowed"   or
+            name == "derived"    or
+            name == "inherited"  or
+            name == "cognate"    or
+            name == "noncognate" or
+            name == "calque"     or
+            name == "back-formation" or
+            false)
         {
             bool duo =
-                name == "borrowed" or
-                name == "derived"  or
-                name == "inherited";
+                name == "borrowed"   or
+                name == "derived"    or
+                name == "inherited"  or
+                name == "calque"     or
+                false;
         //  if (a.unnamed.size() > 0 and duo and a[0] != "en" and a[0] != "mul") kind += " quest lang";
             if (a.unnamed.size() > 0 and duo) { a.unnamed.erase(0); a.complexity--; }
 
@@ -41,15 +48,28 @@ namespace pass4
             if (alt != "" and a.unnamed.size() > 1) {
                 a[1] = alt; //kind += " alt";
             }
+
+            if (a.unnamed.size() > 1 and a.unnamed.back() == "-") a.unnamed.truncate();
             if (a.unnamed.size() > 0 and not Languages.contains(a[0])) kind += " quest lang";
-            if (a.unnamed.size() > 2 and a[2] != "") { output = "''"+a[2]+"''"; kind += " 2"; } else
+            if (a.unnamed.size() > 2 and a[2] != "") { output = "''"+a[2]+"''"; kind += " 1"; } else
             if (a.unnamed.size() > 1 and a[1] != "") { output = "''"+a[1]+"''"; kind += " 1"; } else
                                                      { output = "''(?)''";      kind += " 0"; }
-            if (a.unnamed.size() > 0 and duo) output = Languages[a[0]] + " " + output;
+
+            if (name != "link"
+            and name != "mention"
+            and a.unnamed.size() > 0
+            and Languages.contains(a[0]))
+                output = Languages[a[0]]
+                    + " " + output;
+
             a.ignore("g"); a.ignore("g1"); a.ignore("g2"); // gender
             a.ignore("sc"); // script
             a.ignore("id");
-            a.ignore("pos"); str q;
+            a.ignore("pos");
+            
+            str q;
+            str nocap = a.acquire("nocap");
+            str notext = a.acquire("notext");
             str tr = a.acquire("tr"); // transcript
             str tt = a.acquire("t"); // translation
             q = a.acquire("ts"); if (q != "") tr = q;
@@ -63,6 +83,9 @@ namespace pass4
             if (tr == "" and tt != "") { output += " ("+tt+")"; kind += "t"; } else
             if (tr != "" and tt == "") { output += " ("+tr+")"; kind += "t"; } else
             if (tr != "" and tt != "") { output += " ("+tr+", "+tt+")"; kind += "t"; }
+
+            if (name == "calque" and notext == "") output = (nocap == "" ? "Calque of " : "calque of ") + output;
+            if (name == "back-formation" and notext == "") output = (nocap == "" ? "Back-formation from " : "back-formation from ") + output;
         }
         else
         {
@@ -85,7 +108,7 @@ namespace pass4
         for (auto && [title, topic] : input)
         {
             static int64_t nn = 0; if (++nn % 100'000 == 0)
-                logout("templates3", nn, input.cargo);
+                logout("templates2", nn, input.cargo);
 
             if (first_time) {
                 first_time = false;

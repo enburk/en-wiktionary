@@ -31,6 +31,7 @@ struct args
             name = s;
         
         name.strip(" \t\n");
+        name.canonicalize();
 
         if (auto   it =  redirect_templates.find(name);
                    it != redirect_templates.end ()) {
@@ -110,9 +111,13 @@ struct args
 
         if (ignore_en)
         {
-            auto i = unnamed.begin(); for (auto j = unnamed.begin(); j != unnamed.end(); j++)
+            auto i = unnamed.begin();
+            for (auto j = unnamed.begin(); j != unnamed.end(); j++)
             {
-                if ((*j == "en" || *j == "mul") && lang == "") lang = *j; else std::swap(*i++, *j);
+                if ((*j == "en" ||
+                    *j == "enm" ||
+                    *j == "mul") && lang == "")
+                    lang = *j; else std::swap(*i++, *j);
             }
             unnamed.erase(i, unnamed.end());
         }

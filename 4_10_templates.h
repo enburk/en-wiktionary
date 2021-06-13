@@ -17,6 +17,7 @@ namespace pass4
         {   "pronunciation",
         {
             "audio", "rhymes", "enPR", // non IPA pronunciation
+            "root", // etymology
         }},
         {   "mid",
         {
@@ -37,7 +38,7 @@ namespace pass4
         {
             "Letter", "multiple images", "picdic", "projectlinks",
             "examples", "examples-right", "broken ref",
-            "en-decades",
+            "en-decades", "senseid", "prefixsee"
         }},
         {   "TEST",
         {
@@ -59,43 +60,39 @@ namespace pass4
             }
         }
 
-        if (name == "IPA")
+        if (name == "," or  // Oxford comma
+            name == "lena") // Requests for attention in etymologies in Latin entries
         {
-            a.ignore("nocount");
-            a.ignore("n"); a.ignore("n1"); a.ignore("n2"); a.ignore("n3"); a.ignore("n4"); a.ignore("n5"); str
-            q = a.acquire("qual" ); if (q != "" and a.unnamed.size() >= 1) a[0] = " (''" + q + "'') " + a[0];
-            q = a.acquire("qual1"); if (q != "" and a.unnamed.size() >= 1) a[0] = " (''" + q + "'') " + a[0];
-            q = a.acquire("qual2"); if (q != "" and a.unnamed.size() >= 2) a[1] = " (''" + q + "'') " + a[1];
-            q = a.acquire("qual3"); if (q != "" and a.unnamed.size() >= 3) a[2] = " (''" + q + "'') " + a[2];
-            q = a.acquire("qual4"); if (q != "" and a.unnamed.size() >= 4) a[3] = " (''" + q + "'') " + a[3];
-            q = a.acquire("qual5"); if (q != "" and a.unnamed.size() >= 5) a[4] = " (''" + q + "'') " + a[4];
-            q = a.acquire("qual6"); if (q != "" and a.unnamed.size() >= 6) a[5] = " (''" + q + "'') " + a[5];
-            q = a.acquire("qual7"); if (q != "" and a.unnamed.size() >= 7) a[6] = " (''" + q + "'') " + a[6];
-            if (a.complexity == 1) { output = a[0]; kind += " 1"; } else
-            if (a.complexity == 2) { output = a[0]+", "+a[1]; kind += " 2"; } else
-            if (a.complexity == 3) { output = a[0]+", "+a[1]+", "+a[2]; kind += " 6"; } else
-            if (a.complexity == 4) { output = a[0]+", "+a[1]+", "+a[2]+", "+a[3]; kind += " 6"; } else
-            if (a.complexity == 5) { output = a[0]+", "+a[1]+", "+a[2]+", "+a[3]+", "+a[4]; kind += " 6"; } else
-            if (a.complexity == 6) { output = a[0]+", "+a[1]+", "+a[2]+", "+a[3]+", "+a[4]+", "+a[5]; kind += " 6"; } else
-            if (a.complexity == 7) { output = a[0]+", "+a[1]+", "+a[2]+", "+a[3]+", "+a[4]+", "+a[5]+", "+a[6]; kind += " 6"; } else
-            if (a.complexity == 8) { output = a[0]+", "+a[1]+", "+a[2]+", "+a[3]+", "+a[4]+", "+a[5]+", "+a[6]+", "+a[7]; kind += " 6"; } else
+            output = "";
+        }
+        else
+        if (name == "defdate")
+        {
+            if (a.complexity == 1) { output = "["+a[0]+"]"; } else
+            if (a.complexity == 2) { output = "["+a[1]+"]"; } else
+            kind += " quest";
+        }
+        else
+        if (name == "gloss")
+        {
+            if (a.complexity == 1) { output = "("+a[0]+")"; } else
+            if (a.complexity == 2) { output = "("+a[1]+")"; } else
             kind += " quest";
         }
         else
         if (name == "non-gloss definition")
         {
             if (a.complexity == 1) { output = "''"+a[0]+"''"; } else
+            if (a.complexity == 2) { output = "''"+a[1]+"''"; } else
             kind += " quest";
         }
         else
-        if (name == "ux") // usex, eg, example
+        if (name == "IPAchar" or
+            name == "glossary")
         {
-            a.ignore("inline"); str
-            q = a.acquire("q");      if (q != "") a[0] += " (''" + q + "'')";
-            q = a.acquire("footer"); if (q != "") a[0] += " (''" + q + "'')";
-            if (a.complexity == 1) { output = "''"+a[0]+"''"; kind += " 1"; } else
-            if (a.complexity == 2) { output = "''"+a[0]+"'' ― ''"+a[1]+"''"; kind += " 2"; } else
-            { output = ""; kind += " skip"; }
+            if (a.complexity == 1) { output = a[0]; } else
+            if (a.complexity == 2) { output = a[1]; } else
+            kind += " quest";
         }
         else
         if (name == "accent" // a
@@ -121,42 +118,11 @@ namespace pass4
                 if (arg == "Mary-marry-merry"    ) arg = "</i>Mary–marry–merry<i> merger";
                 if (arg == "non-Mary-marry-merry") arg = "</i>Mary–marry–merry<i> distinction";
             }
-            if (a.complexity == 6) { output = "(''"+a[0]+", "+a[1]+", "+a[2]+", "+a[3]+", "+a[4]+", "+a[5]+"''):"; kind += " 6"; } else
-            if (a.complexity == 5) { output = "(''"+a[0]+", "+a[1]+", "+a[2]+", "+a[3]+", "+a[4]+"''):"; kind += " 6"; } else
-            if (a.complexity == 4) { output = "(''"+a[0]+", "+a[1]+", "+a[2]+", "+a[3]+"''):"; kind += " 6"; } else
-            if (a.complexity == 3) { output = "(''"+a[0]+", "+a[1]+", "+a[2]+"''):"; kind += " 6"; } else
-            if (a.complexity == 2) { output = "(''"+a[0]+", "+a[1]+"''):"; kind += " 2"; } else
-            if (a.complexity == 1) { output = "(''"+a[0]+"''):"; kind += " 1"; } else
-            { output = ""; kind += " skip"; }
-        }
-        else
-        if (name == "taxlink")
-        {
-            const array<str> ignored = {
-            "entry", "i", "noi", "noshow", "nowshow", "nosohw", "noshhow", "boshow",
-            "nomul", "nospe", "obs", "source", "status", "pedia", "pedia\\",
-            "ber", "nover", "ver", "vere", "vr", "wplink", "wplnk", "wslink", };
-            for (auto ignore : ignored) a.ignore(ignore);
-
-            str sname; if (a.unnamed.size() >= 1) sname = a.unnamed[0];
-            str taxon; if (a.unnamed.size() >= 2) taxon = a.unnamed[1];
-            str genus, species; sname.split_by(" ", genus, species);
-            const array<str> taxons = { "division", "taxon",
-                "superkingdom", "kingdom", "subkingdom", "infrakingdom",
-                "superphylum", "phylum", "subphylum", "subspecies",
-                "superclass", "class", "subclass", "infraclass",
-                "superorder", "order", "suborder", "infraorder",
-                "superfamily", "family",  "subfamily", "tribe" };
-            bool is_taxon   = taxons.contains(taxon) && species == "";
-            bool is_genus   = taxon == "genus"       && species == "";
-            bool is_scepies = taxon == "species";
-            if (a.complexity == 2 && is_taxon  ) { output = "["  + sname +  "]"; kind += " 1 taxon";   } else
-            if (a.complexity == 2 && is_genus  ) { output = "[''"+ sname +"'']"; kind += " 1 genus";   } else
-            if (a.complexity == 2 && is_scepies) { output = "[''"+ sname +"'']"; kind += " 1 species"; } else
-            if (a.complexity == 2              ) { output = "[''"+ sname +"'']"; kind += " 2"; } else
-            if (a.complexity == 3              ) { output = "[''"+ a[2]  +"'']"; kind += " 3"; } else
-            if (a.complexity == 4              ) { output = "[''"+ a[2]  +"'']"; kind += " 4"; } else
-            kind += " quest";
+            if (a.opt.size() > 0) kind += " quest";
+            output = str(a.unnamed, ", ");
+            output = "(''"+output+"'')";
+            if (name != "qualifier")
+                output += ":";
         }
         else
         if (name.ends_with(" Hypernyms"))
@@ -190,7 +156,7 @@ namespace pass4
         for (auto && [title, topic] : input)
         {
             static int64_t nn = 0; if (++nn % 100'000 == 0)
-                logout("templates1", nn, input.cargo);
+                logout("templates0", nn, input.cargo);
 
             for (auto & [header, forms, content] : topic)
             {

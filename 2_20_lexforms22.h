@@ -1,17 +1,17 @@
-#pragma once
+﻿#pragma once
 #include "2.h"
 #include "2_20_lexforms2.h"
 namespace pass2
 {
     str lexforms22_(str title, str header, str & forms, str body, Result<entry> & result)
     {
-        args args (body);
+        args args (body);//, false);
 
         auto it = lexforms2_internal::list_of_forms.find(args.name);
         if (it == lexforms2_internal::list_of_forms.end()) return "{{" + body + "}}";
         str lexical_form = it->second;
         str output = "{{" + body + "}}";
-        str report = lexical_form;
+        str kind = "";
 
         str opts;
         str first  = lexical_form.upto(1);
@@ -20,6 +20,7 @@ namespace pass2
         str ending = args.acquire("ending"); // ignore it
         str nodot  = args.acquire("nodot"); if (nodot == "yes" || nodot == "y" || nodot == "t" || nodot == "a") nodot = "1";
         str nocap  = args.acquire("nocap"); if (nocap == "yes" || nocap == "y" || nocap == "t" || nocap == "a") nocap = "1";
+        str notext = args.acquire("notext");
 
         if (cap    != "") { opts += " - cap"; }
         if (ending != "") { opts += " - ending"; }
@@ -31,7 +32,14 @@ namespace pass2
         if (dot   == "") dot = first == first.ascii_lowercased() ? "" : ".";
         if (nodot != "") dot = "";
 
-        if (opts  != "") report = opts;
+        if (opts  != "") kind = opts;
+
+        str q;
+        auto & a = args;
+        //if (a.unnamed.size() > 0) { if (not Languages.contains(a[0])) kind = "quest lang";
+        //    a.unnamed.erase(0);
+        //    a.complexity--;
+        //}
 
         array<str> froms; str
         from = args.acquire("from" ); if (from != "") froms += from.split_by(", ");
@@ -41,84 +49,88 @@ namespace pass2
         from = args.acquire("from5"); if (from != "") froms += from.split_by(", ");
         from = args.acquire("from6"); if (from != "") froms += from.split_by(", ");
 
-        str extra;
-        if (not froms.empty())
+        for (str & from : froms) {
+            if (from == "AU") from = "Australia";
+            if (from == "NZ") from = "New Zealand";
+            if (from == "UK") from = "Britain";
+            if (from == "AAVE") from = "African-American Vernacular English";
+            if (from == "American") from = "American English";
+            if (from == "Caribbean") from = "Caribbean English";
+            if (from == "colloquial") from = "colloquial English";
+            if (from == "dialect") from = "dialectal English";
+            if (from == "dialectal") from = "dialectal English";
+            if (from == "Dialectal") from = "dialectal English";
+            if (from == "NYC") from = "New York City English";
+            if (from == "Non-Oxford") from = "Non-Oxford British English";
+            if (from == "southern US black") from = "southern US black English";
+        }
+        str extra = str::list(froms, ", ", " and ");
+        if (extra.ends_with(" in") or
+            extra.ends_with("American") or
+            extra.ends_with("British") or
+            extra.ends_with("Canadian") or
+            extra.ends_with("Australian"))
+            extra += " English"; 
+
+        if (a.unnamed.size() > 1 and a[1] != "") { output = a[1];  kind += " 2"; } else
+        if (a.unnamed.size() > 0 and a[0] != "") { output = a[0];  kind += " 1"; } else
+                                                 { output = "(?)"; kind += " 0"; }
+
         {
-            for (str from : froms) {
-                if (from == "AU") from = "Australia";
-                if (from == "NZ") from = "New Zealand";
-                if (from == "UK") from = "Britain";
-                if (from == "AAVE") from = "African-American Vernacular English";
-                if (from == "American") from = "American English";
-                if (from == "Caribbean") from = "Caribbean English";
-                if (from == "colloquial") from = "colloquial English";
-                if (from == "dialect") from = "dialect English";
-                if (from == "dialectal") from = "dialect English";
-                if (from == "NYC") from = "New York City English";
-                if (from == "Non-Oxford") from = "Non-Oxford British English";
-                if (from == "southern US black") from = "southern US black English";
-                if (from.ends_with(" in")) from += " English";
-                if (extra != "")
-                    extra += ", ";
-                extra += from;
-            }
-            extra = ", ''representing " + extra + "''";
+            std::lock_guard lock{lexforms_mutex};
+            lexforms[output] += lexform{lexical_form, "-", title};
         }
 
-        str a1, a2, a3;
-        args.ignore("t"); args.ignore("tr"); args.ignore("gloss"); args.ignore("pos"); args.ignore("id");
-        if (args.unnamed.size() > 0 && args[0] != "") a1 = "'''"+args[0]+"'''"; 
-        if (args.unnamed.size() > 1 && args[1] != "") a2 = "'''"+args[1]+"'''"; 
-        if (args.unnamed.size() > 2 && args[2] != "") a3 = "("+oquot+args[2]+cquot+")";
+        q = a.acquire("alt"); if (q != "") output = q;
 
-        if (a1.starts_with("W:")) a1.upto(2).erase();
-        if (a1.starts_with("w:")) a1.upto(2).erase();
-        if (a1.starts_with("s:")) a1.upto(2).erase();
+        if (not output.contains("[[")
+        and not output.contains("]]"))
+        output = "[[" + output + "]]";
+        output = "'''" + output + "'''";
 
-        if (a2.starts_with("W:")) a2.upto(2).erase();
-        if (a2.starts_with("w:")) a2.upto(2).erase();
-        if (a2.starts_with("s:")) a2.upto(2).erase();
+        a.ignore("gloss"); a.ignore("pos"); a.ignore("id"); a.ignore("g");
+        str tr = a.acquire("tr"); // transcript
+        str tt = a.acquire("t"); // translation
+        q = a.acquire("ts"); if (q != "") tr = q;
+        if (a.unnamed.size() >= 3 and a[2] != "") tt = a[2];
+        if (tr == "-") tr = "";
+        if (tt == "-") tt = "";
+        if (tr != "") tr = "''"+tr+"''";
+        if (tt != "") tt = "“" +tt+ "”";
+        q = a.acquire("lit"); if (q != "") tt = "literally “" +q+ "”";
+        if (tr == "" and tt != "") { output += " ("+tt+")"; kind += "t"; } else
+        if (tr != "" and tt == "") { output += " ("+tr+")"; kind += "t"; } else
+        if (tr != "" and tt != "") { output += " ("+tr+", "+tt+")"; kind += "t"; }
 
-        str out;
-        if (args.complexity == 1 && a1 != "") { out = a1; report = "1" + opts; } else
-        if (args.complexity == 2 && a2 == "") { out = a1; report = "2" + opts; } else
-        if (args.complexity == 2 && a2 != "") { out = a2; report = "2" + opts; } else
-        if (args.complexity == 3 && a1 == "" && a2 != "") { out = a2 + " " + a3; report = "3" + opts; } else
-        if (args.complexity == 3 && a1 != "" && a2 == "") { out = a1 + " " + a3; report = "3" + opts; } else
-        if (args.complexity == 3 && a1 != "" && a2 != "") { out = a2 + " " + a3; report = "3" + opts; } else
-        {}
+        if (notext == "")
+        output = "''" + lexical_form + "'' " + output;
+        output += dot;
 
-        if (not froms.empty()) report = " - from " + std::to_string(froms.size());
-
-        if (out != "")
-        {
-            output = out;
-            if (not output.starts_with("'''")) output = "'''" + output;
-            if (not output.ends_with  ("'''")) output = output + "'''";
-            output = "''" + lexical_form + "'' " + output + dot;
-            if (extra != "" and output.ends_with(".")) output.truncate();
-            output += extra;
-
-            out = a2 != "" ? a2 : a1;
-
-            lexforms[out] += lexform{lexical_form, "-", title};
-
-            out.replace_all("[[", "");
-            out.replace_all("]]", "");
-
-            if (not out.contains_only(str::one_of(ALnum))) report = "- alnum1";
-            if (not out.contains_only(str::one_of(ALNUM))) report = "- alnum2";
+        if (extra != "" and
+           (lexical_form == "Standard spelling of" or
+            lexical_form == "standard spelling of")) {
+            extra[0] = str::ascii_toupper(extra[0]);
+            output[2] = str::ascii_tolower(output[2]);
+            if (output.ends_with(" spelling"))
+                output.resize(output.size()-9);
+            output = "''" + extra + "'' " + output;
+            kind = "extra standard";
+        }
+        else if (extra != "") {
+            if (output.ends_with(".")) output.truncate();
+            output += ", ''representing " + extra + "''";
+            kind = "extra";
         }
 
-        else report += " - quest";
+        if (a.complexity >= 4) kind += " quest";
 
-        result.report (title + " ==== " + header + " ==== {{" + body + "}}", report);
+        result.report("{{" + body + "}} => " + output + " ==== " + title + " ==== " + header, kind);
         return output;
     }
 
     Pass<entry, entry> lexforms22 = [](auto & input, auto & output)
     {
-        Result result {__FILE__, output};
+        Result result {__FILE__, output, true};
 
         std::set<entry> entries;
 

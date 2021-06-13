@@ -10,46 +10,53 @@ namespace pass4
         str report = "{{" + body + "}}";
         str kind   = "{{" + name + "}}";
 
+        if (a.unnamed.size() > 0 and not Languages.contains(a[0])) kind += " quest lang";
+        if (a.unnamed.size() > 0) { a.unnamed.erase(0); a.complexity--; }
+
         if (name == "prefixusex")
         {
             a.ignore_all();
-            if (a.unnamed.size() > 0 and not Languages.contains(a[0])) kind += " quest lang";
-            if (a.unnamed.size() > 0) { a.unnamed.erase(0); a.complexity--; }
             if (a.complexity == 2) { output = "''"+title+"'' + ''"+a[0]+"'' → ''"+a[1]+"''"; } else
             kind += " quest";
         }
         else
-        if (name == "affix"  or
+        if (name == "blend"  or
+            name == "affix"  or
             name == "prefix" or
             name == "suffix" or
+            name == "confix" or
             name == "compound")
         {
-            if (a.unnamed.size() > 0 and not Languages.contains(a[0])) kind += " quest lang";
-            if (a.unnamed.size() > 0) { a.unnamed.erase(0); a.complexity--; }
             str
-            q = a.acquire("alt1"); if (q != "" and a.unnamed.size() >= 2) { a[1] = q; }//kind = "{{suffix}} alt"; }
-            q = a.acquire("alt2"); if (q != "" and a.unnamed.size() >= 3) { a[2] = q; }//kind = "{{suffix}} alt"; }
-            q = a.acquire("alt3"); if (q != "" and a.unnamed.size() >= 4) { a[3] = q; }//kind = "{{suffix}} alt"; }
-            if (name == "prefix") if (a.unnamed.size() >= 2 and a[1] != "" and not a[1].ends_with  ("-")) a[1] += "-";
-            if (name == "suffix") if (a.unnamed.size() >= 3 and a[2] != "" and not a[2].starts_with("-")) a[2] = "-" + a[2];
-            if (name == "suffix") if (a.unnamed.size() >= 4 and a[3] != "" and not a[3].starts_with("-")) a[3] = "-" + a[3];
+            q = a.acquire("alt1"); if (q != "" and a.unnamed.size() >= 1) { a[0] = q; }//kind = "{{suffix}} alt"; }
+            q = a.acquire("alt2"); if (q != "" and a.unnamed.size() >= 2) { a[1] = q; }//kind = "{{suffix}} alt"; }
+            q = a.acquire("alt3"); if (q != "" and a.unnamed.size() >= 3) { a[2] = q; }//kind = "{{suffix}} alt"; }
+            if (name == "prefix" or name == "confix") if (a.unnamed.size() >= 1 and a[0] != "" and not a[0].ends_with  ("-")) a[0] = a[0] + "-";
+            if (name == "suffix" or name == "confix") if (a.unnamed.size() >= 2 and a[1] != "" and not a[1].starts_with("-")) a[1] = "-" + a[1];
+            if (name == "suffix" or name == "confix") if (a.unnamed.size() >= 3 and a[2] != "" and not a[2].starts_with("-")) a[2] = "-" + a[2];
             for (str & s : a.unnamed) if (s != "") s = "''" + s + "''";
-            q = a.acquire("t1" ); if (q != "" and a.unnamed.size() >= 2) { a[1] += " (“"+q+"”)"; }//kind = "{{suffix}} trans"; }
-            q = a.acquire("t2" ); if (q != "" and a.unnamed.size() >= 3) { a[2] += " (“"+q+"”)"; }//kind = "{{suffix}} trans"; }
-            q = a.acquire("t3" ); if (q != "" and a.unnamed.size() >= 4) { a[3] += " (“"+q+"”)"; }//kind = "{{suffix}} trans"; }
-            q = a.acquire("lit"); if (q != "" and a.unnamed.size() >= 2) { a[1] += " (literally “"+q+"”)"; }
-            if (a.lang1 != "" and Languages.contains(a.lang1) and a.unnamed.size() >= 2 and a[1] != "") { a [1] = Languages[a.lang1] + " " + a[1]; kind += " lang"; }
-            if (a.lang2 != "" and Languages.contains(a.lang2) and a.unnamed.size() >= 3 and a[2] != "") { a [2] = Languages[a.lang2] + " " + a[2]; kind += " lang"; }
+            q = a.acquire("t1" ); if (q != "" and a.unnamed.size() >= 1) { a[0] += " (“"+q+"”)"; }//kind = "{{suffix}} trans"; }
+            q = a.acquire("t2" ); if (q != "" and a.unnamed.size() >= 2) { a[1] += " (“"+q+"”)"; }//kind = "{{suffix}} trans"; }
+            q = a.acquire("t3" ); if (q != "" and a.unnamed.size() >= 3) { a[2] += " (“"+q+"”)"; }//kind = "{{suffix}} trans"; }
+            q = a.acquire("lit"); if (q != "" and a.unnamed.size() >= 1) { a[0] += " (literally “"+q+"”)"; }
+            if (a.lang1 != "" and Languages.contains(a.lang1) and a.unnamed.size() >= 1 and a[0] != "") { a [0] = Languages[a.lang1] + " " + a[0]; kind += " lang"; }
+            if (a.lang2 != "" and Languages.contains(a.lang2) and a.unnamed.size() >= 2 and a[1] != "") { a [1] = Languages[a.lang2] + " " + a[1]; kind += " lang"; }
             a.ignore_all();
             array<str> aa;
             for (str s : a.unnamed) if (s != "") aa += s;
             output = str(aa, " + ");
-            kind += " " + std::to_string(aa.size());
+            if (name == "blend") output = "Blend of " + output;
+            kind += " " + std::to_string(min(3,aa.size()));
         }
         else
         {
             kind = "{{}}"; templates_statistics [__FILE__][name]++;
         }
+        if (kind != "{{}}" and not
+            templates_usage[__FILE__].contains(name)) {
+            templates_usage[__FILE__].insert  (name);
+            result.report(esc + "\n" + Templates[name]
+                 + "\n" + esc + "\n", "{{"+name+"}}"); }
 
         if (kind.contains(" quest")) kind += " !!!!!";
         if (output.contains("\n")) kind +=  " #br#";

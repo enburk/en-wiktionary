@@ -43,12 +43,13 @@ str ALNUM = ALNUm + (char*)
 
 array<str> lexical_items
 {
-    "noun", "pronoun", "proper noun", "verb", "adjective", "adverb", "numeral", "number", "article", "particle", 
+    "noun", "pronoun", "proper noun", "verb",
+	"adjective", "adverb", "numeral", "number", "article", "particle", 
     "preposition", "postposition", "determiner", "conjunction", "interjection",
-    "initialism", "contraction", "acronym", 
     "letter", "symbol", "punctuation mark", "diacritical mark",
     "suffix", "prefix", "infix", "affix", "interfix",
     "phrase", "prepositional phrase", "proverb", 
+    "initialism", "contraction", "acronym", 
 };
 array<str> related_items
 {
@@ -59,8 +60,7 @@ array<str> related_items
 };
 array<str> lexical_notes
 {
-    "pronunciation", "etymology",
-    "usage notes", "trivia",
+    "pronunciation", "etymology", "usage notes", "trivia",
 };
 
 struct lexform { str form, ack, word; };
@@ -69,6 +69,7 @@ std::map<str, array<lexform>> lexforms;
 
 std::mutex lexforms_mutex;
 
+std::map<str, std::set<str>> templates_usage;
 std::map<str, std::map<str, int>> templates_statistics;
 template<class Entry>  void  dump_templates_statistics (Result<Entry> & result)
 {

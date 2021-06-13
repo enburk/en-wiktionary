@@ -81,7 +81,7 @@ namespace pass4
         for (auto && [title, topic] : input)
         {
             static int64_t nn = 0; if (++nn % 100'000 == 0)
-                logout("templates2", nn, input.cargo);
+                logout("templates1", nn, input.cargo);
 
             if (first_time) {
                 first_time = false;

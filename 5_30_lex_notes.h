@@ -22,17 +22,21 @@ namespace pass5
 
                 int complexity = 0;
 
-                for (str line : content)
+                for (str & line : content)
                 {
                     line.replace_all("[[", "");
                     line.replace_all("]]", "");
 
-                    if (header == "pronunciation") {
+                    if (header == "pronunciation")
+                    {
+                        line.replace_all("): , /", "): /"); // {{enPR}}, {{IPA}}
+                        line.replace_all( ") , /",  ") /"); // {{enPR}}, {{IPA}}
+                        line.replace_all( "* , /",  "* /"); // {{enPR}}, {{IPA}}
+
+                        line.strip();
                         while (line.starts_with("*")) {
-                            line.upto(1).erase();
-                            line.triml();
-                        }
-                        line.replace_all(") , /", ") /"); // {{enPR}}, {{IPA}}
+                            line.erase(0);
+                            line.strip(); }
                     }
 
                     if (!line.contains_only(str::one_of(alnum))) complexity = max(0+1, complexity);
@@ -44,6 +48,9 @@ namespace pass5
 
                     if (line.contains(str::one_of("[]{}#|<>"))) { complexity = 99; break; }
                 }
+
+                if (header == "pronunciation")
+                    content.erase_if([](auto s){ return s == ""; });
 
                 if (complexity == 0 && header == "etymology"    ) complexity = 90;
                 if (complexity <= 2 && header == "pronunciation") complexity = 90;

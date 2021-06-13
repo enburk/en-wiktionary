@@ -39,7 +39,10 @@
 #include "4_10_templates.h"
 #include "4_20_templates_label.h"
 #include "4_30_templates_mention.h"
+#include "4_35_templates_names.h"
+#include "4_40_templates_taxon.h"
 #include "4_50_templates_xfix.h"
+#include "4_89_templates_zz.h"
 #include "4_90_templates_z.h"
 
 #include "5_05_lex_links.h"
@@ -94,7 +97,10 @@ int main ()
     pass4::templates >>
     pass4::templates_label >>
     pass4::templates_mention >>
+    pass4::templates_names >>
+    pass4::templates_taxon >>
     pass4::templates_xfix >>
+    pass4::templates_zz >>
     pass4::templates_z >>
 
     pass5::lex_links >>
