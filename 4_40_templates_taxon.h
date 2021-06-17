@@ -4,20 +4,19 @@ namespace pass4
 {
     str templates_taxon_(str title, str header, str body, Result<entry> & result)
     {
-        args args (body, false); str name = args.name; str arg = args.body; auto & a = args;
+        args args (body); str name = args.name; auto & a = args;
 
         str output = "{{" + body + "}}";
         str report = "{{" + body + "}}";
         str kind   = "{{" + name + "}}";
 
-        if (body == "QUOTE" or
-            body == "rfdate" or
-            body == "RQ") return output;
-
         if (name == "vern")
         {
-            str pl = a.acquire("pl"); a.ignore("pedia");
-            if (a.complexity == 1) { output = a[0] + pl; } else kind += " quest";
+            a.ignore("dis");
+            a.ignore("pedia");
+            a.ignore("novern");
+            str pl = a.acquire("pl");
+            output = a.link("", "") + pl;
         }
         else
         if (name == "taxlink")
@@ -51,6 +50,13 @@ namespace pass4
         else
         if (name == "taxon")
         {
+            a.ignore("i");
+            str nodot = a.acquire("nodot");
+            if (a.complexity <= 2) kind += " quest";
+            if (a.complexity >= 5) kind += " quest";
+            if (a.complexity >= 3) output = "A taxonomic " + a[0] + " within the " + a[1] + " " + a[2];
+            if (a.complexity >= 4) output += " – " + a [3];
+            if (nodot        =="") output += ".";
         }
         else
         {
@@ -59,7 +65,7 @@ namespace pass4
 
         if (kind.contains(" quest")) kind += " !!!!!";
         if (output.contains("\n")) kind +=  " #br#";
-        if (output.contains("\n")) report = "==== " + title + " ==== " + header + " ==== " + "\n\n" + report;
+        if (output.contains("\n")) report = "==== "+title+" ==== "+header+" ==== "+"\n\n" + report;
         if (output.contains("\n")) output.replace_all("\n", " ");
         result.report (report + " => " + output + " == " + title, kind);
         return output;

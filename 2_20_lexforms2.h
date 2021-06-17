@@ -4,7 +4,7 @@ namespace pass2
 {
     namespace lexforms2_internal
     {
-        static std::unordered_map<str, str> list_of_forms =
+        static std::unordered_map<str, str> list_of_forms1 =
         {
         {   "abbreviation of"                       , "Abbreviation of"                                                  },
         {   "acronym of"                            , "Acronym of"                                                       },
@@ -13,7 +13,7 @@ namespace pass2
         {   "alternative case form of"              , "Alternative letter-case of"                                       },
         {   "alternative name of"                   , "Alternative name of"                                              },
         {   "alternative spelling of"               , "Alternative spelling of"                                          },
-        {   "alternative typography of"             , "Alternative spelling of"                                          },
+        {   "alternative typography of"             , "Alternative typography of"                                        },
         {   "alternative capitalisation of"         , "Alternative capitalisation of"                                    },
         {   "alternative capitalization of"         , "Alternative capitalization of"                                    },
         {   "archaic form of"                       , "Archaic form of"                                                  },
@@ -58,7 +58,9 @@ namespace pass2
         {   "synonym of"                            , "Synonym of"                                                       },
         {   "third-person singular of"              , "third-person singular simple present indicative form of"          },
         {"en-third-person singular of"              , "third-person singular simple present indicative form of"          },
-
+        };
+        static std::unordered_map<str, str> list_of_forms2 =
+        {
         {   "agent noun of"                         , "agent noun of"                                                    },
         {   "apocopic form of"                      , "Apocopic form of"                                                 },
         {   "aphetic form of"                       , "Aphetic form of"                                                  },
@@ -86,9 +88,6 @@ namespace pass2
         {   "syncopic form of"                      , "Syncopic form of"                                                 },
         {   "uncommon form of"                      , "Uncommon form of"                                                 },
         {   "uncommon spelling of"                  , "Uncommon spelling of"                                             },
-        {   ""                        , ""                                          },
-        {   ""                        , ""                                          },
-        {   ""                        , ""                                          },
         };
     }
 
@@ -96,40 +95,26 @@ namespace pass2
     {
         args args (body);
 
-        if (args.name == "form of")
-        {
-            str output = "{{" + body + "}}";
-            str kind   = "{{form of}}";
-            str nodot = args.acquire("nodot");
-            if (args.complexity == 2) {
-                output = "''" + args[0] + " of " + args[1] + "''";
-                output += nodot == "" ? "." : "";
-            }
-            else
-            if (args.complexity == 3) {
-                output = "''" + args[0] + " of " + args[2] + "''";
-                output += nodot == "" ? "." : "";
-            }
-            else kind += " quest";
-            result.report (title + " ==== " + header + " ==== {{" + body + "}}", kind);
-            return output;
-        }
+        auto it = lexforms2_internal::list_of_forms1.find(args.name);
+        if (it == lexforms2_internal::list_of_forms1.end())
+            return "{{" + body + "}}";
 
-        auto it = lexforms2_internal::list_of_forms.find(args.name);
-        if (it == lexforms2_internal::list_of_forms.end()) return "{{" + body + "}}";
         str lexical_form = it->second;
-        str output = "{{" + body + "}}";
+        str output = "{{"+body+"}}";
         str report = lexical_form;
 
-        if (args.complexity == 1 && args[0] != "")
+        if (args.complexity == 2) args.languaged();
+        if (args.complexity == 1
+        and args.kind == ""
+        and args.info == ""
+        and args[0] != "")
         {
-            str out = args[0];
+            output = args[0];
+            {
+                std::lock_guard lock{lexforms_mutex};
+                lexforms[output] += lexform{lexical_form, "-", title};
+            }
 
-            if (out.starts_with("W:")) out.upto(2).erase();
-            if (out.starts_with("w:")) out.upto(2).erase();
-            if (out.starts_with("s:")) out.upto(2).erase();
-
-            output = out;
             if (not output.starts_with("'''")) output = "'''" + output;
             if (not output.ends_with  ("'''")) output = output + "'''";
             output = "''" + lexical_form + "'' " + output;
@@ -138,26 +123,40 @@ namespace pass2
             if (first != first.ascii_lowercased())
                 output += ".";
 
-            {
-                std::lock_guard lock{lexforms_mutex};
-                lexforms[out] += lexform{lexical_form, "-", title};
-            }
-
+            str out = output;
             out.replace_all("[[", "");
             out.replace_all("]]", "");
-
             if (not out.contains_only(str::one_of(ALnum))) report = "- alnum1";
             if (not out.contains_only(str::one_of(ALNUM))) report = "- alnum2";
         }
         else report = "- quest";
 
-        result.report (title + " ==== " + header + " ==== {{" + body + "}}", report);
+        result.report("{{"+body+"}} => " + output + " ==== " + title + " ==== " + header, report);
         return output;
     }
 
     Pass<entry, entry> lexforms2 = [](auto & input, auto & output)
     {
-        Result result {__FILE__, output, true};
+        Result result {__FILE__, output};
+
+        Languages.try_emplace("en",  "English");
+        Languages.try_emplace("mul", "Multilingual");
+        Languages.try_emplace("cs",  "");
+        Languages.try_emplace("ceb", "");
+        Languages.try_emplace("de",  "");
+        Languages.try_emplace("da",  "");
+        Languages.try_emplace("fi",  "");
+        Languages.try_emplace("fr",  "");
+        Languages.try_emplace("grc", "");
+        Languages.try_emplace("el",  "");
+        Languages.try_emplace("enm", "");
+        Languages.try_emplace("es",  "");
+        Languages.try_emplace("it",  "");
+        Languages.try_emplace("nl",  "");
+        Languages.try_emplace("la",  "");
+        Languages.try_emplace("pt",  "");
+        Languages.try_emplace("so",  "");
+        Languages.try_emplace("tl",  "");
 
         for (auto && [title, topic] : input)
         {
@@ -166,7 +165,7 @@ namespace pass2
 
             for (auto & [header, forms, content] : topic)
             {
-                for (auto & [from, to] : lexforms2_internal::list_of_forms)
+                for (auto & [from, to] : lexforms2_internal::list_of_forms1)
                     if (content.contains("# " + to + " ")) result.report (
                         title + " ==== " + header + " ==== \n"
                             + content + "\n", "- raw");

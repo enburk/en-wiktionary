@@ -4,7 +4,8 @@ namespace pass4
 {
     str templates_zz_(str title, str header, str body, Result<entry> & result)
     {
-        args args (body, false); str name = args.name; str arg = args.body; auto & a = args;
+        args args (body); str name = args.name; auto & a = args;
+        args.languaged();
 
         name.replace_all("/", "~");
 
@@ -129,11 +130,6 @@ namespace pass4
             if (nodot != "") output += dot == "" ? "." : dot;
         }
         else
-        if (name == "ll")
-        {
-            if (a.complexity == 1) { output = a[0]; } else kind += " quest";
-        }
-        else
         if (name == "hyphenation")
         {
             output = "hyphenation: " + str(a.unnamed, "‧");
@@ -214,15 +210,15 @@ namespace pass4
         {
             kind = "{{}}"; templates_statistics [__FILE__][name]++;
         }
-        if (kind != "{{}}" and not
-            templates_usage[__FILE__].contains(name)) {
-            templates_usage[__FILE__].insert  (name);
+        if (a.kind != "{{}}" and not
+            templates_usage[__FILE__].contains(a.name)) {
+            templates_usage[__FILE__].insert  (a.name);
             result.report(esc + "\n" + Templates[name]
                  + "\n" + esc + "\n", "{{"+name+"}}"); }
 
         if (kind.contains(" quest")) kind += " !!!!!";
         if (output.contains("\n")) kind +=  " #br#";
-        if (output.contains("\n")) report = "==== " + title + " ==== " + header + " ==== " + "\n\n" + report;
+        if (output.contains("\n")) report = "==== "+title+" ==== "+header+" ==== "+"\n\n" + report;
         result.report (report + " => " + output + " == " + title, kind);
         return output;
     }

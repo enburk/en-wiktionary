@@ -13,7 +13,8 @@ namespace pass4
 
     str templates_z_(str title, str header, str body, Result<entry> & result)
     {
-        args args (body, false); str name = args.name; str arg = args.body; auto & a = args;
+        args args (body); str name = args.name; auto & a = args;
+        args.languaged();
 
         name.replace_all(":", "..");
         name.replace_all("/", "~");
@@ -22,9 +23,7 @@ namespace pass4
         str report = "{{" + body + "}}";
         str kind   = "{{" + name + "}}";
 
-        if (body == "QUOTE" or
-            body == "rfdate" or
-            body == "RQ") return output;
+        if (skipped_templates.contains(name)) return output;
 
         if (a.unnamed.size() > 0) { if (not Languages.contains(a[0])) kind += " quest lang";
             a.unnamed.erase(0);
@@ -39,20 +38,70 @@ namespace pass4
         {
         }
         else
-
-
+        if (name == "topics")
+        {
+        }
+        else
+        if (name == "coinage")
+        {
+        }
+        else
+        if (name == "uxi")
+        {
+        }
+        else
+        if (name == "color panel")
+        {
+        }
+        else
+        if (name == "langcat")
+        {
+        }
+        else
+        if (name == "SI-unit-abb")
+        {
+        }
+        else
+        if (name == "")
+        {
+        }
+        else
+        if (name == "")
+        {
+        }
+        else
+        if (name == "")
+        {
+        }
+        else
+        if (name == "")
+        {
+        }
+        else
+        if (name == "")
+        {
+        }
+        else
+        if (name == "")
+        {
+        }
+        else
+        if (name == "")
+        {
+        }
+        else
         {
             kind = "{{}}"; templates_statistics [__FILE__][name]++;
         }
         if (kind != "{{}}" and not
-            templates_usage[__FILE__].contains(name)) {
-            templates_usage[__FILE__].insert  (name);
+            templates_usage[__FILE__].contains(a.name)) {
+            templates_usage[__FILE__].insert  (a.name);
             result.report(esc + "\n" + Templates[name]
                  + "\n" + esc + "\n", "{{"+name+"}}"); }
 
         if (kind.contains(" quest")) kind += " !!!!!";
         if (output.contains("\n")) kind +=  " #br#";
-        if (output.contains("\n")) report = "==== " + title + " ==== " + header + " ==== " + "\n\n" + report;
+        if (output.contains("\n")) report = "==== "+title+" ==== "+header+" ==== "+"\n\n" + report;
         result.report(report + " => " + output + " == " + title, kind);
         return output;
     }

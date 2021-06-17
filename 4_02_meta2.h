@@ -16,7 +16,7 @@ namespace pass4
                 for (auto & [name, text] : Modules)
                 {
                     if (false or
-                        name.starts_with("label/data") or
+                        name.starts_with("labels/data") or
                         name.starts_with("families/data") or
                         name.starts_with("etymology languages/data") or
                         name.starts_with("languages/code to canonical name") or

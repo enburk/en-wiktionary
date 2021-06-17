@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "4.h"
 namespace pass4
 {
@@ -10,18 +10,17 @@ namespace pass4
     };
     std::map<str, lbl> labels_labels;
     std::map<str, str> labels_aliases;
+    std::map<str, int> accents;
 
-    str templates_label_ (str title, str header, str body, Result<entry> & result)
+    str templates_label__ (args & args, str body, Result<entry> & result)
     {
-        args args (body); str name = args.name; str arg = args.body;
+        str name = args.name;
 
-        str output = "{{" + body + "}}";
+        str output = "";
         str report = "{{" + body + "}}";
         str kind   = "{{" + name + "}}";
 
-        if (name != "label") return output; output = "";
-
-        str complexity = std::to_string(min(args.complexity, 9));
+        str complexity = std::to_string(min(args.complexity, 5));
         if (complexity.size() == 1) complexity = "0" + complexity;
         str complexity_plus = "";
 
@@ -68,13 +67,58 @@ namespace pass4
         }
 
         complexity += complexity_plus;
-        result.report (report + " => " + output, complexity);
+        result.report (report + " => " + output, kind + " " + complexity);
         return "(''"+output+"'')";
+    }
+
+    str templates_label_ (str title, str header, str body, Result<entry> & result)
+    {
+        args args (body); str name = args.name;
+
+        str output = "{{" + body + "}}";
+
+        if (name == "label"
+        or  name == "accent" // a
+        or  name == "qualifier" // qua, i, q, qf, qual
+        or  name == "sense")
+        {
+            if (name == "label") args.languaged();
+
+            if (name == "accent") for (str & arg : args.unnamed) {
+                if (arg == "GA"    ) arg = "General American";
+                if (arg == "GenAm" ) arg = "General American";
+                if (arg == "RP"    ) arg = "Received Pronunciation";
+                if (arg == "AU"    ) arg = "General Australian";
+                if (arg == "AuE"   ) arg = "General Australian";
+                if (arg == "Aus"   ) arg = "General Australian";
+                if (arg == "AusE"  ) arg = "General Australian";
+                if (arg == "GenAus") arg = "General Australian";
+                if (arg == "CA"    ) arg = "Canada";
+                if (arg == "NZ"    ) arg = "General New Zealand";
+                if (arg == "cot–caught"          ) arg = "</i>cot–caught<i> merger";
+                if (arg == "pin-pen"             ) arg = "</i>pin-pen<i> merger";
+                if (arg == "father-bother"       ) arg = "</i>father-bother<i> merger";
+                if (arg == "wine/whine"          ) arg = "without the </i>wine-whine<i> merger";
+                if (arg == "horse-hoarse"        ) arg = "without the </i>horse–hoarse<i> merger";
+                if (arg == "Mary-marry-merry"    ) arg = "</i>Mary–marry–merry<i> merger";
+                if (arg == "non-Mary-marry-merry") arg = "</i>Mary–marry–merry<i> distinction";
+            }
+
+            output = templates_label__(args, body, result);
+
+            if (name == "accent") accents[output]++;
+
+            if (name == "accent" or
+                name == "sense")
+                output += ":";
+        }
+
+        return output;
     }
 
     Pass <entry, entry> templates_label = [](auto & input, auto & output)
     {
-        Result result {__FILE__, output};
+        Result result {__FILE__, output, true};
 
         bool first_time = true;
 
@@ -169,5 +213,9 @@ namespace pass4
                 std::move(title),
                 std::move(topic)});
         }
+
+        for (auto [key, num] : accents)
+            result.report(key + " (" + std::to_string(num) + ")",
+                "accents");
     };
 }

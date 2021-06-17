@@ -4,20 +4,18 @@ namespace pass4
 {
     str templates_xfix_(str title, str header, str body, Result<entry> & result)
     {
-        args args (body, false); str name = args.name; str arg = args.body; auto & a = args;
+        args args (body); str name = args.name; auto & a = args;
+        args.languaged();
 
         str output = "{{" + body + "}}";
         str report = "{{" + body + "}}";
-        str kind   = "{{" + name + "}}";
-
-        if (a.unnamed.size() > 0 and not Languages.contains(a[0])) kind += " quest lang";
-        if (a.unnamed.size() > 0) { a.unnamed.erase(0); a.complexity--; }
+        args.kind  = "{{" + name + "}}";
 
         if (name == "prefixusex")
         {
             a.ignore_all();
             if (a.complexity == 2) { output = "''"+title+"'' + ''"+a[0]+"'' → ''"+a[1]+"''"; } else
-            kind += " quest";
+            a.kind += " quest";
         }
         else
         if (name == "blend"  or
@@ -39,30 +37,30 @@ namespace pass4
             q = a.acquire("t2" ); if (q != "" and a.unnamed.size() >= 2) { a[1] += " (“"+q+"”)"; }//kind = "{{suffix}} trans"; }
             q = a.acquire("t3" ); if (q != "" and a.unnamed.size() >= 3) { a[2] += " (“"+q+"”)"; }//kind = "{{suffix}} trans"; }
             q = a.acquire("lit"); if (q != "" and a.unnamed.size() >= 1) { a[0] += " (literally “"+q+"”)"; }
-            if (a.lang1 != "" and Languages.contains(a.lang1) and a.unnamed.size() >= 1 and a[0] != "") { a [0] = Languages[a.lang1] + " " + a[0]; kind += " lang"; }
-            if (a.lang2 != "" and Languages.contains(a.lang2) and a.unnamed.size() >= 2 and a[1] != "") { a [1] = Languages[a.lang2] + " " + a[1]; kind += " lang"; }
+            str lang1 = a.lang1 != "" and Languages.contains(a.lang1) ? Languages[a.lang1] : "";
+            str lang2 = a.lang2 != "" and Languages.contains(a.lang2) ? Languages[a.lang2] : "";
+            if (lang1 != "" and a.unnamed.size() >= 1 and a[0] != "") { a [0] = lang1 + " " + a[0]; a.kind += " lang"; }
+            if (lang2 != "" and a.unnamed.size() >= 2 and a[1] != "") { a [1] = lang2 + " " + a[1]; a.kind += " lang"; }
             a.ignore_all();
             array<str> aa;
             for (str s : a.unnamed) if (s != "") aa += s;
-            output = str(aa, " + ");
-            if (name == "blend") output = "Blend of " + output;
-            kind += " " + std::to_string(min(3,aa.size()));
+            if (not a.kind.ends_with("lang")) a.kind += " " + std::to_string(min(3,aa.size()));
+            if (not aa.empty())
+            {
+                output = str(aa, " + ");
+                if (name == "blend") output = "Blend of " + output;
+            }
         }
         else
         {
-            kind = "{{}}"; templates_statistics [__FILE__][name]++;
+            a.kind = "{{}}"; templates_statistics [__FILE__][name]++;
         }
-        if (kind != "{{}}" and not
-            templates_usage[__FILE__].contains(name)) {
-            templates_usage[__FILE__].insert  (name);
-            result.report(esc + "\n" + Templates[name]
-                 + "\n" + esc + "\n", "{{"+name+"}}"); }
 
-        if (kind.contains(" quest")) kind += " !!!!!";
-        if (output.contains("\n")) kind +=  " #br#";
-        if (output.contains("\n")) report = "==== " + title + " ==== " + header + " ==== " + "\n\n" + report;
+        if (a.kind.contains(" quest")) a.kind += " !!!!!";
+        if (output.contains("\n")) a.kind +=  " #br#";
+        if (output.contains("\n")) report = "==== "+title+" ==== "+header+" ==== "+"\n\n" + report;
         if (output.contains("\n")) output.replace_all("\n", " ");
-        result.report (report + " => " + output + " == " + title, kind);
+        result.report (report + " => " + output + " == " + title, a.kind);
         return output;
     }
 

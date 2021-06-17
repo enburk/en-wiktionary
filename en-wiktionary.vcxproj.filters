@@ -190,6 +190,9 @@
     <ClInclude Include="4_89_templates_zz.h">
       <Filter>4</Filter>
     </ClInclude>
+    <ClInclude Include="4_37_templates_places.h">
+      <Filter>4</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="0">

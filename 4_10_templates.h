@@ -14,11 +14,6 @@ namespace pass4
             "rfref", "rfquote", "rfscript", "rfd-redundant", "rfm-sense",
             "rfd", "rfm", "rfv" //, "rfdate"
         }},
-        {   "pronunciation",
-        {
-            "audio", "rhymes", "enPR", // non IPA pronunciation
-            "root", // etymology
-        }},
         {   "mid",
         {
             "top",  "mid",  "bottom",  "col-top",  "col-bottom", 
@@ -34,6 +29,16 @@ namespace pass4
             "der-top4", "der-mid4", "der-bottom4", "rel-top4", "rel-mid4", "rel-bottom4", 
             "der-top5", "der-mid5", "der-bottom5", "rel-top5", "rel-mid5", "rel-bottom5",
         }},
+        {   "pronunciation",
+        {
+            "audio", "rhymes", "enPR", // non IPA pronunciation
+        }},
+        {   "etymology",
+        {
+            ",",    // Oxford comma
+            "lena", // Requests for attention in etymologies in Latin entries
+            "root",
+        }},
         {   "miscellaneous",
         {
             "Letter", "multiple images", "picdic", "projectlinks",
@@ -46,11 +51,14 @@ namespace pass4
     };
     str templates_(str title, str header, str body, Result<entry> & result)
     {
-        args args (body); str name = args.name; str arg = args.body; auto & a = args;
+        args args (body); str name = args.name; auto & a = args;
+
+        name.replace_all(":", "..");
+        name.replace_all("/", "~");
 
         str output = "{{" + body + "}}";
         str report = "{{" + body + "}}";
-        str kind   = "{{" + name + "}}";
+        args.kind  = "{{" + name + "}}";
 
         for (const auto & [group, set] : rejected_templates) {
             if (set.find (name) != set.end()) {
@@ -60,75 +68,40 @@ namespace pass4
             }
         }
 
-        if (name == "," or  // Oxford comma
-            name == "lena") // Requests for attention in etymologies in Latin entries
+        if (name == "glossary" or
+            name == "IPAchar")
         {
-            output = "";
+            output = a.link("", "");
+        }
+        else
+        if (name == "ll"   or
+            name == "link" or
+            name == "l-self")
+        {
+            a.languaged();
+            a.ignore("g");
+            output = a.link("", "");
         }
         else
         if (name == "defdate")
         {
-            if (a.complexity == 1) { output = "["+a[0]+"]"; } else
-            if (a.complexity == 2) { output = "["+a[1]+"]"; } else
-            kind += " quest";
+            output = a.link("[", "]");
         }
         else
         if (name == "gloss")
         {
-            if (a.complexity == 1) { output = "("+a[0]+")"; } else
-            if (a.complexity == 2) { output = "("+a[1]+")"; } else
-            kind += " quest";
+            output = a.link("(", ")");
         }
         else
         if (name == "non-gloss definition")
         {
-            if (a.complexity == 1) { output = "''"+a[0]+"''"; } else
-            if (a.complexity == 2) { output = "''"+a[1]+"''"; } else
-            kind += " quest";
-        }
-        else
-        if (name == "IPAchar" or
-            name == "glossary")
-        {
-            if (a.complexity == 1) { output = a[0]; } else
-            if (a.complexity == 2) { output = a[1]; } else
-            kind += " quest";
-        }
-        else
-        if (name == "accent" // a
-        or  name == "qualifier" // qua, i, q, qf, qual
-        or  name == "sense")
-        {
-            if (name == "accent") for (str & arg : a.unnamed) {
-                if (arg == "GA"    ) arg = "General American";
-                if (arg == "GenAm" ) arg = "General American";
-                if (arg == "RP"    ) arg = "Received Pronunciation";
-                if (arg == "AU"    ) arg = "General Australian";
-                if (arg == "AuE"   ) arg = "General Australian";
-                if (arg == "Aus"   ) arg = "General Australian";
-                if (arg == "AusE"  ) arg = "General Australian";
-                if (arg == "GenAus") arg = "General Australian";
-                if (arg == "CA"    ) arg = "Canada";
-                if (arg == "NZ"    ) arg = "General New Zealand";
-                if (arg == "cot–caught"          ) arg = "</i>cot–caught<i> merger";
-                if (arg == "pin-pen"             ) arg = "</i>pin-pen<i> merger";
-                if (arg == "father-bother"       ) arg = "</i>father-bother<i> merger";
-                if (arg == "wine/whine"          ) arg = "without the </i>wine-whine<i> merger";
-                if (arg == "horse-hoarse"        ) arg = "without the </i>horse–hoarse<i> merger";
-                if (arg == "Mary-marry-merry"    ) arg = "</i>Mary–marry–merry<i> merger";
-                if (arg == "non-Mary-marry-merry") arg = "</i>Mary–marry–merry<i> distinction";
-            }
-            if (a.opt.size() > 0) kind += " quest";
-            output = str(a.unnamed, ", ");
-            output = "(''"+output+"'')";
-            if (name != "qualifier")
-                output += ":";
+            output = a.link("''", "''");
         }
         else
         if (name.ends_with(" Hypernyms"))
         {
-            kind = " Hypernyms";
-            output = Templates[name];
+            a.kind = "Hypernyms";
+            output = Templates[a.name];
             output.replace_all("\n", " ");
             output.strip();
             bracketer b;
@@ -137,15 +110,50 @@ namespace pass4
             output = b.output;
         }
         else
+        if (name.starts_with("list.."))
         {
-            kind = "{{}}"; templates_statistics[__FILE__][name]++;
+            a.kind = "list..";
+            output = Templates[a.name];
+            output.replace_all("\n", " ");
+            output.strip();
+            bracketer b;
+            b.proceed_template = [&](str s){ return templates_(title, header, s, result); };
+            b.proceed(output);
+            output = b.output;
+        }
+        else
+        if (name == "list helper")
+        {
+            a.kind = "list helper";
+            str title = a.acquire("title");
+            output = "(''"+title+"''): ";
+            bracketer b;
+            b.proceed_template = [&](str s){ return templates_(title, header, s, result); };
+            b.proceed(str::list(a.unnamed));
+            output += b.output;
+        }
+        else
+        if (name == "list helper 2")
+        {
+            a.kind = "list helper 2";
+            str title = a.acquire("title");
+            str list  = a.acquire("list");
+            output = "(''"+title+"''): ";
+            bracketer b;
+            b.proceed_template = [&](str s){ return templates_(title, header, s, result); };
+            b.proceed(list);
+            output += b.output;
+        }
+        else
+        {
+            a.kind = "{{}}"; templates_statistics[__FILE__][name]++;
         }
 
-        if (kind.contains(" quest")) kind += " !!!!!";
-        if (output.contains("\n")) kind +=  " #br#";
-        if (output.contains("\n")) report = "==== " + title + " ==== " + header + " ==== " + "\n\n" + report;
+        if (a.kind.contains(" quest")) a.kind += " !!!!!";
+        if (output.contains("\n")) a.kind +=  " #br#";
+        if (output.contains("\n")) report = "==== "+title+" ==== "+header+" ==== "+"\n\n" + report;
         if (output.contains("\n")) output.replace_all("\n", " ");
-        if (kind != "{{}}") result.report (report + " => " + output + " == " + title, kind);
+        if (a.kind != "{{}}") result.report (report + " => " + output + " == " + title, a.kind);
         return output;
     }
 
@@ -165,6 +173,8 @@ namespace pass4
 
                 for (auto & line : content)
                 {
+                    line.replace_all("E=mc²", "E&eq;mc²");
+
                     bracketer b;
                     b.proceed_template = [&](str s){ return templates_(t, h, s, result); };
                     b.proceed(line);

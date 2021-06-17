@@ -29,15 +29,15 @@ namespace aux
             if (size() > 0) truncate(size() - delimiter.size());
         }
 
-        static str list(array<str> lines, str del1 = ", ", str del2 = " or ") {
+        static str list(array<str> lines, str delimiter = ", ", str last_delimiter = ", ") {
             if (lines.size() == 0) return "";
             if (lines.size() == 1) return lines[0];
             str s = lines[0];
             for (int i=1; i<lines.size()-1; i++) {
-                s += del1;
+                s += delimiter;
                 s += lines[i];
             }
-            s += del2;
+            s += last_delimiter;
             s += lines.back();
             return s;
         }
@@ -270,6 +270,13 @@ namespace aux
 
         str ascii_lowercased () const { str s = *this; std::transform(s.begin(), s.end(), s.begin(), ascii_tolower); return s; }
         str ascii_uppercased () const { str s = *this; std::transform(s.begin(), s.end(), s.begin(), ascii_toupper); return s; }
+
+        void capitalize (bool on = true)
+        {
+            if (not empty())  (*this)[0] = on ?
+                ascii_toupper((*this)[0]):
+                ascii_tolower((*this)[0]);
+        }
     };
 }
 namespace std

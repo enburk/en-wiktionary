@@ -4,28 +4,39 @@ namespace pass4
 {
     str templates_mention_(str title, str header, str body, Result<entry> & result)
     {
-        if (body == "QUOTE" || body == "rfdate" || body == "RQ") return "{{" + body + "}}";
-
-        args args(body, false); str name = args.name; str arg = args.body; auto & a = args;
+        args args (body); str name = args.name; auto & a = args;
 
         str output = "{{" + body + "}}";
         str report = "{{" + body + "}}";
-        str kind   = "{{" + name + "}}";
+        args.kind  = "{{" + name + "}}";
 
+        if (name == "zh-l"
+        or  name == "zh-m"
+        or  name == "ja-r"
+        or  name == "ja-l"
+        or  name == "ko-l"
+        or  name == "he-m"
+        or  name == "he-l"
+        or  name == "ne-l"
+        or  name == "vi-l"
+        or  false)
+        {
+            output = a.link("", "");
+            a.kind = "lang " + a.kind;
+        }
+        else
         if (name == "etyl")
         {
             if (a.complexity >= 1)
             {
-                if (Languages.contains(a[0])) {
+                if (Languages.contains(a[0]))
                     output = Languages[a[0]];
-                    kind += " 1"; } else
-                    kind += " quest 1";
+                    else a.kind += " quest 1";
             }
-            else kind += " quest 2";
+            else a.kind += " quest 2";
         }
         else
-        if (name == "link"       or
-            name == "mention"    or
+        if (name == "mention"    or
             name == "borrowed"   or
             name == "derived"    or
             name == "inherited"  or
@@ -41,61 +52,44 @@ namespace pass4
                 name == "inherited"  or
                 name == "calque"     or
                 false;
-        //  if (a.unnamed.size() > 0 and duo and a[0] != "en" and a[0] != "mul") kind += " quest lang";
-            if (a.unnamed.size() > 0 and duo) { a.unnamed.erase(0); a.complexity--; }
 
-            str alt = a.acquire("alt");
-            if (alt != "" and a.unnamed.size() > 1) {
-                a[1] = alt; //kind += " alt";
+            if (a.unnamed.size() > 0 and duo) {
+                a.unnamed.erase(0);
+                a.complexity--;
             }
 
-            if (a.unnamed.size() > 1 and a.unnamed.back() == "-") a.unnamed.truncate();
-            if (a.unnamed.size() > 0 and not Languages.contains(a[0])) kind += " quest lang";
-            if (a.unnamed.size() > 2 and a[2] != "") { output = "''"+a[2]+"''"; kind += " 1"; } else
-            if (a.unnamed.size() > 1 and a[1] != "") { output = "''"+a[1]+"''"; kind += " 1"; } else
-                                                     { output = "''(?)''";      kind += " 0"; }
-
-            if (name != "link"
-            and name != "mention"
-            and a.unnamed.size() > 0
-            and Languages.contains(a[0]))
-                output = Languages[a[0]]
-                    + " " + output;
-
+            a.dotcapped();
             a.ignore("g"); a.ignore("g1"); a.ignore("g2"); // gender
-            a.ignore("sc"); // script
-            a.ignore("id");
-            a.ignore("pos");
-            
-            str q;
-            str nocap = a.acquire("nocap");
-            str notext = a.acquire("notext");
-            str tr = a.acquire("tr"); // transcript
-            str tt = a.acquire("t"); // translation
-            q = a.acquire("ts"); if (q != "") tr = q;
-            if (a.unnamed.size() >= 4 and a[3] != "") tt = a[3];
-            if (tr == "-") tr = "";
-            if (tt == "-") tt = "";
-            if (tr != "") tr = "''"+tr+"''";
-            if (tt != "") tt = "“" +tt+ "”";
-            q = a.acquire("lit"); if (q != "") tt = "literally “" +q+ "”";
-            if (a.complexity >= 5) kind += " quest";
-            if (tr == "" and tt != "") { output += " ("+tt+")"; kind += "t"; } else
-            if (tr != "" and tt == "") { output += " ("+tr+")"; kind += "t"; } else
-            if (tr != "" and tt != "") { output += " ("+tr+", "+tt+")"; kind += "t"; }
 
-            if (name == "calque" and notext == "") output = (nocap == "" ? "Calque of " : "calque of ") + output;
-            if (name == "back-formation" and notext == "") output = (nocap == "" ? "Back-formation from " : "back-formation from ") + output;
+            if (a.unnamed.size() > 0
+            and Languages.contains(a[0])) {
+                output = Languages[a[0]];
+                a.unnamed.erase(0);
+                a.complexity--;
+            }
+            if (output != "")
+                output += " ";
+
+            if (a.unnamed.size() > 0 and
+                a.unnamed.back() == "-")
+                a.unnamed.truncate();
+            
+            output += a.link("''", "''");
+
+            a.kind.replace_all("}} 2", "}} 1");
+
+            if (name == "calque"        ) output = a.capitalized("Calque of "          ) + output;
+            if (name == "back-formation") output = a.capitalized("Back-formation from ") + output;
         }
         else
         {
-            kind = "{{}}"; templates_statistics [__FILE__][name]++;
+            a.kind = "{{}}"; templates_statistics [__FILE__][name]++;
         }
 
-        if (output.contains("\n")) kind +=  " #br#";
-        if (output.contains("\n")) report = "==== " + title + " ==== " + header + " ==== " + "\n\n" + report;
+        if (output.contains("\n")) a.kind +=  " #br#";
+        if (output.contains("\n")) report = "==== "+title+" ==== "+header+" ==== "+"\n\n" + report;
         if (output.contains("\n")) output.replace_all("\n", " ");
-        if (kind != "{{}}") result.report (report + " => " + output + " == " + title, kind);
+        if (a.kind != "{{}}") result.report (report + " => " + output + " == " + title, a.kind);
         return output;
     }
 

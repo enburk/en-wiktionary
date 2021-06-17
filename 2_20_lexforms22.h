@@ -5,49 +5,72 @@ namespace pass2
 {
     str lexforms22_(str title, str header, str & forms, str body, Result<entry> & result)
     {
-        args args (body);//, false);
+        args a(body);
 
-        auto it = lexforms2_internal::list_of_forms.find(args.name);
-        if (it == lexforms2_internal::list_of_forms.end()) return "{{" + body + "}}";
+        if (a.name == "form of")
+        {
+            str output = "{{"+body+"}}";
+            a.kind = "{{form of}}";
+
+            a.languaged();
+            a.dotcapped();
+
+            if (a.unnamed.size() > 0)
+            {
+                str lexical_form = a[0];
+                output = a.capitalized(a[0]);
+                a.unnamed.erase(0);
+                a.complexity--;
+
+                if (output == "") a.kind += " quest";
+                output = "''" + output + " of'' ";
+                output += a.link();
+
+                str first = lexical_form.upto(1);
+                if (first != first.ascii_lowercased() or a.dot != ".")
+                    output += a.dot;
+            }
+            result.report("{{"+body+"}} => "+output+" ==== "+title+" ==== "+header, a.kind);
+            return output;
+        }
+
+        auto it = lexforms2_internal::list_of_forms1.find(a.name);
+        if (it == lexforms2_internal::list_of_forms1.end())
+             it = lexforms2_internal::list_of_forms2.find(a.name);
+        if (it == lexforms2_internal::list_of_forms2.end())
+            return "{{" + body + "}}";
+
         str lexical_form = it->second;
         str output = "{{" + body + "}}";
-        str kind = "";
 
-        str opts;
-        str first  = lexical_form.upto(1);
-        str dot    = args.acquire("dot");
-        str cap    = args.acquire("cap"); // ignore it
-        str ending = args.acquire("ending"); // ignore it
-        str nodot  = args.acquire("nodot"); if (nodot == "yes" || nodot == "y" || nodot == "t" || nodot == "a") nodot = "1";
-        str nocap  = args.acquire("nocap"); if (nocap == "yes" || nocap == "y" || nocap == "t" || nocap == "a") nocap = "1";
-        str notext = args.acquire("notext");
+        if (a.name != "en-past of"
+        and a.name != "en-irregular plural of"
+        and a.name != "en-third-person singular of"
+        and a.name != "en-ing form of"
+        and a.name != "en-simple past of"
+        and a.name != "en-comparative of"
+        and a.name != "en-superlative of")
+        a.languaged();
+        a.dotcapped();
 
-        if (cap    != "") { opts += " - cap"; }
-        if (ending != "") { opts += " - ending"; }
-        if (dot != "" && dot != "." && dot != "," && dot != ":" && dot != ";") { opts += " - dot"; }
-        if (nodot != "" && nodot != "1") { opts += " - nodot"; }
-        if (nocap != "" && nocap != "1") { opts += " - nocap"; }
+        if (a.unnamed.size() > 0 and a[0] != "")
+        {
+            std::lock_guard lock{lexforms_mutex};
+            lexforms[a[0]] += lexform{lexical_form, "-", title};
+        }
 
-        if (nocap != "") lexical_form.upto(1).replace_by(first.ascii_lowercased());
-        if (dot   == "") dot = first == first.ascii_lowercased() ? "" : ".";
-        if (nodot != "") dot = "";
-
-        if (opts  != "") kind = opts;
-
-        str q;
-        auto & a = args;
-        //if (a.unnamed.size() > 0) { if (not Languages.contains(a[0])) kind = "quest lang";
-        //    a.unnamed.erase(0);
-        //    a.complexity--;
-        //}
+        a.ignore("ending");
+        a.ignore("pos");
+        a.ignore("id");
+        a.ignore("g");
 
         array<str> froms; str
-        from = args.acquire("from" ); if (from != "") froms += from.split_by(", ");
-        from = args.acquire("from2"); if (from != "") froms += from.split_by(", ");
-        from = args.acquire("from3"); if (from != "") froms += from.split_by(", ");
-        from = args.acquire("from4"); if (from != "") froms += from.split_by(", ");
-        from = args.acquire("from5"); if (from != "") froms += from.split_by(", ");
-        from = args.acquire("from6"); if (from != "") froms += from.split_by(", ");
+        from = a.acquire("from" ); if (from != "") froms += from.split_by(", ");
+        from = a.acquire("from2"); if (from != "") froms += from.split_by(", ");
+        from = a.acquire("from3"); if (from != "") froms += from.split_by(", ");
+        from = a.acquire("from4"); if (from != "") froms += from.split_by(", ");
+        from = a.acquire("from5"); if (from != "") froms += from.split_by(", ");
+        from = a.acquire("from6"); if (from != "") froms += from.split_by(", ");
 
         for (str & from : froms) {
             if (from == "AU") from = "Australia";
@@ -72,65 +95,40 @@ namespace pass2
             extra.ends_with("Australian"))
             extra += " English"; 
 
-        if (a.unnamed.size() > 1 and a[1] != "") { output = a[1];  kind += " 2"; } else
-        if (a.unnamed.size() > 0 and a[0] != "") { output = a[0];  kind += " 1"; } else
-                                                 { output = "(?)"; kind += " 0"; }
+        output = a.capitalized(lexical_form);
 
-        {
-            std::lock_guard lock{lexforms_mutex};
-            lexforms[output] += lexform{lexical_form, "-", title};
-        }
+        if (output != "")
+            output = "''" + output + "'' ";
 
-        q = a.acquire("alt"); if (q != "") output = q;
-
-        if (not output.contains("[[")
-        and not output.contains("]]"))
-        output = "[[" + output + "]]";
-        output = "'''" + output + "'''";
-
-        a.ignore("gloss"); a.ignore("pos"); a.ignore("id"); a.ignore("g");
-        str tr = a.acquire("tr"); // transcript
-        str tt = a.acquire("t"); // translation
-        q = a.acquire("ts"); if (q != "") tr = q;
-        if (a.unnamed.size() >= 3 and a[2] != "") tt = a[2];
-        if (tr == "-") tr = "";
-        if (tt == "-") tt = "";
-        if (tr != "") tr = "''"+tr+"''";
-        if (tt != "") tt = "“" +tt+ "”";
-        q = a.acquire("lit"); if (q != "") tt = "literally “" +q+ "”";
-        if (tr == "" and tt != "") { output += " ("+tt+")"; kind += "t"; } else
-        if (tr != "" and tt == "") { output += " ("+tr+")"; kind += "t"; } else
-        if (tr != "" and tt != "") { output += " ("+tr+", "+tt+")"; kind += "t"; }
-
-        if (notext == "")
-        output = "''" + lexical_form + "'' " + output;
-        output += dot;
+        output += a.link();
 
         if (extra != "" and
            (lexical_form == "Standard spelling of" or
             lexical_form == "standard spelling of")) {
             extra[0] = str::ascii_toupper(extra[0]);
             output[2] = str::ascii_tolower(output[2]);
-            if (output.ends_with(" spelling"))
-                output.resize(output.size()-9);
+            if (extra.ends_with(" spelling"))
+                extra.resize(extra.size()-9);
             output = "''" + extra + "'' " + output;
-            kind = "extra standard";
+            a.kind = "extra standard";
         }
         else if (extra != "") {
             if (output.ends_with(".")) output.truncate();
             output += ", ''representing " + extra + "''";
-            kind = "extra";
+            a.kind = "extra";
         }
 
-        if (a.complexity >= 4) kind += " quest";
+        str first = lexical_form.upto(1);
+        if (first != first.ascii_lowercased() or a.dot != ".")
+            output += a.dot;
 
-        result.report("{{" + body + "}} => " + output + " ==== " + title + " ==== " + header, kind);
+        result.report("{{"+body+"}} => "+output+" ==== "+title+" ==== "+header, a.kind + a.info);
         return output;
     }
 
     Pass<entry, entry> lexforms22 = [](auto & input, auto & output)
     {
-        Result result {__FILE__, output, true};
+        Result result {__FILE__, output};
 
         std::set<entry> entries;
 
