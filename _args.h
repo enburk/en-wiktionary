@@ -2,6 +2,7 @@
 {
     str name, body;
     str kind, info;
+    str gloss1, gloss2;
     str lang, lang1, lang2;
     std::map<str,str> opt;
     array<str> unnamed;
@@ -75,12 +76,12 @@
 
                 if (key == "head"  ) continue;
                 if (key == "head2" ) continue;
-                if (key == "gloss" ) continue;
-                if (key == "gloss1") continue;
-                if (key == "gloss2") continue;
-                if (key == "lang"  ) { lang1 = value; continue; }
-                if (key == "lang1" ) { lang1 = value; continue; }
-                if (key == "lang2" ) { lang2 = value; continue; }
+                if (key == "gloss" ) { gloss1 = value; continue; }
+                if (key == "gloss1") { gloss1 = value; continue; }
+                if (key == "gloss2") { gloss2 = value; continue; }
+                if (key == "lang"  ) { lang1  = value; continue; }
+                if (key == "lang1" ) { lang1  = value; continue; }
+                if (key == "lang2" ) { lang2  = value; continue; }
                 if (key == "sort"  ) continue;
                 if (key == "nocat" ) continue;
 

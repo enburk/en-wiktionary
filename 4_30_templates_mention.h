@@ -21,8 +21,7 @@ namespace pass4
         or  name == "vi-l"
         or  false)
         {
-            output = a.link("", "");
-            a.kind = "lang " + a.kind;
+            a.kind = "lang reject";
         }
         else
         if (name == "etyl")
@@ -82,14 +81,69 @@ namespace pass4
             if (name == "back-formation") output = a.capitalized("Back-formation from ") + output;
         }
         else
+        if (name == "inflection of")
+        {
+            a.languaged(); if (a.unnamed.size() < 3) a.kind += " quest size"; else
+            {
+                str word = a.unnamed[0]; a.unnamed.erase(0);
+                str sept = a.unnamed[0]; a.unnamed.erase(0);
+                if (sept != "") a.kind +=
+                    " quest sept";
+
+                output = "";
+
+                for (str s : a.unnamed)
+                {
+                    if (output != "") output += " ";
+                    if (s == "1"    ) output += "first-person"; else
+                    if (s == "2"    ) output += "second-person"; else
+                    if (s == "3"    ) output += "third-person"; else
+                    if (s == "1//3" ) output += "first/third-person"; else
+                    if (s == "1//2//3") output += "first/second/third-person"; else
+                    if (s == "s"    ) output += "singular"; else
+                    if (s == "p"    ) output += "plural"; else
+                    if (s == "pl"   ) output += "plural"; else
+                    if (s == "s//p" ) output += "singular/plural"; else
+                    if (s == "f"    ) output += "feminine"; else
+                    if (s == "sim"  ) output += "simple"; else
+                    if (s == "pres" ) output += "present"; else
+                    if (s == "present" ) output += "present"; else
+                    if (s == "past" ) output += "past"; else
+                    if (s == "present//past" ) output += "present/past"; else
+                    if (s == "part" ) output += "participle"; else
+                    if (s == "participle" ) output += "participle"; else
+                    if (s == "ind"  ) output += "indicative"; else
+                    if (s == "indc" ) output += "indicative"; else
+                    if (s == "col"  ) output += "collective"; else
+                    if (s == "obs"  ) output += "obsolete"; else
+                    if (s == "alternative") output += "alternative"; else
+                    if (s == "nom"  ) output += "nominative"; else
+                    if (s == "gen"  ) output += "genitive"; else
+                    if (s == "def"  ) output += "definite"; else
+                    if (s == "act"  ) output += "active"; else
+                    if (s == "an"   ) output += "animate"; else
+                    if (s == "imp"  ) output += "imperative"; else
+                    if (s == "sub"  ) output += "subjunctive"; else
+                    if (s == ";"    ) output += "\n# "; else
+
+                    { output += "?"; a.kind += "!"; }
+                }
+
+                output = "''" + output + " of'' '''" + word + "'''";
+
+                if (not a.opt.empty()) a.kind += " opt";
+            }
+        }
+        else
         {
             a.kind = "{{}}"; templates_statistics [__FILE__][name]++;
         }
 
         if (output.contains("\n")) a.kind +=  " #br#";
-        if (output.contains("\n")) report = "==== "+title+" ==== "+header+" ==== "+"\n\n" + report;
-        if (output.contains("\n")) output.replace_all("\n", " ");
-        if (a.kind != "{{}}") result.report (report + " => " + output + " == " + title, a.kind);
+        if (output.contains("\n"))
+            report = esc+" "+title+"\n"+report+"\n====\n"+output; else
+            report = report + " => " + output + " == " + title;
+        if (a.kind != "{{}}") result.report (report, a.kind);
         return output;
     }
 

@@ -185,6 +185,8 @@ namespace aux
         auto erase (const_iterator i                  ) { return base::erase(i); }
         auto erase (int            i                  ) { return base::erase(begin()+i); }
 
+        void erase_all(const type  & e) { erase_if([e](const auto & a){ return a == e; }); }
+
         void truncate  (int offset) { from(offset).erase(); }
         void truncate  () { if (size() > 0) base::pop_back(); }
 

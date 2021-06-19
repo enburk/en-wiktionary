@@ -277,6 +277,10 @@ namespace aux
                 ascii_toupper((*this)[0]):
                 ascii_tolower((*this)[0]);
         }
+        str capitalized (bool on = true)
+        {
+            str s= *this; s.capitalize(on); return s;
+        }
     };
 }
 namespace std

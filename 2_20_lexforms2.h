@@ -88,6 +88,7 @@ namespace pass2
         {   "syncopic form of"                      , "Syncopic form of"                                                 },
         {   "uncommon form of"                      , "Uncommon form of"                                                 },
         {   "uncommon spelling of"                  , "Uncommon spelling of"                                             },
+        {   "short for"                             , "Short for"                                                        },
         };
     }
 

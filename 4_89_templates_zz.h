@@ -81,36 +81,6 @@ namespace pass4
             if (nodot != "") output += dot == "" ? "." : dot;
         }
         else
-        if (name == "named-after")
-        {
-            str dot    = a.acquire("dot");
-            str nodot  = a.acquire("nodot");
-            str nocap  = a.acquire("nocap");
-            str notext = a.acquire("notext");
-            str nat    = a.acquire("nat");
-            str born   = a.acquire("born");
-            str died   = a.acquire("died");
-            a.ignore("wplink");
-            str q;
-            q = a.acquire("nationality");  if (q != "") nat = q;
-
-            array<str> occs;
-            q = a.acquire("occ");  if (q != "") occs += q;
-            q = a.acquire("occ1"); if (q != "") occs += q;
-            q = a.acquire("occ2"); if (q != "") occs += q;
-            q = a.acquire("occ3"); if (q != "") occs += q;
-            q = a.acquire("occ4"); if (q != "") occs += q;
-            str occ = str::list(occs, ", ", " and ");
-
-            if (a.opt.size() > 0) kind += " quest";
-            output = notext != "" ? "" : nocap != "" ? "Named after " : "named after of ";
-            if (nat  != "") output += nat + " ";
-            if (occ  != "") output += occ + " ";
-            if (born != "") output += "(" + born + "–" + died + ")";
-            output += str::list(a.unnamed, ", ", " and ");
-            if (nodot != "") output += dot == "" ? "." : dot;
-        }
-        else
         if (name == "&lit")
         {
             str

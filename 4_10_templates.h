@@ -37,13 +37,18 @@ namespace pass4
         {
             ",",    // Oxford comma
             "lena", // Requests for attention in etymologies in Latin entries
-            "root",
+            "root", 
+        }},
+        {   "seealso",
+        {
+            "projectlinks",
+            "langcat", 
         }},
         {   "miscellaneous",
         {
-            "Letter", "multiple images", "picdic", "projectlinks",
+            "Letter", "multiple images", "picdic", "color panel", 
             "examples", "examples-right", "broken ref",
-            "en-decades", "senseid", "prefixsee"
+            "en-decades", "senseid", "prefixsee",
         }},
         {   "TEST",
         {

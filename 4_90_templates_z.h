@@ -25,24 +25,7 @@ namespace pass4
 
         if (skipped_templates.contains(name)) return output;
 
-        if (a.unnamed.size() > 0) { if (not Languages.contains(a[0])) kind += " quest lang";
-            a.unnamed.erase(0);
-            a.complexity--;
-        }
-
-        if (name == "zh-l")
-        {
-        }
-        else
-        if (name == "inflection of")
-        {
-        }
-        else
         if (name == "topics")
-        {
-        }
-        else
-        if (name == "coinage")
         {
         }
         else
@@ -50,39 +33,31 @@ namespace pass4
         {
         }
         else
-        if (name == "color panel")
-        {
-        }
-        else
-        if (name == "langcat")
-        {
-        }
-        else
         if (name == "SI-unit-abb")
         {
         }
         else
-        if (name == "")
+        if (name == "name translit")
         {
         }
         else
-        if (name == "")
+        if (name == "rootsee")
         {
         }
         else
-        if (name == "")
+        if (name == "catlangname")
         {
         }
         else
-        if (name == "")
+        if (name == "suffixusex")
         {
         }
         else
-        if (name == "")
+        if (name == "attention")
         {
         }
         else
-        if (name == "")
+        if (name == "langname-mention")
         {
         }
         else

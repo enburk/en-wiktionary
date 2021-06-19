@@ -29,12 +29,19 @@ namespace pass4
 		"union territory", "unitary authority", "unitary district", "united township municipality",
 		"unrecognized country", "valley", "village", "village municipality", "voivodeship", "volcano", 
 		"Welsh community",
-		// +
+		// + of
+		"emirate",
 		"capital",
 		"capital and largest city",
+		"shire town",
+		"commune",
+		"ward",
+		// + in
 		"community",
-		"place", "places",
-		"locale"
+		"settlement",
+		"place",
+		"locale",
+		"hamlet",
 	};
 
 	static array<str> placetypes_of;
@@ -49,8 +56,12 @@ namespace pass4
 		"village", "volcano",
 		// +
 		"community",
-		"place", "places",
-		"locale"
+		"settlement",
+		"place",
+		"locale",
+		"hamlet",
+		"parish", // !
+		"region", // !
 	};
 
 	static array<str> placenames_the = {
@@ -88,6 +99,7 @@ namespace pass4
 		// + 
 		"capital", 
 		"capital and largest city",
+		"shire town",
 	};
 
 	static array<str> placetypes_a = {
@@ -95,6 +107,11 @@ namespace pass4
 		"unitary authority",
 		"unitary district",
 		"united township municipality",
+		// +
+		"county",
+		"plateau",
+		"town",
+		"census-designated place",
 	};
 
 	static array<str> placetypes_Suf = {
@@ -121,12 +138,209 @@ namespace pass4
 		"local government district",
 		"London borough",
 		"parish",
-		"prefecture", // +
 		"subdivision",
 		"tehsil",
 		"Welsh community",
+		"prefecture", // +
+		"borough", // +
 	};
 
+	str lcfirst (str s) { if (s != "") s[0] = str::ascii_tolower(s[0]); return s; }
+	str ucfirst (str s) { if (s != "") s[0] = str::ascii_toupper(s[0]); return s; }
+
+	auto map (const std::map<str,str> & m, const str & s) {
+		auto it = m.find(s); return it != m.end() ? it->second : s;	};
+
+	auto match (str s, str pattern) {
+		return std::regex_match(s, std::regex(pattern)); };
+
+	auto the (str type, str name)
+	{
+		return
+		placenames_the.contains(name)
+		or  type == "gulf"
+		or  type == "ocean"
+		or  type == "river"
+		or  type == "sea"
+		or  type == "voivodeship"
+		or (type == "bay"      and match(name, "^Bay of "))
+		or (type == "lake"     and match(name, "^Lake of "))
+		or (type == "country"  and match(name, "^Republic of "))
+		or (type == "country"  and match(name, " Republic of ")) // +
+		or (type == "country"  and match(name, " States of ")) // +
+		or (type == "country"  and match(name, "^State of ")) // +
+		or (type == "country"  and match(name, " Republic$"))
+		or (type == "republic" and match(name, "^Republic of "))
+		or (type == "republic" and match(name, " Republic$"))
+		or (type == "region"   and match(name, " [Rr]egion$"))
+		or (type == "river"    and match(name, " River$"))
+		or (type == "county"   and match(name, "^Shire of "))
+		or (type == "local government area"      and match(name, "^Shire of "))
+		or (type == "Indian reservation"         and match(name, " Reservation"))
+		or (type == "Indian reservation"         and match(name, " Nation"))
+		or (type == "tribal jurisdictional area" and match(name, " Reservation"))
+		or (type == "tribal jurisdictional area" and match(name, " Nation"))
+		or  match(name, "^Isle of ")
+		or  match(name, " Islands$")
+		or  match(name, " Mountains$")
+		or  match(name, " Empire$")
+		or  match(name, " Country$")
+		or  match(name, " Region$")
+		or  match(name, " District$")
+		or  match(name, "^City of ")
+		or  match(name, " Territory$") // +
+		or  match(name, " Territories$") // +
+		;
+	};
+
+	auto naked (str type) -> str
+	{
+		if (type == "") return "";
+		type = type.split_by(":").front();
+		type = type.split_by(" (").front();
+		type = map(placetype_aliases, type);
+		auto pp = type.split_by(" "); int n = pp.size();
+		str pp4 = n < 4 ? "" : pp[n-4] + " " + pp[n-3] + " " + pp[n-2] + " " + pp[n-1];
+		str pp3 = n < 3 ? "" : pp[n-3] + " " + pp[n-2] + " " + pp[n-1];
+		str pp2 = n < 2 ? "" : pp[n-2] + " " + pp[n-1];
+		str pp1 = n < 1 ? "" : pp[n-1];
+		return
+			placetypes.contains(pp4) ? pp4:
+			placetypes.contains(pp3) ? pp3:
+			placetypes.contains(pp2) ? pp2:
+			placetypes.contains(pp1) ? pp1: "";
+	};
+
+	auto affixed (str p1, str p2, bool articled = false)
+	{
+		str suf;
+		if (p1.ends_with(":suf") or
+			p1.ends_with(":Suf"))
+			p1.split_by(":", p1, suf);
+
+		str pref;
+		if (p1.ends_with(":pref") or
+			p1.ends_with(":Pref"))
+			p1.split_by(":", p1, pref);
+
+		p1 = map(placetype_aliases, p1);
+		p2 = map(placename_aliases, p2);
+		if (p1 == "city" and
+			p2 == "New York")
+			p2 = "New York City";
+
+		str article = articled and the(p1, p2) ? "the" : "";
+
+		if (suf == "" and not
+			p2.ascii_lowercased().ends_with(p1)) {
+			if (placetypes_suf.contains(p1)) suf = "suf";
+			if (placetypes_Suf.contains(p1)) suf = "Suf";
+		}
+
+		if (suf == "suf") suf = p1;
+		if (suf == "Suf") suf = ucfirst(p1);
+		if (suf == "London borough") suf = "borough";
+		if (suf == "Welsh community") suf = "community";
+		if (suf == "local government district") suf = "district";
+		if (suf != "") p2 += " " + suf;
+
+		if (pref == "pref") pref = p1;
+		if (pref == "Pref") pref = ucfirst(p1);
+		if (pref != "") p2 = "the " +
+			pref + " of " + p2;
+
+		if (article != "") p2 =
+			article + " " + p2;
+		return p2;
+	};
+
+    str templates_places__(array<str> unnamed, str & kind, str & seat)
+    {
+		auto uu =
+		unnamed.front().split_by("/");
+		unnamed.erase(0);
+
+		kind +=
+		" "	+ std::to_string(min(3,uu.size())) +
+		" "	+ std::to_string(min(3,unnamed.size()));
+
+		str output;
+		str state;
+		str type;
+
+		for (str u : uu)
+		{
+			u = map(placetype_aliases, u);
+
+			str t = naked(u); if (t != "") type = t;
+
+			if (placetypes.contains(type))
+			{
+				if (output.ends_with(" and") or
+					output.ends_with(" or"))
+					output += " ";
+				else
+				if (output != "")
+				{
+					output +=
+						u == "or"  or
+						u == "and" or
+						u.starts_with("or " ) or
+						u.starts_with("and ") or
+						u.starts_with("("   ) ?
+						" " : ", ";
+					output += 
+						placetypes_the.contains(u) ? "the ":
+						placetypes_a  .contains(u) ? "a ":
+						"";
+				}
+			}
+			else
+			if (output != "")
+				output += " ";
+
+			output += u;
+		}
+
+		if (type == "borough")
+			seat =  "Borough";
+
+		for (str u : unnamed)
+		{
+			str u1, u2; u.split_by("/", u1, u2);
+
+			if (u2 == "")
+			{
+				output +=
+					u.starts_with("or " ) or u == "or"  or
+					u.starts_with("and ") or u == "and" or
+					u.starts_with("("   ) ? " " :
+					u.starts_with("in " ) or u == "in"  or
+					u.starts_with("on " ) or u == "on"  or
+					u.starts_with("of " ) or u == "of"  or
+					false ? state != "" ?
+					", " : " " :
+					", ";
+				output += u;
+				state = "unplaced";
+			}
+			else
+			{
+				if (state == "")
+					output += placetypes_of.contains(type) ?
+						" of" : " in";
+
+				if (u2.contains("/")) kind += " quest";
+
+				output += state == "placed" ?
+				", " + affixed(u1, u2, false):
+				" "  + affixed(u1, u2, state == "");
+				state = "placed";
+			}
+		}
+
+		return output;
+	}
 
     str templates_places_(str title, str header, str body, Result<entry> & result)
     {
@@ -152,16 +366,20 @@ namespace pass4
 					auto part = text.from(b+2).size(e-b-2);
 					auto full = text.from(b+0).size(e-b+2);
 					str s1, s2; str(part).split_by("/", s1, s2);
-					if (s2 == "") s2 = s1; else
-					if (s1 == "dept") s2 += " department"; else
-					if (s1 == "dist") s2 += " district"; else
-					if (s1 == "riv:Suf") s2 += " River"; else
-					if (s1 == "pen:suf") s2 += " peninsula"; else
-					{}
+					if (s2 == "") s2 = s1; else s2 = affixed(s1, s2);
+					if (s1.contains(":")) kind += "..";
 					full.replace_by(s2);
 				}
 			};
 
+			a.unnamed.erase_all("");
+
+			str def = a.acquire("def");
+			if (def != "")
+			{
+				a.kind += " def"; output = def;
+			}
+			else
 			if (body.contains("<<") and a.unnamed.size() == 1)
 			{
 				a.kind += " new";
@@ -175,234 +393,46 @@ namespace pass4
 			}
 			else
 			{
+				output = "";
+				auto & u = a.unnamed;
+
 				a.kind += " old"; if (body.contains("<<")) {
-				a.kind += " new"; for (auto & s : a.unnamed) angles(s, a.kind); }
+				a.kind += " new"; for (auto & s : u) angles(s, a.kind); }
 
-				auto map = [](const std::map<str,str> & m, const str & s) {
-				auto it = m.find(s); return it != m.end() ? it->second : s;	};
+				if (body.contains("pref:") or
+					body.contains("//") or
+					body.contains("|;") or
+					false)
+					result.report(report,
+						"quest");
 
-				auto match = [](str s, str pattern) { return std::regex_match(s, std::regex(pattern)); };
-
-				auto the = [match](str type, str name)
+				while (true)
 				{
-					return
-					placenames_the.contains(name)
-					or  type == "gulf"
-					or  type == "ocean"
-					or  type == "river"
-					or  type == "sea"
-					or  type == "voivodeship"
-					or (type == "bay"      and match(name, "^Bay of "))
-					or (type == "lake"     and match(name, "^Lake of "))
-					or (type == "country"  and match(name, "^Republic of "))
-					or (type == "country"  and match(name, " Republic of ")) // +
-					or (type == "country"  and match(name, " States of ")) // +
-					or (type == "country"  and match(name, "^State of ")) // +
-					or (type == "country"  and match(name, " Republic$"))
-					or (type == "republic" and match(name, "^Republic of "))
-					or (type == "republic" and match(name, " Republic$"))
-					or (type == "region"   and match(name, " [Rr]egion$"))
-					or (type == "river"    and match(name, " River$"))
-					or (type == "county"   and match(name, "^Shire of "))
-					or (type == "local government area"      and match(name, "^Shire of "))
-					or (type == "Indian reservation"         and match(name, " Reservation"))
-					or (type == "Indian reservation"         and match(name, " Nation"))
-					or (type == "tribal jurisdictional area" and match(name, " Reservation"))
-					or (type == "tribal jurisdictional area" and match(name, " Nation"))
-					or  match(name, "^Isle of ")
-					or  match(name, " Islands$")
-					or  match(name, " Mountains$")
-					or  match(name, " Empire$")
-					or  match(name, " Country$")
-					or  match(name, " Region$")
-					or  match(name, " District$")
-					or  match(name, "^City of ")
-					or  match(name, " Territory$") // +
-					or  match(name, " Territories$") // +
-					;
-				};
+					bool parted = false;
 
-				str where = "";
-				str kind1 = "";
-				str kind2 = "";
-				str kind3 = "";
-
-				while (a.unnamed.size() >= 3)
-				{
-					a.kind += " 3";
-					auto a3 = a.unnamed.back().split_by("/");
-					if (a3.size() == 2)
+					for (int i=0; i<u.size(); i++)
 					{
-						str p1 = map(placetype_aliases, a3[0]);
-						str p2 = map(placename_aliases, a3[1]);
-						if (p1 == "city" and
-							p2 == "New York")
-							p2 = "New York City";
-
-						if (p1 == "country"
-						or  p1 == "constituent country"
-						or  p1 == "county"
-						or  p1 == "city"
-						or  p1 == "council area"
-						or  p1 == "province"
-						or  p1 == "region"
-						or  p1 == "state"
-						or  false) {;}
-						else
-						if (placetypes.contains(p1))
-							kind1 = "a"; else
-							kind2 = "b";
-
-						a.unnamed.back() = p2;
+						if (u[i] == ";") {
+							str kind; // ignore it
+							output += templates_places__(u.upto(i), kind, seat);
+							output += "; ";
+							a.kind += ";";
+							u.upto(i+1).erase();
+							parted = true;
+							break;
+						}
 					}
-					else kind3 = "c";
 
-					str
-					where_ =
-						a[1].starts_with("in ") or
-						a[1].starts_with("of ") ?
-						" " : ", ";
-					where_ += a.unnamed.back();
-					where = where_ + where;
-					a.unnamed.truncate();
+					if (not parted) break;
 				}
-
-				str def = a.acquire("def");
-				if (def != "")
-				{
-					a.kind += " def"; output = def;
-				}
-				else
-				if (a.unnamed.size() == 2)
-				{
-					a.kind += " 2";
-					auto a0 = a[0].split_by("/");
-					auto a1 = a[1].split_by("/");
-
-					if (a0.size() >= 5 and
-					   (a0[1] == "and" or a0[1] == "or") and
-					   (a0[3] == "and" or a0[3] == "or")) {
-						a0[0] = map(placetype_aliases, a0[0]);
-						a0[2] = map(placetype_aliases, a0[2]);
-						a0[4] = map(placetype_aliases, a0[4]);
-						a0[0] = a0[0] + " " + a0[1] + " " + a0[2] + " " + a0[3] + " " + a0[4];
-						a0.erase(1);
-						a0.erase(1);
-						a0.erase(1);
-						a0.erase(1);
-						a.kind += "!!";
-					}
-					if (a0.size() >= 4 and
-					   (a0[2] == "and" or a0[2] == "or")) {
-						a0[0] = map(placetype_aliases, a0[0]);
-						a0[1] = map(placetype_aliases, a0[1]);
-						a0[3] = map(placetype_aliases, a0[3]);
-						a0[0] += a0[1].starts_with("(") ? " " : ", ";
-						a0[0] += placetypes.contains(a0[1]) ? str("aeiou").contains(a0[1][0]) ? "an " : "a " : "";
-						a0[0] += a0[1] + " " + a0[2] + " " + a0[3];
-						a0.erase(1);
-						a0.erase(1);
-						a0.erase(1);
-						a.kind += "!!";
-					}
-					if (a0.size() >= 3 and
-					   (a0[1] == "and" or a0[1] == "or")) {
-						a0[0] = map(placetype_aliases, a0[0]);
-						a0[2] = map(placetype_aliases, a0[2]);
-						a0[0] = a0[0] + " " + a0[1] + " " + a0[2];
-						a0.erase(1);
-						a0.erase(1);
-						a.kind += "!";
-					}
-					if (a0.size() == 2){
-						a0[0] = map(placetype_aliases, a0[0]);
-						a0[1] = map(placetype_aliases, a0[1]);
-						if (placetypes_a  .contains(a0[1])) a0[1] = "a "   + a0[1];
-						if (placetypes_the.contains(a0[1])) a0[1] = "the " + a0[1];
-						a0[0] += a0[1].starts_with("(") ? " " : ", ";
-						a0[0] += a0[1];
-						a0.erase(1);
-						a.kind += "!";
-					}
-
-					if (a0.size() == 1 and a1.size() == 1)
-					{
-						output = a0[0]; if (not a1[0].starts_with(","))
-						output += " ";
-						output += a1[0];
-						a.kind += "1";
-					}
-					else
-					if (a0.size() == 1 and a1.size() == 2)
-					{
-						a0[0] = map(placetype_aliases, a0[0]);
-						str p0 = a0[0];
-						str p1 = a1[0];
-						str p2 = a1[1];
-
-						p0 = p0.split_by(" (").front();
-						auto pp = p0.split_by(" "); int n = pp.size();
-						str pp4 = n < 4 ? "" : pp[n-4] + " " + pp[n-3] + " " + pp[n-2] + " " + pp[n-1];
-						str pp3 = n < 3 ? "" : pp[n-3] + " " + pp[n-2] + " " + pp[n-1];
-						str pp2 = n < 2 ? "" : pp[n-2] + " " + pp[n-1];
-						str pp1 = n < 1 ? "" : pp[n-1];
-						p0 = placetypes.contains(pp4) ? pp4:
-							 placetypes.contains(pp3) ? pp3:
-							 placetypes.contains(pp2) ? pp2:
-							 placetypes.contains(pp1) ? pp1: "";
-
-						if (p0 == "borough") seat = "Borough";
-
-						str suf;
-						if (p1.ends_with(":suf") or
-							p1.ends_with(":Suf"))
-							p1.split_by(":", p1, suf);
-
-						p1 = map(placetype_aliases, p1);
-						p2 = map(placename_aliases, p2);
-						if (p1 == "city" and
-							p2 == "New York")
-							p2 = "New York City";
-
-						if (not placetypes.contains(p0)) a.kind += "!";
-						if (placetypes.contains(p2) or not
-							placetypes.contains(p1))
-							a.kind += "!";
-
-						str article = the(p1, p2) ? "the " : "";
-						if (article != "") a.kind += "!";
-
-						if (placetypes_suf.contains(p1)) suf = "suf";
-						if (placetypes_Suf.contains(p1)) suf = "Suf";
-						if (suf == "suf") suf = p1;
-						if (suf == "Suf") { suf = p1; suf[0] = str::ascii_toupper(suf[0]); }
-						if (suf == "London borough") suf = "borough";
-						if (suf == "Welsh community") suf = "community";
-						if (suf == "local government district") suf = "district";
-						if (suf != "") p2 += " " + suf;
-
-						output  = a0[0];
-						output += placetypes_of.contains(p0) ? " of " : " in ";
-						output += article;
-						output += p2;
-
-						a.kind += kind1;
-						a.kind += kind2;
-						a.kind += kind3;
-					}
-					else a.kind += " quest";
-				}
-				else
-				{
-					//output = str(a.unnamed, " ");
-					a.kind += " quest";
-				}
+				output += templates_places__(u, a.kind, seat);
 
 				str A = a.acquire("a");
 
-				for (str s : placetypes_the)
-					if (output.starts_with(s + " of "))
-						A = "The";
+				if (A == "")
+					for (str s : placetypes_the)
+						if (output.starts_with(s + " of "))
+							A = "The";
 
 				if (A == "" and output != ""
 					and not output.starts_with("a ")
@@ -412,8 +442,9 @@ namespace pass4
 					and not output.starts_with("the ")
 					and not output.starts_with("The "))
 					A = str("AEIOUaeiou").contains(output[0]) ? "An" : "A";
+
 				if (A != "" and not output.starts_with("{{"))
-					output = A + " " + output + where;
+					output = A + " " + output;
 			}
 
 			a.ignore("cat");
@@ -447,22 +478,50 @@ namespace pass4
             q = a.acquire("caplc"       ); if (q != "") { output += ". Capital and largest city: " + q; }
             q = a.acquire("largest city"); if (q != "") { output += ". Largest city: "             + q; }
             q = a.acquire("modern"      ); if (q != "") { output += "; modern: "                   + q; }
-            q = a.acquire("t1"          ); if (q != "") { output  = q + " (" + output + ")";            }
-            q = a.acquire("t"           ); if (q != "") { output  = q + " (" + output + ")";            }
+            q = a.acquire("t1"          ); if (q != "") { output  = q + " (" + lcfirst(output) + ")"; }
+            q = a.acquire("t"           ); if (q != "") { output  = q + " (" + lcfirst(output) + ")"; }
 
             if (not a.opt.empty()) a.kind += " opt";
 
-			bool fix = false; str prefix = output;
-			fix |= 0 < output.replace_all(" en:", " ");
-			fix |= 0 < output.replace_all("..", ".");
-			fix |= 0 < output.replace_all(".;", ";");
-			fix |= 0 < output.replace_all(";;", ";");
-			if (fix) result.report (esc + " " + title
-				+ "\n" + report
-				+ "\n" + prefix
-				+ "\n" + output,
-				"fix");
-
+			for (int i=0; i<3; i++)
+			{
+				bool fix = false; str prefix = output;
+				fix |= 0 < output.replace_all(" en:", " ");
+				fix |= 0 < output.replace_all("  ", " ");
+				fix |= 0 < output.replace_all("..", ".");
+				fix |= 0 < output.replace_all(".,", ",");
+				fix |= 0 < output.replace_all(".;", ";");
+				fix |= 0 < output.replace_all(";;", ";");
+				fix |= 0 < output.replace_all(",,", ",");
+				fix |= 0 < output.replace_all(",;", ",");
+				fix |= 0 < output.replace_all(";,", ";");
+				fix |= 0 < output.replace_all(" ;", ";");
+				fix |= 0 < output.replace_all(" ,", ",");
+				fix |= 0 < output.replace_all(" .", ".");
+				fix |= 0 < output.replace_all(" in in ", " in ");
+				fix |= 0 < output.replace_all(" of of ", " of ");
+				fix |= 0 < output.replace_all(" on on ", " on ");
+				fix |= 0 < output.replace_all(" the the ", " the ");
+				fix |= 0 < output.replace_all(" an an ", " an ");
+				fix |= 0 < output.replace_all(" a a ", " a ");
+				fix |= 0 < output.replace_all(" in, the, ", " in the ");
+				fix |= 0 < output.replace_all(" on, the, ", " on the ");
+				fix |= 0 < output.replace_all(" of, the, ", " of the ");
+				fix |= 0 < output.replace_all(" the, ", " the ");
+				fix |= 0 < output.replace_all(" an, ", " an ");
+				fix |= 0 < output.replace_all(" a, ", " a ");
+				fix |= 0 < output.replace_all(" in, ", " in ");
+				fix |= 0 < output.replace_all(" on, ", " on ");
+				fix |= 0 < output.replace_all(" of, ", " of ");
+				fix |= 0 < output.replace_all(" or, ", " or ");
+				fix |= 0 < output.replace_all(", or ", " or ");
+				fix |= 0 < output.replace_all(" and, ", " and ");
+				if (fix) result.report (esc + " " + title
+					+ "\n" + report
+					+ "\n" + prefix
+					+ "\n" + output,
+					"fix" + std::to_string(i));
+			}
         }
         else
         {
@@ -648,16 +707,87 @@ namespace pass4
 			{"{{place|en|major river|in Scotland, flowing from|carea/South Lanarkshire|past|carea/North Lanarkshire|through|carea/Glasgow|and past|carea/Renfrewshire|and|carea/West Dunbartonshire|to the|place/Firth of Clyde}}",
 			"A major river in Scotland, flowing from South Lanarkshire council area, past North Lanarkshire council area, through Glasgow council area, and past Renfrewshire council area and West Dunbartonshire council area, to the Firth of Clyde"},
 			{"{{place|en|town|s/Louisiana|;|the parish seat|of|parish/Grant Parish|;|named for Schuyler Colfax}}",
-			"A city, the county seat of Whitman County, Washington; named for Schuyler Colfax"},
-			{"", ""},
-			{"", ""},
-			{"", ""},
-			{"", ""},
-			{"", ""},
-			{"", ""},
-			{"", ""},
-			{"", ""},
-			{"", ""},
+			"A town in Louisiana; the parish seat of Grant Parish; named for Schuyler Colfax"},
+			{"{{place|en|capital city|dept/Gironde|c/France|;|capital city|r:pref/Nouvelle-Aquitaine}}",
+			"The capital city of Gironde department, France; capital city of the region of Nouvelle-Aquitaine"},
+			{"{{place|en|emirate|c/United Arab Emirates|on the southern|gulf/Persian Gulf}}",
+			"An emirate of the United Arab Emirates, on the southern Persian Gulf"},
+			{"{{place|en|city/and/seaport|c/Israel|on the|sea/Mediterranean Sea}}", "A city and seaport in Israel, on the Mediterranean Sea"},
+			{"{{place|en|The <<capital city>> of <<s/Texas>>, <<cc/USA>> and the <<county seat>> of <<co/Travis County>>|;|named for American empresario Stephen F. Austin}}",
+			"The capital city of Texas, USA and the county seat of Travis County; named for American empresario Stephen F. Austin"},
+			{"{{place|en|country|r/Central Europe|a member state of the European Union|official=Republic of Austria}}",
+			"A country in Central Europe, a member state of the European Union. Official name: Republic of Austria"},
+			{"{{place|en|city/shire town|co/Chittenden County|s/Vermont|;|the largest city in Vermont|;|perhaps named for Richard Boyle, 3rd Earl of Burlington, or the prominent Burling family of New York}}",
+			"A city, the shire town of Chittenden County, Vermont; the largest city in Vermont; perhaps named for Richard Boyle, 3rd Earl of Burlington, or the prominent Burling family of New York"},
+			{"{{place|en|river|in|England|, forming the boundary between|co/Derbyshire|and|co/Staffordshire}}",
+			"A river in England, forming the boundary between Derbyshire and Staffordshire"},
+			{"{{place|en|city/and/municipality|p/North Holland|c/Netherlands|;|capital city|c/Netherlands}}",
+			"A city and municipality of North Holland, Netherlands; capital city of the Netherlands"},
+			{"{{place|en|municipality/capital city|c/Brazil|;|state capital|s/Distrito Federal|c/Brazil}}",
+			"A municipality, the capital city of Brazil; state capital of Distrito Federal, Brazil"},
+			{"{{place|en|capital city|c/Switzerland|;|capital city|can/Bern}}", "The capital city of Switzerland; capital city of Bern canton"},
+			{"{{place|en|city|in southern|c/Poland|;|capital|voivodeship/Silesian Voivodeship}}",
+			"A city in southern Poland; capital of the Silesian Voivodeship"},
+			{"{{place|en|capital city|dept/Bouches-du-Rhône|c/France|;|capital city|r:pref/Provence-Alpes-Côte d'Azur}}",
+			"The capital city of Bouches-du-Rhône department, France; capital city of the region of Provence-Alpes-Côte d'Azur"},
+			{"{{place|en|town/county seat|co/Tyrrell County||s/North Carolina}}", "A town, the county seat of Tyrrell County, North Carolina"},
+			{"{{place|en|country| and the largest <<island>> in the <<r/Caribbean>>|caplc=Havana}}",
+			"A country and the largest island in the Caribbean. Capital and largest city: Havana"},
+			{"{{place|en|township|city:pref/Mandalay|div:suf/Mandalay|c/Burma|;, and|former capital|c/Burma}}",
+			"A township in the city of Mandalay, Mandalay division, Burma, and former capital of Burma"},
+			{"{{place|en|geographic region|region/Horn of Africa}}", "A geographic region in Horn of Africa"},
+			{"{{place|en|village|council area/Fife|cc/Scotland}}", "A village in Fife council area, Scotland"},
+			{"{{place|en|highlands|region/Southern France|c/France|t1=Massif Central}}", "Massif Central (a highlands in Southern France, France)"},
+			{"{{place|en|settlement|isl/Saint Thomas|terr/United States Virgin Islands}}", "A settlement in Saint Thomas, United States Virgin Islands"},
+			{"{{place|en|former headland|isl/Hong Kong Island|sar/Hong Kong}}", "A former headland in Hong Kong Island, Hong Kong"},
+			{"{{place|en|development|s/Tarlac|the New Clark City}}", "A development in Tarlac, the New Clark City"},
+			{"{{place|en|country|region/Oceania|comprising over 300 islands}}", "A country in Oceania, comprising over 300 islands"},
+			{"{{place|en|city/county seat/(one of two)|co/St. Clair County|s/Alabama|c/USA}}",
+			"A city, the county seat (one of two) of St. Clair County, Alabama, United States"},
+			{"{{place|en|unincorporated community/census-designated place/county seat|co/Oscoda County|s/Michigan|c/USA}}",
+			"An unincorporated community, a census-designated place, the county seat of Oscoda County, Michigan, United States"},
+			{"{{place|en|mountain/plateau/town/and/locality|lgarea/City of Gold Coast|s/Queensland|c/Australia}}",
+			"A mountain, a plateau, a town and locality in the City of Gold Coast, Queensland, Australia"},
+			{"{{place|en|unincorporated community/census-designated place/county seat|co/Echols County|s/Georgia|c/USA}}",
+			"An unincorporated community, a census-designated place, the county seat of Echols County, Georgia, United States"},
+			{"{{place|en|modern municipality|runit/Xanthi|in the|adr:pref/Thrace|c/Greece}}",
+			"A modern municipality of Xanthi, in the administrative region of Thrace, Greece"},
+			{"{{place|en|city/administrative centre|obl/Chernivtsi|in the|r:suf/Bukovyna|c/Ukraine}}",
+			"A city, the administrative centre of Chernivtsi Oblast, in the Bukovyna region, Ukraine"},
+			{"{{place|en|coastal village|co/Ceredigion|cc/Wales|north of|vill/Borth}}", "A coastal village in Ceredigion, Wales, north of Borth"},
+			{"{{place|en|small village|wcomm/Llanwddyn|co/Powys|cc/Wales|historically in|place/Montgomeryshire}}",
+			"A small village in Llanwddyn community, Powys, Wales, historically in Montgomeryshire"},
+			{"{{place|en|city|co/Tarrant County|s/Texas|c/USA|previously named|town/Bransford}}",
+			"A city in Tarrant County, Texas, United States, previously named Bransford"},
+			{"{{place|en|hamlet|par/Savernake|south of|town/Marlborough|co/Wiltshire|cc/England}}",
+			"A hamlet in Savernake parish, south of Marlborough, Wiltshire, England"},
+			{"{{place|en|CDP/and/town/county seat|co/Suffolk County|on|isl/Long Island|s/New York|c/USA}}",
+			"A census-designated place and town, the county seat of Suffolk County, on Long Island, New York, United States"},
+			{"{{place|en||village/and/civil parish|with a group parish council in|dist/West Lindsey|co/Lincolnshire|cc/England}}",
+			"A village and civil parish with a group parish council in West Lindsey district, Lincolnshire, England"},
+			{"{{place|en|municipal unit|of|the|municipality|of|municipality/Lezhë|in|the|county|of|county/Lezhë|c/Albania}}",
+			"A municipal unit of the municipality of Lezhë in the county of Lezhë, Albania"},
+			{"{{place|en|mountain|between|s/Alaska|c/USA|and|terr/Yukon|c/Canada|in|the|range/Saint Elias Mountains}}",
+			"A mountain between Alaska, United States and Yukon, Canada in the Saint Elias Mountains"},
+			{"{{place|en|suburb|of|city/London|in|lbor/Haringey|lbor/Camden|and|lbor/Islington|co/Greater London|cc/England}}",
+			"A suburb of London in Haringey borough, Camden borough and Islington borough, Greater London, England"},
+			{"{{place|en|unincorporated community|co/Athens County|s/Ohio|and a|state park|in|co/Morgan County|and|co/Athens County}}",
+			"An unincorporated community in Athens County, Ohio, and a state park in Morgan County and Athens County"},
+			{"{{place|en|unincorporated community|par/St. John the Baptish Parish||s/Louisiana}}",
+			"An unincorporated community in St. John the Baptish Parish, Louisiana"},
+			{"{{place|en|community|twp/Admaston/Bromley|co/Renfrew County|p/Ontario|c/Canada}}",
+			"A community in Admaston/Bromley, Renfrew County, Ontario, Canada"},
+			{"{{place|en|legendary city/ancient capital|kingdom:suf/Kosala}}", "A legendary city, the ancient capital of Kosala kingdom"},
+			{"{{place|en|prefecture/capital city|c/Japan}}", "A prefecture, the capital city of Japan"},
+			{"{{place|en|city/and/port|c/Denmark}}", "A city and port in Denmark"},
+			{"{{place|en|town/and/commune|p:pref/Trapani|r/Sicily|c/Italy}}", "A town and commune of the province of Trapani, Sicily, Italy"},
+			{"{{place|en|civil parish/and/small settlement|dist/Maldon|co/Essex|cc/England}}",
+			"A civil parish and small settlement in Maldon district, Essex, England"},
+			{"{{place|en|hamlet/and/civil parish|in|bor/Allerdale|co/Cumbria|cc/England}}",
+			"A hamlet and civil parish in Allerdale borough, Cumbria, England"},
+			{"{{place|en|a <<river>> downstate in <<s:Suf/New York>>}}", "a river downstate in New York State"},
+			{"{{place|en|country|in northeastern|cont/Africa|on the|sea/Red Sea|, having <<capital/Asmara>> as its capital|modern=State of Eritrea (since the 1990s)}}",
+			"A country in northeastern Africa, on the Red Sea, having Asmara as its capital; modern State of Eritrea (since the 1990s)"},
 			{"", ""},
 			{"", ""},
 			{"", ""},
@@ -666,7 +796,7 @@ namespace pass4
 		for (auto [key, value] : unittest)
 		{
             bracketer b;
-            b.proceed_template = [&](str s){ return templates_places_("", "", s, result); };
+            b.proceed_template = [&](str s){ return templates_places_("unittest", "", s, result); };
             b.proceed(key);
             if (b.output != value)
 				result.report(esc

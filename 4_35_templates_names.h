@@ -61,6 +61,53 @@ namespace pass4
             output = "''" + output + "''";
         }
         else
+        if (name == "coinage" or
+            name == "named-after")
+        {
+            a.ignore("w");
+            a.ignore("wp");
+            a.ignore("wplink");
+            a.ignore("srclang");
+            a.ignore("nobycat");
+            str dot    = a.acquire("dot");
+            str nodot  = a.acquire("nodot");
+            str nocap  = a.acquire("nocap");
+            str notext = a.acquire("notext");
+            str born   = a.acquire("born");
+            str died   = a.acquire("died");
+            str alt    = a.acquire("alt");
+            str tr     = a.acquire("tr");
+            str in     = a.acquire("in");
+
+            auto
+            nats  = a.acquire_all("nationality");
+            nats += a.acquire_all("nat");
+            str nat = str::list(nats,  ", ", " and ");
+            
+            auto
+            occs  = a.acquire_all("occupation");
+            occs += a.acquire_all("occ");
+            str occ = str::list(occs,  ", ", " and ");
+
+            output = str(
+                alt != "" ? alt :
+                notext != "" ? "" : 
+                name == "coinage"     ? "coined by "     :
+                name == "named-after" ? "named after of ":
+                "").capitalized(nocap == "");
+
+            if (nat   != "") output += nat + " ";
+            if (occ   != "") output += occ + " ";
+
+            output += str::list(a.unnamed, ", ", " and ");
+
+            if (tr    != "") output += " ("+tr+")";            
+            if (born  != "") output += " ("+born+"–"+died+")";
+            if (in    != "") output += " in " + in;
+            if (nodot != "") output += dot == "" ? "." : dot;
+            if (a.opt.size() > 0) a.kind += " quest";
+        }
+        else
         {
             a.kind = "{{}}"; templates_statistics [__FILE__][name]++;
         }
