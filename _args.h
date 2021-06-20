@@ -62,6 +62,28 @@
         b.proceed(s);
         s = b.output;
 
+        while (true)
+        {
+            auto b = s.find( "<math>"); if (!b) break;
+            auto e = s.find("</math>"); if (!e) break; if (e.offset < b.offset) break;
+
+            auto range = s.from(b.offset).upto(e.offset+7);
+            str ss = "#####"+std::to_string(piped.size());
+            piped[ss] = str(range);
+            range.replace_by(ss);
+        }
+
+        while (true)
+        {
+            auto b = s.find( "<nowiki>"); if (!b) break;
+            auto e = s.find("</nowiki>"); if (!e) break; if (e.offset < b.offset) break;
+
+            auto range = s.from(b.offset).upto(e.offset+9);
+            str ss = "#####"+std::to_string(piped.size());
+            piped[ss] = str(range);
+            range.replace_by(ss);
+        }
+
         array<str> args = s.split_by("|");
         for (str & arg : args) arg.strip(" \t\n"); if (args.size() > 0) args.erase(args.begin());
         for (str & arg : args)
@@ -244,6 +266,35 @@
         if (not opt.empty()) kind += " quest";
 
         return output;
+    }
+
+    void altqual ()
+    {
+        {
+            str q = acquire("alt");
+            if (q != "" and unnamed.size() >= 1)
+                unnamed[0] = q;
+
+            for (int i=1; i<20; i++) {
+                str q = acquire("alt" + std::to_string(i));
+                if (q != "" and unnamed.size() >= i)
+                    unnamed[i-1] = q;
+            }
+        }
+        for (str qual : {"q", "qual"})
+        {
+            str q = acquire(qual);
+            if (q != "" and unnamed.size() >= 1)
+                unnamed[0] = "(''" + q + "'') " +
+                unnamed[0];
+
+            for (int i=1; i<20; i++) {
+                str q = acquire(qual + std::to_string(i));
+                if (q != "" and unnamed.size() >= i)
+                    unnamed[i-1] = "(''" + q + "'') " +
+                    unnamed[i-1];
+            }
+        }
     }
 
     auto acquire_all (str s)

@@ -10,18 +10,13 @@ namespace pass4
         str report = "{{" + body + "}}";
         args.kind  = "{{" + name + "}}";
 
-        if (name == "zh-l"
-        or  name == "zh-m"
-        or  name == "ja-r"
-        or  name == "ja-l"
-        or  name == "ko-l"
-        or  name == "he-m"
-        or  name == "he-l"
-        or  name == "ne-l"
-        or  name == "vi-l"
-        or  false)
+        if (name == "lang")
         {
-            a.kind = "lang reject";
+            a.languaged();
+            a.ignore("sc"); // script
+            a.ignore("face");
+            if (a.complexity >= 1) output = "''" + a[0] + "''";
+            else a.kind += " quest";
         }
         else
         if (name == "etyl")
@@ -43,6 +38,7 @@ namespace pass4
             name == "noncognate" or
             name == "calque"     or
             name == "back-formation" or
+            name == "langname-mention" or
             false)
         {
             bool duo =
@@ -52,13 +48,11 @@ namespace pass4
                 name == "calque"     or
                 false;
 
-            if (a.unnamed.size() > 0 and duo) {
-                a.unnamed.erase(0);
-                a.complexity--;
-            }
-
+            if (duo)
+            a.languaged();
             a.dotcapped();
             a.ignore("g"); a.ignore("g1"); a.ignore("g2"); // gender
+            a.ignore("w");
 
             if (a.unnamed.size() > 0
             and Languages.contains(a[0])) {
@@ -66,25 +60,48 @@ namespace pass4
                 a.unnamed.erase(0);
                 a.complexity--;
             }
-            if (output != "")
-                output += " ";
 
-            if (a.unnamed.size() > 0 and
-                a.unnamed.back() == "-")
-                a.unnamed.truncate();
-            
-            output += a.link("''", "''");
-
-            a.kind.replace_all("}} 2", "}} 1");
+            if (a.unnamed.size() == 0 or // ''(?)''
+                a.unnamed.size() >= 2 or
+                a.unnamed[0] != "-")
+                output += (
+                output == "" ? "" : " ")
+                    + a.link("''", "''");
+            else a.kind += " 0";
 
             if (name == "calque"        ) output = a.capitalized("Calque of "          ) + output;
             if (name == "back-formation") output = a.capitalized("Back-formation from ") + output;
+        }
+        else
+        if (name == "clipping")
+        {
+            a.languaged();
+            a.dotcapped();
+            if (a.complexity == 0) output = "clipping"; else
+            output = a.capitalized("Clipping of ") + a.link("''", "''");
+        }
+        else
+        if (name == "doublet")
+        {
+            a.languaged();
+            a.dotcapped();
+            a.ignore_all(); 
+            output = a.capitalized("Doublet of ''") + str::list(a.unnamed, ", ", " and ") + "''";
+        }
+        else
+        if (name == "onomatopoeic")
+        {
+            a.languaged();
+            a.dotcapped();
+            str s = a.acquire("title");
+            output = a.capitalized(s != "" ? s : "Onomatopoeic");
         }
         else
         if (name == "inflection of")
         {
             a.languaged(); if (a.unnamed.size() < 3) a.kind += " quest size"; else
             {
+                a.ignore_all(); if (not a.opt.empty()) a.kind += " opt";
                 str word = a.unnamed[0]; a.unnamed.erase(0);
                 str sept = a.unnamed[0]; a.unnamed.erase(0);
                 if (sept != "") a.kind +=
@@ -94,44 +111,53 @@ namespace pass4
 
                 for (str s : a.unnamed)
                 {
-                    if (output != "") output += " ";
-                    if (s == "1"    ) output += "first-person"; else
-                    if (s == "2"    ) output += "second-person"; else
-                    if (s == "3"    ) output += "third-person"; else
-                    if (s == "1//3" ) output += "first/third-person"; else
+                    if (output != ""  ) output += " ";
+                    if (s == "1"      ) output += "first-person"; else
+                    if (s == "2"      ) output += "second-person"; else
+                    if (s == "3"      ) output += "third-person"; else
+                    if (s == "3s"     ) output += "third-person singular"; else
+                    if (s == "1//3"   ) output += "first/third-person"; else
                     if (s == "1//2//3") output += "first/second/third-person"; else
-                    if (s == "s"    ) output += "singular"; else
-                    if (s == "p"    ) output += "plural"; else
-                    if (s == "pl"   ) output += "plural"; else
-                    if (s == "s//p" ) output += "singular/plural"; else
-                    if (s == "f"    ) output += "feminine"; else
-                    if (s == "sim"  ) output += "simple"; else
-                    if (s == "pres" ) output += "present"; else
-                    if (s == "present" ) output += "present"; else
-                    if (s == "past" ) output += "past"; else
+                    if (s == "s"      ) output += "singular"; else
+                    if (s == "p"      ) output += "plural"; else
+                    if (s == "pl"     ) output += "plural"; else
+                    if (s == "plural" ) output += "plural"; else
+                    if (s == "s//p"   ) output += "singular/plural"; else
+                    if (s == "f"      ) output += "feminine"; else
+                    if (s == "n"      ) output += "neiter"; else
+                    if (s == "sim"    ) output += "simple"; else
+                    if (s == "simple" ) output += "simple"; else
+                    if (s == "pres"   ) output += "present"; else
+                    if (s == "present") output += "present"; else
+                    if (s == "past"   ) output += "past"; else
                     if (s == "present//past" ) output += "present/past"; else
-                    if (s == "part" ) output += "participle"; else
+                    if (s == "part"   ) output += "participle"; else
                     if (s == "participle" ) output += "participle"; else
-                    if (s == "ind"  ) output += "indicative"; else
-                    if (s == "indc" ) output += "indicative"; else
-                    if (s == "col"  ) output += "collective"; else
-                    if (s == "obs"  ) output += "obsolete"; else
+                    if (s == "ind"    ) output += "indicative"; else
+                    if (s == "indc"   ) output += "indicative"; else
+                    if (s == "col"    ) output += "collective"; else
+                    if (s == "obs"    ) output += "obsolete"; else
                     if (s == "alternative") output += "alternative"; else
-                    if (s == "nom"  ) output += "nominative"; else
-                    if (s == "gen"  ) output += "genitive"; else
-                    if (s == "def"  ) output += "definite"; else
-                    if (s == "act"  ) output += "active"; else
-                    if (s == "an"   ) output += "animate"; else
-                    if (s == "imp"  ) output += "imperative"; else
-                    if (s == "sub"  ) output += "subjunctive"; else
-                    if (s == ";"    ) output += "\n# "; else
+                    if (s == "finite usage") output += "finite usage"; else
+                    if (s == "nom"    ) output += "nominative"; else
+                    if (s == "gen"    ) output += "genitive"; else
+                    if (s == "def"    ) output += "definite"; else
+                    if (s == "act"    ) output += "active"; else
+                    if (s == "an"     ) output += "animate"; else
+                    if (s == "imp"    ) output += "imperative"; else
+                    if (s == "sub"    ) output += "subjunctive"; else
+                    if (s == "subj"   ) output += "subjunctive"; else
+                    if (s == "cond"   ) output += "conditional"; else
+                    if (s == "comd"   ) output += "comparative degree"; else
+                    if (s == "supd"   ) output += "superlative degree"; else
+                    if (s == "form"   ) output += "form"; else
+                    if (s == "tense"  ) output += "tense"; else
+                    if (s == ";"      ) output += "'' and ''"; else
 
                     { output += "?"; a.kind += "!"; }
                 }
 
                 output = "''" + output + " of'' '''" + word + "'''";
-
-                if (not a.opt.empty()) a.kind += " opt";
             }
         }
         else
@@ -139,7 +165,14 @@ namespace pass4
             a.kind = "{{}}"; templates_statistics [__FILE__][name]++;
         }
 
-        if (output.contains("\n")) a.kind +=  " #br#";
+        if (a.kind != "{{}}") 
+        if (not a.opt.empty()) a.kind += " opt";
+
+        a.kind.replace_all("}} 2", "}} 1");
+        a.kind.replace_all("}} 1 tr", "}} 1");
+        a.kind.replace_all("}} 0 tr", "}} 0");
+
+        if (output.contains("\n")) a.kind += " #br#";
         if (output.contains("\n"))
             report = esc+" "+title+"\n"+report+"\n====\n"+output; else
             report = report + " => " + output + " == " + title;

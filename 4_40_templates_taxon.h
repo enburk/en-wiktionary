@@ -59,9 +59,54 @@ namespace pass4
             if (nodot        =="") output += ".";
         }
         else
+        if (name == "SI-unit-abb")
+        {
+            if (a.unnamed.size() != 3) a.kind += " quest size"; else
+            {
+                str pow =
+                    a[0] == "yocto" ?"-24" :
+                    a[0] == "zepto" ?"-21" :
+                    a[0] == "atto"  ?"-18" :
+                    a[0] == "femto" ?"-15" :
+                    a[0] == "pico"  ?"-12" :
+                    a[0] == "nano"  ? "-9" :
+                    a[0] == "micro" ? "-6" :
+                    a[0] == "milli" ? "-3" :
+                    a[0] == "centi" ? "-2" :
+                    a[0] == "deci"  ? "-1" :
+                    a[0] == "deca"  ?  "1" :
+                    a[0] == "hecto" ?  "2" :
+                    a[0] == "kilo"  ?  "3" :
+                    a[0] == "mega"  ?  "6" :
+                    a[0] == "giga"  ?  "9" :
+                    a[0] == "tera"  ? "12" :
+                    a[0] == "peta"  ? "15" :
+                    a[0] == "exa"   ? "18" :
+                    a[0] == "zetta" ? "21" :
+                    a[0] == "yotta" ? "24" :
+                    "";
+                if (pow == "") a.kind += " quest";
+
+                output = "(''metrology'') Symbol for '''" + a[0] + a[1] + "''', "
+                    "an SI unit of " + a[2] + " equal to 10<small><sup>" + pow
+                    + "</sup></small> " + a[1] + "s.";
+            }
+        }
+        else
+        if (name == "frac")
+        {
+            if (a.complexity == 1) output =        "<small><sup>"  "1" "</sup><big>⁄</big><sub>"+a[0]+"</sub></small>"; else
+            if (a.complexity == 2) output =        "<small><sup>"+a[0]+"</sup><big>⁄</big><sub>"+a[1]+"</sub></small>"; else
+            if (a.complexity == 3) output = a[0] + "<small><sup>"+a[1]+"</sup><big>⁄</big><sub>"+a[2]+"</sub></small>"; else 
+            kind += " quest";
+        }
+        else
         {
             kind = "{{}}"; templates_statistics [__FILE__][name]++;
         }
+
+        if (a.kind != "{{}}") 
+        if (not a.opt.empty()) a.kind += " opt";
 
         if (kind.contains(" quest")) kind += " !!!!!";
         if (output.contains("\n")) kind +=  " #br#";

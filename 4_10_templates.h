@@ -12,7 +12,8 @@ namespace pass4
             "rfquotek", "rfap", "rfex", "rfp", "rfap", "rfquote-sense", "rfv-etym",
             "rfc-sense", "rfv-sense", "rfc", "rfclarify", "rfd-sense", "rfv-pron",
             "rfref", "rfquote", "rfscript", "rfd-redundant", "rfm-sense",
-            "rfd", "rfm", "rfv" //, "rfdate"
+            "rfd", "rfm", "rfv", // "rfdate",
+            "attention", 
         }},
         {   "mid",
         {
@@ -41,8 +42,11 @@ namespace pass4
         }},
         {   "seealso",
         {
-            "projectlinks",
-            "langcat", 
+            "projectlink", "projectlinks", "langcat", "catlangname", 
+        }},
+        {   "categories",
+        {
+            "topics", "rootsee",
         }},
         {   "miscellaneous",
         {

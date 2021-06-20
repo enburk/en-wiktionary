@@ -4,11 +4,17 @@ namespace pass4
 {
     const array<str> skipped_templates = {
         "QUOTE", "rfdate", "RQ", // lex items
+        "name translit", // name/surname translit senses
         "projectlink~Wikipedia", // see also
         "PL..species", // see also
         "seeSynonyms", // see also
         "etystub", // etymology
         "unknown", // etymology
+        "zh-l", "zh-m",
+        "ja-r", "ja-l",
+        "ko-l", "he-m",
+        "he-l", "ne-l",
+        "vi-l",
     };
 
     str templates_z_(str title, str header, str body, Result<entry> & result)
@@ -25,39 +31,103 @@ namespace pass4
 
         if (skipped_templates.contains(name)) return output;
 
-        if (name == "topics")
+        if (name == "nobr")
         {
         }
         else
-        if (name == "uxi")
+        if (name == "B.C.E.")
         {
         }
         else
-        if (name == "SI-unit-abb")
+        if (name == "R..TPL")
         {
         }
         else
-        if (name == "name translit")
+        if (name == "checksense")
         {
         }
         else
-        if (name == "rootsee")
+        if (name == "·")
         {
         }
         else
-        if (name == "catlangname")
+        if (name == "term-label")
         {
         }
         else
-        if (name == "suffixusex")
+        if (name == "nb...")
         {
         }
         else
-        if (name == "attention")
+        if (name == "learned borrowing")
         {
         }
         else
-        if (name == "langname-mention")
+        if (name == "translation only")
+        {
+        }
+        else
+        if (name == "century")
+        {
+        }
+        else
+        if (name == "comcatlite")
+        {
+        }
+        else
+        if (name == "PL..commons")
+        {
+        }
+        else
+        if (name == "ethnologue")
+        {
+        }
+        else
+        if (name == "C.E.")
+        {
+        }
+        else
+        if (name == "Latn-def")
+        {
+        }
+        else
+        if (name == "morse code for")
+        {
+        }
+        else
+        if (name == "U..en..plurals of letters")
+        {
+        }
+        else
+        if (name == "transliteration")
+        {
+        }
+        else
+        if (name == "col")
+        {
+        }
+        else
+        if (name == "")
+        {
+        }
+        else
+        if (name == "")
+        {
+        }
+        else
+        if (name == "")
+        {
+        }
+        else
+        if (name == "")
+        {
+        }
+        else
+        if (name == "")
+        {
+        }
+        else
+        if (name == "")
         {
         }
         else

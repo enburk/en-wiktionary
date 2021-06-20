@@ -65,6 +65,7 @@ namespace pass2
         {   "apocopic form of"                      , "Apocopic form of"                                                 },
         {   "aphetic form of"                       , "Aphetic form of"                                                  },
         {   "attributive form of"                   , "attributive form of"                                              },
+        {   "clipping of"                           , "Clipping of"                                                      },
         {   "eggcorn of"                            , "Eggcorn of"                                                       },
         {   "ellipsis of"                           , "Ellipsis of"                                                      },
         {   "elongated form of"                     , "Elongated form of"                                                },

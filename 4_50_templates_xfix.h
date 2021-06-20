@@ -18,6 +18,14 @@ namespace pass4
             a.kind += " quest";
         }
         else
+        if (name == "suffixusex")
+        {
+            a.ignore_all();
+            if (a.complexity == 2) { output = "''"+a[0]+"'' + ''"+title+"'' → ''"+a[1]+"''"; } else
+            if (a.complexity == 4) { output = "''"+a[0]+"'' + ''"+a[1] +"'' + ''"+a[2]+"'' → ''"+a[3]+"''"; } else
+            a.kind += " quest";
+        }
+        else
         if (name == "blend"  or
             name == "affix"  or
             name == "prefix" or
@@ -55,6 +63,9 @@ namespace pass4
         {
             a.kind = "{{}}"; templates_statistics [__FILE__][name]++;
         }
+
+        if (a.kind != "{{}}") 
+        if (not a.opt.empty()) a.kind += " opt";
 
         if (a.kind.contains(" quest")) a.kind += " !!!!!";
         if (output.contains("\n")) a.kind +=  " #br#";

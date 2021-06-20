@@ -11,30 +11,27 @@ namespace pass4
 
         str output = "{{" + body + "}}";
         str report = "{{" + body + "}}";
-        str kind   = "{{" + name + "}}";
-
-        if (a.unnamed.size() > 0) { if (not Languages.contains(a[0])) kind += " quest lang";
-            a.unnamed.erase(0);
-            a.complexity--;
-        }
+        args.kind  = "{{" + name + "}}";
 
         if (name == "alternative plural of")
         {
-            if (a.complexity == 2) { output = "''plural of "+a[0]+" (alternative form of ("+a[1]+")''"; } else
-            kind += " quest";
+            if (a.complexity == 2)
+            output = "''plural of " + a[0]+
+            " (alternative form of ("+a[1]+")''"; else
+            a.kind += " quest";
         }
         else
         if (name == "alter")
         {
             output = "";
             for (str s : a.unnamed) {
-                if (s == "" and kind.ends_with("()")) continue;
-                if (s == "") { output += " ("; kind += "()"; } else
+                if (s == "" and a.kind.ends_with("()")) continue;
+                if (s == "") { output += " ("; a.kind += "()"; } else
                 if (output != "" and not output.ends_with("("))
                 output += ", ";
                 output += s;
             }
-            if (kind.ends_with("()")) {
+            if (a.kind.ends_with("()")) {
                 if (output.ends_with("(")) {
                     output.truncate();
                     output.truncate(); }
@@ -48,49 +45,15 @@ namespace pass4
         {
             output = "";
             str q = a.acquire("title"); if (q != "") output += "''("+q+"):''\n";
-            for (str s : a.unnamed) if (s != "") output += "* " + s + "\n";
-        }
-        else
-        if (name == "doublet"     or
-            name == "clipping"    or
-            name == "clipping of" or
-            false)
-        {
-            str
-            q = a.acquire("t1"); if (q != "" and a.unnamed.size() >= 1) a[0] += " (''" + q + "'')";
-            q = a.acquire("t2"); if (q != "" and a.unnamed.size() >= 2) a[1] += " (''" + q + "'')";
-            q = a.acquire("alt1");  if (q != "" and a.unnamed.size() >= 1) { a[0] = q; }
-            q = a.acquire("alt2");  if (q != "" and a.unnamed.size() >= 2) { a[1] = q; }
-            q = a.acquire("alt3");  if (q != "" and a.unnamed.size() >= 3) { a[2] = q; }
-            str dot    = a.acquire("dot");
-            str nodot  = a.acquire("nodot");
-            str nocap  = a.acquire("nocap");
-            str notext = a.acquire("notext");
-            a.ignore("id1"); a.ignore("pos1");
-            if (a.opt.size() > 0) kind += " quest";
-            for (auto & s : a.unnamed) s = "[["+s+"]]";
-            output = notext != "" ? "" : 
-            name == "doublet"     ? nocap != "" ? "Doublet of " : "doublet of ":
-            name == "clipping"    ? nocap != "" ? "Clipping of " : "clipping of ":
-            name == "clipping of" ? nocap != "" ? "Clipping of " : "clipping of ":
-            "";
-            output += str::list(a.unnamed, ", ", " and ");
-            output += "''" + output + "''";
-
-            if (name == "clipping of")
-            if (nodot != "") output += dot == "" ? "." : dot;
+            for (str s : a.unnamed)     if (s != "") output += "* " + s + "\n";
         }
         else
         if (name == "&lit")
         {
-            str
-            q = a.acquire("alt1");  if (q != "" and a.unnamed.size() >= 1) { a[0] = q; }
-            q = a.acquire("alt2");  if (q != "" and a.unnamed.size() >= 2) { a[1] = q; }
-            q = a.acquire("alt3");  if (q != "" and a.unnamed.size() >= 3) { a[2] = q; }
-            str dot = a.acquire("dot");
+            a.altqual();
+            str dot   = a.acquire("dot");
             str nodot = a.acquire("nodot");
-            str qual = a.acquire("qualifier");
-            if (a.opt.size() > 0) kind += " quest";
+            str qual  = a.acquire("qualifier");
             output = qual == "often" ? 
                 "Often used other than figuratively or idiomatically: ":
                 "Used other than figuratively or idiomatically: ";
@@ -105,14 +68,21 @@ namespace pass4
             output = "hyphenation: " + str(a.unnamed, "‧");
         }
         else
-        if (name == "ux") // usex, eg, example
+        if (name == "ux" or // usex, eg, example
+            name == "uxi")
         {
-            a.ignore("inline"); str
-            q = a.acquire("q");      if (q != "") a[0] += " (''" + q + "'')";
-            q = a.acquire("footer"); if (q != "") a[0] += " (''" + q + "'')";
-            if (a.complexity == 1) { output = "''"+a[0]+"''"; kind += " 1"; } else
-            if (a.complexity == 2) { output = "''"+a[0]+"'' ― ''"+a[1]+"''"; kind += " 2"; } else
-            { output = ""; kind += " skip"; }
+            str q;
+            a.ignore("tr");
+            a.ignore("ref");
+            a.ignore("inline");
+            q = a.acquire("q");           if (q != "") a[0] += " (''" + q + "'')";
+            q = a.acquire("q1");          if (q != "") a[0] += " (''" + q + "'')";
+            q = a.acquire("t");           if (q != "") a[0] += " (''" + q + "'')";
+            q = a.acquire("footer");      if (q != "") a[0] += " (''" + q + "'')";
+            q = a.acquire("translation"); if (q != "") a[0] += " (''" + q + "'')";
+            if (a.complexity == 2) { output = "''"+a[0]+"'' ― ''"+a[1]+"''"; a.kind += " 2"; } else
+            if (a.complexity == 1) { output = "''"+a[0]+"''"; a.kind += " 1"; } else
+            { output = ""; a.kind += " skip"; }
         }
         else
         if (name == "IPA" or
@@ -120,65 +90,33 @@ namespace pass4
             name == "antonyms" or
             name == "hyponyms" or
             name == "hypernyms" or
+            name == "homophone" or
             name == "homophones" or
             name == "coordinate terms" or
             false)
         {
-            for (str & s : a.unnamed)
-                if (s.starts_with("Thesaurus:") or
-                    s.starts_with("thesaurus:"))
-                    s.upto(10).erase();
-
+            a.altqual();
+            a.ignore_all("n");
+            a.ignore_all("id");
             a.ignore("nocount");
-            a.ignore("n"); a.ignore("n1"); a.ignore("n2"); a.ignore("n3"); a.ignore("n4"); a.ignore("n5");
-            a.ignore("id"); a.ignore("id1"); a.ignore("id2"); a.ignore("id3");
-            a.ignore("id4"); a.ignore("id5"); a.ignore("id6");
-            str
-            q = a.acquire("qual" ); if (q != "" and a.unnamed.size() >= 1) a[0] = "(''" + q + "'') " + a[0];
-            q = a.acquire("qual1"); if (q != "" and a.unnamed.size() >= 1) a[0] = "(''" + q + "'') " + a[0];
-            q = a.acquire("qual2"); if (q != "" and a.unnamed.size() >= 2) a[1] = "(''" + q + "'') " + a[1];
-            q = a.acquire("qual3"); if (q != "" and a.unnamed.size() >= 3) a[2] = "(''" + q + "'') " + a[2];
-            q = a.acquire("qual4"); if (q != "" and a.unnamed.size() >= 4) a[3] = "(''" + q + "'') " + a[3];
-            q = a.acquire("qual5"); if (q != "" and a.unnamed.size() >= 5) a[4] = "(''" + q + "'') " + a[4];
-            q = a.acquire("qual6"); if (q != "" and a.unnamed.size() >= 6) a[5] = "(''" + q + "'') " + a[5];
-            q = a.acquire("qual7"); if (q != "" and a.unnamed.size() >= 7) a[6] = "(''" + q + "'') " + a[6];
-            q = a.acquire("q" );    if (q != "" and a.unnamed.size() >= 1) a[0] = "(''" + q + "'') " + a[0];
-            q = a.acquire("q1");    if (q != "" and a.unnamed.size() >= 1) a[0] = "(''" + q + "'') " + a[0];
-            q = a.acquire("q2");    if (q != "" and a.unnamed.size() >= 2) a[1] = "(''" + q + "'') " + a[1];
-            q = a.acquire("q3");    if (q != "" and a.unnamed.size() >= 3) a[2] = "(''" + q + "'') " + a[2];
-            q = a.acquire("q4");    if (q != "" and a.unnamed.size() >= 4) a[3] = "(''" + q + "'') " + a[3];
-            q = a.acquire("q5");    if (q != "" and a.unnamed.size() >= 5) a[4] = "(''" + q + "'') " + a[4];
-            q = a.acquire("q6");    if (q != "" and a.unnamed.size() >= 6) a[5] = "(''" + q + "'') " + a[5];
-            q = a.acquire("q7");    if (q != "" and a.unnamed.size() >= 7) a[6] = "(''" + q + "'') " + a[6];
-            q = a.acquire("q8");    if (q != "" and a.unnamed.size() >= 8) a[7] = "(''" + q + "'') " + a[7];
-            q = a.acquire("q9");    if (q != "" and a.unnamed.size() >= 9) a[8] = "(''" + q + "'') " + a[8];
-            q = a.acquire("q10");   if (q != "" and a.unnamed.size() >=10) a[9] = "(''" + q + "'') " + a[9];
-            q = a.acquire("q11");   if (q != "" and a.unnamed.size() >=11) a[10]= "(''" + q + "'') " + a[10];
-            q = a.acquire("q12");   if (q != "" and a.unnamed.size() >=12) a[11]= "(''" + q + "'') " + a[11];
-            q = a.acquire("q13");   if (q != "" and a.unnamed.size() >=13) a[12]= "(''" + q + "'') " + a[12];
-            q = a.acquire("q14");   if (q != "" and a.unnamed.size() >=14) a[13]= "(''" + q + "'') " + a[13];
-            q = a.acquire("q15");   if (q != "" and a.unnamed.size() >=15) a[14]= "(''" + q + "'') " + a[14];
-            q = a.acquire("alt1");  if (q != "" and a.unnamed.size() >= 1) { a[0] = q; }
-            q = a.acquire("alt2");  if (q != "" and a.unnamed.size() >= 2) { a[1] = q; }
-            q = a.acquire("alt3");  if (q != "" and a.unnamed.size() >= 3) { a[2] = q; }
+            if (a.opt.size() > 0) a.kind += " quest";
 
-            if (a.opt.size() > 0) kind += " quest";
             output = str(a.unnamed, ", ");
             if (name == "synonyms"  or
                 name == "antonyms"  or
                 name == "hyponyms"  or
                 name == "hypernyms" or
+                name == "homophone" or
                 name == "homophones")
             {
                 str s = name;
-                if (a.unnamed.size() < 2)
-                    s.truncate();
+                if (a.unnamed.size() < 2) s.truncate();
                 output = s + ": " + output;
             }
         }
         else
         {
-            kind = "{{}}"; templates_statistics [__FILE__][name]++;
+            a.kind = "{{}}"; templates_statistics [__FILE__][name]++;
         }
         if (a.kind != "{{}}" and not
             templates_usage[__FILE__].contains(a.name)) {
@@ -186,10 +124,15 @@ namespace pass4
             result.report(esc + "\n" + Templates[name]
                  + "\n" + esc + "\n", "{{"+name+"}}"); }
 
-        if (kind.contains(" quest")) kind += " !!!!!";
-        if (output.contains("\n")) kind +=  " #br#";
-        if (output.contains("\n")) report = "==== "+title+" ==== "+header+" ==== "+"\n\n" + report;
-        result.report (report + " => " + output + " == " + title, kind);
+        if (a.kind != "{{}}") 
+        if (not a.opt.empty()) a.kind += " opt";
+
+        if (a.kind.contains(" quest")) a.kind += " !!!!!";
+        if (output.contains("\n")) a.kind +=  " #br#";
+        if (output.contains("\n"))
+            report = esc+" "+title+"\n"+report+"\n====\n"+output; else
+            report = report + " => " + output + " == " + title;
+        if (a.kind != "{{}}") result.report (report, a.kind);
         return output;
     }
 

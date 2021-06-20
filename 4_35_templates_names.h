@@ -105,12 +105,14 @@ namespace pass4
             if (born  != "") output += " ("+born+"–"+died+")";
             if (in    != "") output += " in " + in;
             if (nodot != "") output += dot == "" ? "." : dot;
-            if (a.opt.size() > 0) a.kind += " quest";
         }
         else
         {
             a.kind = "{{}}"; templates_statistics [__FILE__][name]++;
         }
+
+        if (a.kind != "{{}}") 
+        if (not a.opt.empty()) a.kind += " opt";
 
         if (a.kind.contains(" quest")) a.kind += " !!!!!";
         if (output.contains("\n")) a.kind +=  " #br#";
