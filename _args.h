@@ -109,15 +109,16 @@
 
                 body += key + "=" + value + "|";
 
-                if (key == "1") { unnamed.resize(max(1, unnamed.size())); unnamed[0] = value; } else
-                if (key == "2") { unnamed.resize(max(2, unnamed.size())); unnamed[1] = value; } else
-                if (key == "3") { unnamed.resize(max(3, unnamed.size())); unnamed[2] = value; } else
-                if (key == "4") { unnamed.resize(max(4, unnamed.size())); unnamed[3] = value; } else
-                if (key == "5") { unnamed.resize(max(5, unnamed.size())); unnamed[4] = value; } else
-                if (key == "6") { unnamed.resize(max(6, unnamed.size())); unnamed[5] = value; } else
-                if (key == "7") { unnamed.resize(max(7, unnamed.size())); unnamed[6] = value; } else
-                if (key == "8") { unnamed.resize(max(8, unnamed.size())); unnamed[7] = value; } else
-                if (key == "9") { unnamed.resize(max(9, unnamed.size())); unnamed[8] = value; } else
+                if (key.digital())
+                {
+                    int n = std::stoi(key);
+                    if (n < 0 or n > 99) kind += " quest key"; else
+                    {
+                        unnamed.resize(max(n+1, unnamed.size()));
+                        unnamed[n] = value;
+                    }
+                }
+                else
                 {
                     opt [key] = value;
                 }
@@ -239,7 +240,9 @@
         if (a.size() > 0 and a[0] != "") { output = a[0]; kind += " 1"; } else
                                          { output ="(?)"; kind += " 0"; }
 
-        str alt = acquire("alt"); if (alt != "") output = alt;
+        str
+        alt = acquire("alt" ); if (alt != "") output = alt;
+        alt = acquire("alt1"); if (alt != "") output = alt;
 
         output = o + output + c;
 
@@ -252,6 +255,7 @@
         str ts = acquire("ts"); if (ts != "") tr = ts;
         if (a.size() >= 3 and a[2] != "") tt = a[2];
 
+        if (tt == "" and gloss1 != "") tt = gloss1;
         if (tr == "-") tr = "";
         if (tt == "-") tt = "";
         if (tr != "") tr = "''"+tr+"''";

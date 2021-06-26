@@ -12,7 +12,8 @@ namespace pass4
         args.kind  = "{{" + name + "}}";
 
         if (name == "surname" or
-            name == "given name")
+            name == "given name" or
+            name == "historical given name")
         {
             str q;
             str A = a.acquire("a"); if (A == "") A = "A";

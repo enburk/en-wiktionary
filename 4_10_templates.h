@@ -13,7 +13,8 @@ namespace pass4
             "rfc-sense", "rfv-sense", "rfc", "rfclarify", "rfd-sense", "rfv-pron",
             "rfref", "rfquote", "rfscript", "rfd-redundant", "rfm-sense",
             "rfd", "rfm", "rfv", // "rfdate",
-            "attention", 
+            "attention", "checksense",
+            "sic", 
         }},
         {   "mid",
         {
@@ -29,6 +30,12 @@ namespace pass4
             "der-top3", "der-mid3", "der-bottom3", "rel-top3", "rel-mid3", "rel-bottom3", 
             "der-top4", "der-mid4", "der-bottom4", "rel-top4", "rel-mid4", "rel-bottom4", 
             "der-top5", "der-mid5", "der-bottom5", "rel-top5", "rel-mid5", "rel-bottom5",
+            "hyp-top",  "hyp-mid",  "hyp-bottom", 
+            "hyp-top1", "hyp-mid1", "hyp-bottom1",
+            "hyp-top2", "hyp-mid2", "hyp-bottom2",
+            "hyp-top3", "hyp-mid3", "hyp-bottom3", 
+            "hyp-top4", "hyp-mid4", "hyp-bottom4", 
+            "hyp-top5", "hyp-mid5", "hyp-bottom5",
         }},
         {   "pronunciation",
         {
@@ -38,11 +45,16 @@ namespace pass4
         {
             ",",    // Oxford comma
             "lena", // Requests for attention in etymologies in Latin entries
-            "root", 
+            "root", "nonlemma", "PIE word", "listen",  
         }},
         {   "seealso",
         {
-            "projectlink", "projectlinks", "langcat", "catlangname", 
+            "projectlink", "projectlinks", "morse links", 
+            "PL..commons", "PL..1911", "comcatlite", "ethnologue", 
+            "wikipedia", "slim-wikipedia", "wikispecies", "interwiktionary",  
+            "catlangname", "langlist", "langcat", "mul-script~Latn-list", 
+            "ISO 639", "letters", "lookfrom", "Book-B", "punctuation", 
+            "interfixsee", "prefixsee", "seeCites", "syndiff", 
         }},
         {   "categories",
         {
@@ -52,7 +64,10 @@ namespace pass4
         {
             "Letter", "multiple images", "picdic", "color panel", 
             "examples", "examples-right", "broken ref",
-            "en-decades", "senseid", "prefixsee",
+            "en-decades", "senseid", "senseid-close", "hot sense", "tea room sense",
+            "+preo", "+obj", "abbreviated", "colorbox", "colour_panel", "construed with",
+            "ja-def", "Runr-def", "l2c", "maintenance line",  
+            "anchor", "-",
         }},
         {   "TEST",
         {
@@ -78,23 +93,22 @@ namespace pass4
         }
 
         if (name == "glossary" or
-            name == "IPAchar")
+            name == "pedlink"  or
+            name == "IPAchar"  or
+            name == "nobr")
         {
             output = a.link("", "");
         }
         else
-        if (name == "ll"   or
-            name == "link" or
-            name == "l-self")
+        if (name == "ll"     or
+            name == "link"   or
+            name == "l-self" or
+            name == "m-self" or
+            name == "alter")
         {
             a.languaged();
             a.ignore("g");
             output = a.link("", "");
-        }
-        else
-        if (name == "defdate")
-        {
-            output = a.link("[", "]");
         }
         else
         if (name == "gloss")

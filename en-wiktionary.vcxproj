@@ -196,6 +196,7 @@
     <ClInclude Include="4_37_templates_places.h" />
     <ClInclude Include="4_40_templates_taxon.h" />
     <ClInclude Include="4_50_templates_xfix.h" />
+    <ClInclude Include="4_88_templates_zzz.h" />
     <ClInclude Include="4_89_templates_zz.h" />
     <ClInclude Include="4_90_templates_z.h" />
     <ClInclude Include="5.h" />

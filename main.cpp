@@ -43,6 +43,7 @@
 #include "4_37_templates_places.h"
 #include "4_40_templates_taxon.h"
 #include "4_50_templates_xfix.h"
+#include "4_88_templates_zzz.h"
 #include "4_89_templates_zz.h"
 #include "4_90_templates_z.h"
 
@@ -102,6 +103,7 @@ int main ()
     pass4::templates_places >>
     pass4::templates_taxon >>
     pass4::templates_xfix >>
+    pass4::templates_zzz >>
     pass4::templates_zz >>
     pass4::templates_z >>
 

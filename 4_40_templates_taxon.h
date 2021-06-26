@@ -19,7 +19,8 @@ namespace pass4
             output = a.link("", "") + pl;
         }
         else
-        if (name == "taxlink")
+        if (name == "taxlink" or
+            name == "taxlinknew")
         {
             const array<str> ignored = {
             "entry", "i", "noi", "noshow", "nowshow", "nosohw", "noshhow", "boshow",
@@ -48,6 +49,11 @@ namespace pass4
             kind += " quest";
         }
         else
+        if (name == "taxlink2")
+        {
+            output = "''" + a[0] + "''";
+        }
+        else
         if (name == "taxon")
         {
             a.ignore("i");
@@ -59,8 +65,42 @@ namespace pass4
             if (nodot        =="") output += ".";
         }
         else
-        if (name == "SI-unit-abb")
+        if (name == "SI-unit" or
+            name == "SI-unit-2" or
+            name == "SI-unit-np" or
+            name == "SI-unit-abb" or
+            name == "SI-unit-abb2" or
+            name == "SI-unit-abbnp")
         {
+            if (name == "SI-unit" or
+                name == "SI-unit-np") a.languaged();
+
+            str t2;
+            if (name == "SI-unit-2"   ) { t2 = a[3]; a.unnamed.erase(2); }
+            if (name == "SI-unit-abb2") { t2 = a[2]; a.unnamed.erase(2); }
+
+            if (a.unnamed.size() == 2) a.unnamed +=
+                a[1] == "ampere" ? "current" :
+                a[1] == "candela" ? "luminous intensity" :
+                a[1] == "kelvin" ? "temperature" :
+                a[1] == "gram" ? "mass" :
+                a[1] == "gramme" ? "mass" :
+                a[1] == "meter" ? "length" :
+                a[1] == "metre" ? "length" :
+                a[1] == "mole" ? "amount of substance" :
+                a[1] == "second" ? "time" :
+                a[1] == "coulumb" ? "charge" :
+                a[1] == "farad" ? "capacitance" :
+                a[1] == "hertz" ? "frequency" :
+                a[1] == "joule" ? "energy" :
+                a[1] == "newton" ? "force" :
+                a[1] == "ohm" ? "resistance" :
+                a[1] == "pascal" ? "pressure" :
+                a[1] == "watt" ? "power" :
+                a[1] == "tesla" ? "magnetic flux intensity" :
+                a[1] == "volt" ? "electric potential" :
+                "??????????????????????????????????????????";
+
             if (a.unnamed.size() != 3) a.kind += " quest size"; else
             {
                 str pow =
@@ -87,9 +127,26 @@ namespace pass4
                     "";
                 if (pow == "") a.kind += " quest";
 
-                output = "(''metrology'') Symbol for '''" + a[0] + a[1] + "''', "
-                    "an SI unit of " + a[2] + " equal to 10<small><sup>" + pow
-                    + "</sup></small> " + a[1] + "s.";
+                output = "(''metrology'') ";
+
+                output +=
+                    name == "SI-unit" or
+                    name == "SI-unit-2" ?
+                    "An ": "Symbol for '''" + a[0] + a[1] + "'''";
+
+                if (t2 != "") output += " (''" + a[0] + t2 + "'')";
+                
+                output += ", an SI unit of " + a[2] +
+                    " equal to 10<small><sup>" + pow
+                    + "</sup></small> " + a[1];
+                
+                if (name != "SI-unit-abbnp" and
+                    name != "SI-unit-np")
+                    output += "s";
+
+                if (t2 != "") output += " (''" + t2 + "s'')";
+
+                output += ".";
             }
         }
         else

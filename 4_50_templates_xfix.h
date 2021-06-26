@@ -26,6 +26,16 @@ namespace pass4
             a.kind += " quest";
         }
         else
+        if (name == "affixusex")
+        {
+            str
+            q = a.acquire("alt1"); if (q != "" and a.unnamed.size() >= 1) a[0] = q;
+            q = a.acquire("alt2"); if (q != "" and a.unnamed.size() >= 2) a[1] = q;
+            q = a.acquire("alt3"); if (q != "" and a.unnamed.size() >= 3) a[2] = q;
+            if (a.complexity == 3) { output = "''"+a[0]+"'' + ''"+a[1] +"'' → ''"+a[2]+"''"; } else
+            a.kind += " quest";
+        }
+        else
         if (name == "blend"  or
             name == "affix"  or
             name == "prefix" or

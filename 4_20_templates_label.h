@@ -28,6 +28,12 @@ namespace pass4
 
         for (auto arg : args.unnamed)
         {
+            if (arg == "_") {
+                output += " ";
+                OMIT_postComma = true;
+                continue;
+            }
+
             str out = arg; bool alias = false;
             if (labels_aliases.contains(arg)) {
                 out = labels_aliases[arg];
@@ -78,11 +84,14 @@ namespace pass4
         str output = "{{" + body + "}}";
 
         if (name == "label"
+        or  name == "term-label"
         or  name == "accent" // a
         or  name == "qualifier" // qua, i, q, qf, qual
         or  name == "sense")
         {
-            if (name == "label") args.languaged();
+            if (name == "label"
+            or  name == "term-label")
+                args.languaged();
 
             if (name == "accent") for (str & arg : args.unnamed) {
                 if (arg == "GA"    ) arg = "General American";

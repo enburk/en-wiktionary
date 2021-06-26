@@ -37,8 +37,15 @@ namespace pass4
             name == "cognate"    or
             name == "noncognate" or
             name == "calque"     or
-            name == "back-formation" or
-            name == "langname-mention" or
+            name == "ellipsis"   or
+            name == "partial calque"    or
+            name == "back-formation"    or
+            name == "langname-mention"  or
+            name == "learned borrowing" or
+            name == "unadapted borrowing" or
+            name == "semantic loan"     or
+            name == "aphetic form"      or
+            name == "transliteration"   or
             false)
         {
             bool duo =
@@ -46,6 +53,11 @@ namespace pass4
                 name == "derived"    or
                 name == "inherited"  or
                 name == "calque"     or
+                name == "partial calque"    or
+                name == "learned borrowing" or
+                name == "unadapted borrowing" or
+                name == "semantic loan"     or
+                name == "transliteration"   or
                 false;
 
             if (duo)
@@ -70,7 +82,11 @@ namespace pass4
             else a.kind += " 0";
 
             if (name == "calque"        ) output = a.capitalized("Calque of "          ) + output;
+            if (name == "ellipsis"      ) output = a.capitalized("Ellipsis of "        ) + output;
             if (name == "back-formation") output = a.capitalized("Back-formation from ") + output;
+            if (name == "back-formation") output = a.capitalized("Transliteration of " ) + output;
+            if (name == "semantic loan" ) output = a.capitalized("Semantic loan from " ) + output;
+            if (name == "aphetic form"  ) output = a.capitalized("Aphetic form of "    ) + output;
         }
         else
         if (name == "clipping")

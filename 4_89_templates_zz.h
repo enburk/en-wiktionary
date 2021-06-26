@@ -5,114 +5,105 @@ namespace pass4
     str templates_zz_(str title, str header, str body, Result<entry> & result)
     {
         args args (body); str name = args.name; auto & a = args;
-        args.languaged();
 
+        name.replace_all(":", "..");
         name.replace_all("/", "~");
+        name.replace_all("·", "middot");
 
         str output = "{{" + body + "}}";
         str report = "{{" + body + "}}";
         args.kind  = "{{" + name + "}}";
 
-        if (name == "alternative plural of")
+        if (name == "B.C.E." or
+            name == "C.E."   or
+            false) a.ignore_all();
+
+        if (name == "middot"        ) output = ","; else
+        if (name == "nbsp"          ) output = u8"\u00A0"; else
+        if (name == "mdash"         ) output = "—"; else
+        if (name == "LR"            ) output = "(ʾ)"; else
+        if (name == "keyword"       ) output = a[0]; else
+        if (name == "IPAfont"       ) output = a[0]; else
+        if (name == "IPAlink"       ) output = a[0]; else
+        if (name == "math"          ) { if (a.unnamed.size() > 0) output = a[0]; } else
+        if (name == "B.C.E."        ) output = "<small>B.C.E.</small>"; else
+        if (name == "C.E."          ) output = "<small>C.E.</small>"; else
+        if (name == "C."            ) output = a[0] + "th"; else
+        if (name == "morse code for") output = "''Visual rendering of Morse code for'' " + a.link(); else
+        if (name == "nb..."         ) output = a.acquire("otherforms") == "" ? " […]" : " [and other forms]"; else
+        if (name == "..."           ) output = a.acquire("otherforms") == "" ? " […]" : " [and other forms]"; else
+        if (name == "circa"         ) output = a.acquire("short") == "" ? "circa " + a[0] : "c. " + a[0]; else
+        if (name == "circa2"        ) output = a.acquire("short") == "" ? "circa " + a[0] : "c. " + a[0]; else
+        if (name == "smallcaps"     ) output = "<span style=\"font-variant:small-caps;\">"+a[0]+"</span>"; else
+        if (name == "monospace"     ) output = "<span style=\"font-family:monospace;\">"+a[0]+"</span>"; else
+        if (name == "upright"       ) output = "<span style=\"font-style:normal;\">"+a[0]+"</span>"; else
+        if (name == "sub"           ) output = "<sub>"+a[0]+"</sub>"; else
+        if (name == "sup"           ) output = "<sup>"+a[0]+"</sup>"; else
+        if (name == "italic"        ) output = "<i>"+a[0]+"</i>"; else
+        if (name == "small"         ) output = "<small>"+a[0]+"</small>"; else
+        if (name == "defdate"       ) output = "<small>" + a.link("[", "]") + "</small>"; else
+        if (name == "defdt"         ) output = "<small>" + a.link("[", "]") + "</small>"; else
+        if (name == "native or resident of") output = "A native or resident of " + a[0]; else
+        if (name == "used in phrasal verbs") output = a.capitalized("''Used in a phrasal verb'' ") + a.link(); else
+        if (name == "ws"            ) output = "* " + a[0]; else
+        if (name == "g"             ) output = "''" + a[0] + "''"; else
+        if (name == "mention-gloss" ) output = "“" + a[0] + "”"; else
+        if (name == "nuclide"       )
         {
-            if (a.complexity == 2)
-            output = "''plural of " + a[0]+
-            " (alternative form of ("+a[1]+")''"; else
+            output = "<sup>"+a[0]+"</sup>"
+                "<sub style=\"margin-left:" +
+               (a[1].size() == 1 ? "-1.0ex" :
+                a[1].size() == 2 ? "-2.3ex" : 
+                a[1].size() == 3 ? "-3.5ex" : "0ex") +
+                ";\">"+a[1]+"</sub>"+a[2];
+        }
+        else
+        if (name == "w")
+        {
+            a.unnamed.erase_all("");
+            a.unnamed.erase_all("en");
+            if (a.unnamed.size() > 0) output = a[0];
+        }
+        else
+        if (name == "century")
+        {
+            if (a.complexity == 1) output = "<small>[from "+a[0]+"th c.]</small>"; else
+            if (a.complexity == 2) output = "<small>["+a[0]+"th–"+a[1]+"th c.]</small>"; else
             a.kind += " quest";
-        }
-        else
-        if (name == "alter")
-        {
-            output = "";
-            for (str s : a.unnamed) {
-                if (s == "" and a.kind.ends_with("()")) continue;
-                if (s == "") { output += " ("; a.kind += "()"; } else
-                if (output != "" and not output.ends_with("("))
-                output += ", ";
-                output += s;
-            }
-            if (a.kind.ends_with("()")) {
-                if (output.ends_with("(")) {
-                    output.truncate();
-                    output.truncate(); }
-                else output += ")";
-            }
-        }
-        else
-        if (name == "col2" or
-            name == "col3" or
-            name == "col4")
-        {
-            output = "";
-            str q = a.acquire("title"); if (q != "") output += "''("+q+"):''\n";
-            for (str s : a.unnamed)     if (s != "") output += "* " + s + "\n";
-        }
-        else
-        if (name == "&lit")
-        {
-            a.altqual();
-            str dot   = a.acquire("dot");
-            str nodot = a.acquire("nodot");
-            str qual  = a.acquire("qualifier");
-            output = qual == "often" ? 
-                "Often used other than figuratively or idiomatically: ":
-                "Used other than figuratively or idiomatically: ";
-            if (a.unnamed.size() > 1) output += "see ";
-            output += str::list(a.unnamed, ", ", " and ");
-            output = "''" + output + "''";
-            if (nodot != "") output += dot == "" ? "." : dot;
         }
         else
         if (name == "hyphenation")
         {
-            output = "hyphenation: " + str(a.unnamed, "‧");
+            str text   = a.acquire("caption");
+            str notext = a.acquire("nocaption");
+            output = notext == "" ? text == "" ? "hyphenation: " : text+":" : "";
+            output += str(a.unnamed, "‧");
         }
         else
-        if (name == "ux" or // usex, eg, example
-            name == "uxi")
+        if (name == "unknown")
         {
-            str q;
-            a.ignore("tr");
-            a.ignore("ref");
-            a.ignore("inline");
-            q = a.acquire("q");           if (q != "") a[0] += " (''" + q + "'')";
-            q = a.acquire("q1");          if (q != "") a[0] += " (''" + q + "'')";
-            q = a.acquire("t");           if (q != "") a[0] += " (''" + q + "'')";
-            q = a.acquire("footer");      if (q != "") a[0] += " (''" + q + "'')";
-            q = a.acquire("translation"); if (q != "") a[0] += " (''" + q + "'')";
-            if (a.complexity == 2) { output = "''"+a[0]+"'' ― ''"+a[1]+"''"; a.kind += " 2"; } else
-            if (a.complexity == 1) { output = "''"+a[0]+"''"; a.kind += " 1"; } else
-            { output = ""; a.kind += " skip"; }
+            str nocap = a.acquire("nocap");
+            str title = a.acquire("title");
+            output = title == "" ? nocap == "" ? "Unknown" : "unknown" : title;
         }
         else
-        if (name == "IPA" or
-            name == "synonyms" or
-            name == "antonyms" or
-            name == "hyponyms" or
-            name == "hypernyms" or
-            name == "homophone" or
-            name == "homophones" or
-            name == "coordinate terms" or
-            false)
+        if (name == "IPA letters")
         {
-            a.altqual();
-            a.ignore_all("n");
-            a.ignore_all("id");
-            a.ignore("nocount");
-            if (a.opt.size() > 0) a.kind += " quest";
-
-            output = str(a.unnamed, ", ");
-            if (name == "synonyms"  or
-                name == "antonyms"  or
-                name == "hyponyms"  or
-                name == "hypernyms" or
-                name == "homophone" or
-                name == "homophones")
+            output = "/";
+            for (auto s : a.unnamed)
             {
-                str s = name;
-                if (a.unnamed.size() < 2) s.truncate();
-                output = s + ": " + output;
+                if (s.starts_with("'")) { output += "'"; s.erase(0); }
+                output += 
+                s=="A" ? "eɪ"    : s=="B" ? "biː"  : s=="C" ? "siː"    : s=="D" ? "diː"  :
+                s=="E" ? "iː"    : s=="F" ? "ɛf"   : s=="G" ? "dʒiː"   : s=="H" ? "eɪtʃ" :
+                s=="I" ? "aɪ"    : s=="J" ? "dʒeɪ" : s=="K" ? "keɪ"    : s=="L" ? "ɛl"   :
+                s=="M" ? "ɛm"    : s=="N" ? "ɛn"   : s=="O" ? "əʊ"     : s=="P" ? "piː"  : s=="Q" ? "kjuː" :
+                s=="R" ? "ɑː(ɹ)" : s=="S" ? "ɛs"   : s=="T" ? "tiː"    : s=="U" ? "juː"  : s=="V" ? "viː"  : s=="W" ? "dʌb.əl.juː" :
+                s=="X" ? "ɛks"   : s=="Y" ? "waɪ"  : s=="Z" ? "zɛd"    :
+                s=="0" ? "əʊ"    : s=="1" ? "wʌn"  : s=="2" ? "tuː"    : s=="3" ? "θɹiː" : s=="4" ? "fɔː(ɹ)" :
+                s=="5" ? "faɪv"  : s=="6" ? "sɪks" : s=="7" ? "sɛv.ən" : s=="8" ? "eɪt"  : s=="9" ? "naɪn"   : "?????";
             }
+            output += "/";
         }
         else
         {
@@ -142,9 +133,6 @@ namespace pass4
 
         for (auto && [title, topic] : input)
         {
-            static int64_t nn = 0; if (++nn % 100'000 == 0)
-                logout("templatesz", nn, input.cargo);
-
             for (auto & [header, forms, content] : topic)
             {
                 auto t = title;

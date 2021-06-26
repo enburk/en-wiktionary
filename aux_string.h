@@ -256,6 +256,15 @@ namespace aux
 
         ////////////////////////////////////////////////////////////////////////////
 
+        bool digital () const {
+            bool digital = false;
+            for (char c : *this)
+                if(c < '0' || '9' < c)
+                    return false; else
+                        digital = true;
+            return digital;
+        }
+
         bool ascii_isalnum () const {
             for (char c : *this)
                 if((c < '0') || ('9' < c &&
