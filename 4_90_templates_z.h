@@ -7,8 +7,6 @@ namespace pass4
     std::map<str, bool>       z_report_x;
 
     const array<str> skipped_templates = {
-        "CURRENTDAY", "CURRENTMONTHNAME", "CURRENTYEAR",  
-        "=", "!", "'", "unsupported", // symbols
         "QUOTE", "quote", "rfdate", "RQ", "ISBN", "ref", "Q", // lex items
         "translation only", "caret notation of", // empty entry
         "name translit", // name/surname translit senses
@@ -36,6 +34,17 @@ namespace pass4
         if (skipped_templates.contains(name)) return output;
 
         if (name.starts_with("U..en..")) a.kind = "U..en..";
+
+        str zws = u8"\u200B"; // zero width space
+
+        if (name == "="             ) { output = zws + "="  + zws; a.kind = "sybol equal"; } else
+        if (name == "!"             ) { output = zws + "|"  + zws; a.kind = "sybol pipe"; } else
+        if (name == "'"             ) { output = zws + "'"  + zws; a.kind = "sybol apostroph"; } else
+        if (name == "unsupported"   ) { output = zws + a[0] + zws; a.kind = "sybol unsupported"; } else
+
+        if (name == "CURRENTDAY"      ) { output = name; a.kind = name; } else
+        if (name == "CURRENTMONTHNAME") { output = name; a.kind = name; } else
+        if (name == "CURRENTYEAR"     ) { output = name; a.kind = name; } else
 
         if (name == "PL..species"   ) { output = "{{..}}"; a.kind = name; } else
         if (name == "PL..quote"     ) { output = "{{..}}"; a.kind = name; } else

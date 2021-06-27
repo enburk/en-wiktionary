@@ -265,6 +265,14 @@ namespace aux
             return digital;
         }
 
+        bool ascii_isalpha () const {
+            for (char c : *this)
+                if((c < 'A') || ('Z' < c &&
+                    c < 'a') || ('z' < c))
+                    return false;
+            return true;
+        }
+
         bool ascii_isalnum () const {
             for (char c : *this)
                 if((c < '0') || ('9' < c &&

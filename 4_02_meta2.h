@@ -4,7 +4,7 @@ namespace pass4
 {
     Pass <entry, entry> meta2 = [](auto & input, auto & output)
     {
-        Result result {__FILE__, output, true};
+        Result result {__FILE__, output};
 
         bool first_time = true;
 

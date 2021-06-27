@@ -118,5 +118,6 @@ int main ()
     pass6::redirects >> 
     pass6::out >>
 
-    stop >> terminator; return 0;
+    stop >> terminator;
+    return 0;
 }

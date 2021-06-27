@@ -67,20 +67,35 @@ namespace pass3
                 {
                     auto ra = content.find("<", str::start_from(p)); int a = ra.offset;
                     auto rb = content.find(">", str::start_from(p)); int b = rb.offset;
-                    if ((!ra &&!rb)) { break; }
-                    if ((!ra && rb) ||
-                        ( ra &&!rb) || a > b) {
-                        report_broken_tag(title, content, p, result);
-                        break; }
+
+                    if (!ra and !rb) break;
+                    if (!ra and  rb) break;
+                    if ( ra and !rb) break;
+
+                    if (a > b) { p = b+1; continue; }
 
                     p = b+1;
                     str tag = content.from(a+1).upto(b);
-                    str name, tail; tag.split_by(str::one_of(" /\n"), name, tail, str::delimiter::to_the_right);
+                    str name, tail; tag.split_by(str::one_of(" /\n"),
+                        name, tail, str::delimiter::to_the_right);
+
                     name = name.ascii_lowercased();
+                    if (not name.ascii_isalpha()) {
+                        p = a+1; continue; }
+
                     str report =
-                        name == "b" || name == "i" || name == "u" || name == "s" ? "b, i, u, s" : 
-                        name == "sub" || name == "sup" || name == "big" || name == "small" ? "sub, sup, big, small" :
-                        name == "kbd" || name == "hiero" || name == "tt" || name == "em" ? "tt, em, kbd, hiero" :
+                        name == "b" or
+                        name == "i" or
+                        name == "u" or
+                        name == "s" ? "b, i, u, s" : 
+                        name == "sub" or
+                        name == "sup" or
+                        name == "big" or
+                        name == "small" ? "sub, sup, big, small" :
+                        name == "kbd"   or
+                        name == "hiero" or
+                        name == "tt"    or
+                        name == "em" ? "tt, em, kbd, hiero" :
                         name;
 
                     if (tail.ends_with("/"))
@@ -95,6 +110,22 @@ namespace pass3
                     p = rc.offset + rc.length;
 
                     str text = content.from(a).upto(p);
+
+                    if (name == "math")
+                    {
+                        str math = text; 
+                        math.replace_all("{{", "{" u8"\u200B" "{"); // zero with space
+                        math.replace_all("{{", "{" u8"\u200B" "{"); // zero with space
+                        math.replace_all("}}", "}" u8"\u200B" "}"); // zero with space
+                        math.replace_all("}}", "}" u8"\u200B" "}"); // zero with space
+                        if (math != text) {
+                            content.from(a).upto(p).replace_by(math); p = a + math.size();
+                            result.report ("========== " + title + "\n" +
+                                text + "\n=====\n" + math + "\n\n",
+                                report + " {{}}");
+                        }
+                    }
+
                     if (text.contains("\n"))
                     {
                         str combine; 
@@ -111,7 +142,9 @@ namespace pass3
                         }
 
                         content.from(a).upto(p).replace_by(combine); p = a + combine.size();
-                        result.report ("========== " + title + "\n" + text + "\n=====\n" + combine + "\n\n", report + " #br#");
+                        result.report ("========== " + title + "\n" +
+                            text + "\n=====\n" + combine + "\n\n",
+                            report + " #br#");
                         continue;
                     }
 

@@ -4,7 +4,7 @@ namespace pass4
 {
     Pass <entry, entry> meta1 = [](auto & input, auto & output)
     {
-        Result result {__FILE__, output, true};
+        Result result {__FILE__, output};
 
         array<str> groups = {"label", "lang", "etymo", "families", "place"};
 

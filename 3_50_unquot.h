@@ -115,16 +115,18 @@ namespace pass3
                         str l = line.upto(15);
                         if (l.starts_with ("##")) { l.erase(0); complex(40); }
                         if (l.starts_with ("# ")) { accepted += line; state = "def"; continue; }
+
                         l.replace_all("  ", "");
                         l.replace_all(" ", "");
                     
-                        if (l.starts_with ("#:"    )) { if (state == "def") accepted += line; } else
-                        if (l.starts_with ("#*:"   )) { if (state == "def") complex(10); } else
+                        if (l.starts_with ("#:" )) { if (state == "def") accepted += line; } else
+                        if (l.starts_with ("#*:")) { if (state == "def") complex(10); } else
 
-                        if (l.starts_with ("#*'''"     )) { state = "date"; complex(11); } else
-                        if (l.starts_with ("#* '''"    )) { state = "date"; complex(11); } else
-                        if (l.starts_with ("#*ca.'''"  )) { state = "date"; complex(12); } else
-                        if (l.starts_with ("#*{{rfdate")) { state = "date"; complex(13); } else
+                        if (l.starts_with ("#*'''"      )) { state = "date"; complex(11); } else
+                        if (l.starts_with ("#*ca.'''"   )) { state = "date"; complex(12); } else
+                        if (l.starts_with ("#*{{rfdate" )) { state = "date"; complex(13); } else
+                        if (l.starts_with ("#*''[http:]")) { state = "date"; complex(14); } else
+                        if (l.starts_with ("#:''[http:]")) { state = "date"; complex(14); } else
 
                         if (l == "#*{{QUOTE}}") { state = "quote"; complex(30); } else
                         if (l == "#*{{RQ}}"   ) { state = "quote"; complex(31); } else

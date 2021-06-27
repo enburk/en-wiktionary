@@ -538,7 +538,7 @@ namespace pass4
 
     Pass <entry, entry> templates_places = [](auto & input, auto & output)
     {
-        Result result {__FILE__, output, true};
+        Result result {__FILE__, output};
 
 		auto & a = placetype_aliases;
 		a["c"] = "country";
