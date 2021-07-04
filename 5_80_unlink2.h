@@ -2,10 +2,7 @@
 #include "5.h"
 namespace pass5
 {
-    // needed for lex_items and lex_notes
-
-    template<class entry>
-    str unlink_(str title, str header, str body, Result<entry> & result, str line)
+    str unlink2_(str title, str header, str body, Result<entry> & result, str line)
     {
         str kind   = "";
         str output = "[[" + body + "]]";
@@ -105,30 +102,38 @@ namespace pass5
         return output;
     }
 
-    Pass <entry, entry> lex_links = [](auto & input, auto & output)
+    Pass <entry, entry> unlink2 = [](auto & input, auto & output)
     {
-        Result result {__FILE__, output};
+        Result result {__FILE__, output, true};
 
         for (auto && [title, topic] : input)
         {
+            static int64_t nn = 0; if (++nn % 200'000 == 0)
+                logout("unlink", nn, input.cargo);
+
             for (auto & [header, forms, content] : topic)
             {
                 auto t = title;
                 auto h = header;
-
-                if (not lexical_items.contains(header) and
-                    not lexical_notes.contains(header))
-                    continue;
 
                 for (auto & line : content)
                 {
                     if (line == "") continue;
 
                     bracketer b;
-                    b.proceed_link = [&] (str s) { return unlink_(t, h, s, result, line); };
+                    b.proceed_link = [&] (str s) { return unlink2_(t, h, s, result, line); };
                     b.proceed(line);
             
                     line = std::move(b.output);
+
+                    line.replace_all("_COLON_", ":");
+                    line.replace_all("_COLONEQ_", ":=");
+                    line.replace_all("_SMILE1_", ":)");
+                    line.replace_all("_SMILE2_", ":-)");
+                    line.replace_all("_PIPE_", "|");
+                    line.replace_all("_EQUAL_", "=");
+                    line.replace_all("_LCURLY_", "{");
+                    line.replace_all("_RCURLY_", "}");
                 }
             }
 

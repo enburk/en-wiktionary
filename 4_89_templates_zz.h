@@ -25,7 +25,7 @@ namespace pass4
         if (name == "keyword"       ) output = a[0]; else
         if (name == "IPAfont"       ) output = a[0]; else
         if (name == "IPAlink"       ) output = a[0]; else
-        if (name == "math"          ) { if (a.unnamed.size() > 0) output = a[0]; } else
+        if (name == "math"          ) { if (a.size() > 0) output = a[0]; } else
         if (name == "B.C.E."        ) output = "<small>B.C.E.</small>"; else
         if (name == "C.E."          ) output = "<small>C.E.</small>"; else
         if (name == "C."            ) output = a[0] + "th"; else
@@ -62,7 +62,7 @@ namespace pass4
         {
             a.unnamed.erase_all("");
             a.unnamed.erase_all("en");
-            if (a.unnamed.size() > 0) output = a[0];
+            if (a.size() > 0) output = a[0];
         }
         else
         if (name == "century")

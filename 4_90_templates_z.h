@@ -37,10 +37,37 @@ namespace pass4
 
         str zws = u8"\u200B"; // zero width space
 
-        if (name == "="             ) { output = zws + "="  + zws; a.kind = "sybol equal"; } else
-        if (name == "!"             ) { output = zws + "|"  + zws; a.kind = "sybol pipe"; } else
         if (name == "'"             ) { output = zws + "'"  + zws; a.kind = "sybol apostroph"; } else
-        if (name == "unsupported"   ) { output = zws + a[0] + zws; a.kind = "sybol unsupported"; } else
+        if (name == "!"             ) { output = "_PIPE_";         a.kind = "sybol pipe"; } else
+        if (name == "="             ) { output = "_EQUAL_";        a.kind = "sybol equal"; } else
+        if (name == "unsupported"   )
+        {
+            a.kind = "sybol unsupported";
+            if (a[0] == "."           ) { a.kind += " 0"; output = a[0]; }
+            if (a[0] == " "           ) { a.kind += " 0"; output = a[0]; }
+            if (a[0] == "_"           ) { a.kind += " 0"; output = a[0]; }
+            if (a[0] == "[…]"         ) { a.kind += " 0"; output = a[0]; }
+            if (a[0] == "_ _"         ) { a.kind += " 0"; output = a[0]; }
+            if (a[0] == "period"      ) { a.kind += " 1"; output = "."; }
+            if (a[0] == "<"           ) { a.kind += " 1"; output = "&lt;"; }
+            if (a[0] == ">"           ) { a.kind += " 1"; output = "&gt;"; }
+            if (a[0] == "<>"          ) { a.kind += " 1"; output = "&lt;&gt;"; }
+            if (a[0] == "<3"          ) { a.kind += " 1"; output = "&lt;3"; }
+            if (a[0] == "[ ]"         ) { a.kind += " 1"; output = "[ ]"; }
+            if (a[0] == "square brackets") { a.kind += " 1"; output = "[ ]"; }
+            if (a[0] == "#"           ) { a.kind += " 1"; output = "#"; }
+            if (a[0] == "C sharp"     ) { a.kind += " 1"; output = "C#"; }
+            if (a[0] == "|"           ) { a.kind += " 2"; output = "_PIPE_"; }
+            if (a[0] == "="           ) { a.kind += " 2"; output = "_EQUAL_"; }
+            if (a[0] == "pipe"        ) { a.kind += " 2"; output = "_PIPE_"; }
+            if (a[0] == "colon equals") { a.kind += " 2"; output = "_COLONEQ_"; }
+            if (a[0] == "left curly bracket" ) { a.kind += " 2"; output = "_LCURLY_"; }
+            if (a[0] == "right curly bracket") { a.kind += " 2"; output = "_RCURLY_"; }
+            if (a[0] == "curly brackets"     ) { a.kind += " 2"; output = "_LCURLY_ _RCURLY_"; }
+            result.report ("\n", a.kind);
+            result.report (line, a.kind);
+        }
+        else
 
         if (name == "CURRENTDAY"      ) { output = name; a.kind = name; } else
         if (name == "CURRENTMONTHNAME") { output = name; a.kind = name; } else
@@ -59,7 +86,7 @@ namespace pass4
         if (name == "U..en..NNES"   ) output = "Generally an error made by non-native speakers."; else
         if (name == "U..en..an h"   ) output = "Like many terms that start with a non-silent ''h'' but have emphasis on their second syllable, some people precede ''"+title+"'' with ''an'', others with ''a''."; else
         if (name == "U..en..equal"  ) output = "In mathematics, this adjective can be used in phrases like \"A and B are congruent\", \"A is congruent to B\", and, less commonly, \"A is congruent with B\"."; else
-        if (name == "U..en..foreignism"   ) output = "Often written in italics (''"+title+"''), or pronounced as a "+(a.unnamed.size() > 1 ? a[1] : "foreign")+" word."; else
+        if (name == "U..en..foreignism"   ) output = "Often written in italics (''"+title+"''), or pronounced as a "+(a.size() > 1 ? a[1] : "foreign")+" word."; else
         if (name == "U..en..-ese"   )
         {
             str an = a.acquire("an") == "" ? "a" : "an";
@@ -96,7 +123,7 @@ namespace pass4
         if (output.contains("\n")) a.kind +=  " #br#";
         if (output.contains("\n"))
             report = esc+" "+title+"\n"+report+"\n====\n"+output; else
-            report = report + " => " + output + " == " + title;
+            report = report+" => "+output+" == "+title+" == "+header;
         if (a.kind != "{{}}") result.report (report, a.kind);
         return output;
     }
@@ -114,6 +141,10 @@ namespace pass4
 
                 for (auto & line : content)
                 {
+                    line.replace_all("{{unsupported|:}}", "_COLON_");
+                    line.replace_all("{{unsupported|:)}}", "_SMILE1_");
+                    line.replace_all("{{unsupported|:-)}}", "_SMILE2_");
+
                     bracketer b;
                     b.proceed_template = [&](str s){ return templates_z_(t, h, s, line, result); };
                     b.proceed(line);

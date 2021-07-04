@@ -40,17 +40,32 @@ namespace pass5
                     }
 
                     if (!line.contains_only(str::one_of(alnum))) complexity = max(0+1, complexity);
-                    if (!line.contains_only(str::one_of(Alnum))) complexity = max(1+1, complexity);
                     if (!line.contains_only(str::one_of(ALnum))) complexity = max(2+1, complexity);
                     if (!line.contains_only(str::one_of(ALNum))) complexity = max(3+1, complexity);
-                    if (!line.contains_only(str::one_of(ALNUm))) complexity = max(4+1, complexity);
                     if (!line.contains_only(str::one_of(ALNUM))) complexity = max(5+1, complexity);
 
-                    if (line.contains(str::one_of("[]{}#|<>"))) { complexity = 99; break; }
+                    if (0 < line.replace_all("; see Wikipedia.", ".")
+                    or  0 < line.replace_all("<sup>[http:]</sup>", "")
+                    or  0 < line.replace_all("(See [http:])", "")
+                    or  0 < line.replace_all(" ([http:])", ""))
+                        complexity = max(10, complexity);
+
+                    if (line.contains(str::one_of("*" ))) { complexity = max(11, complexity); }
+                    if (line.contains(str::one_of(":" ))) { complexity = max(12, complexity); }
+                    if (line.contains(str::one_of("[]"))) { complexity = max(13, complexity); }
+                    if (line.contains(str::one_of("<>"))) { complexity = max(91, complexity); }
+                    if (line.contains(str::one_of("{}"))) { complexity = max(92, complexity); break; }
+                    if (line.contains(str::one_of("#|"))) { complexity = max(93, complexity); break; }
+                    if (line.contains("[http:]"        )) { complexity = max(94, complexity); break; }
+                    if (line.contains("wiki") or line.contains("wikt") or
+                        line.contains("Wiki") or line.contains("Wikt") or
+                        line.contains("Category") or
+                        line.contains("Appendix"))
+                        complexity = max(96, complexity);
+
                 }
 
-                if (header == "pronunciation")
-                    content.erase_if([](auto s){ return s == ""; });
+                if (header == "pronunciation") content.erase_all("");
 
                 if (complexity == 0 && header == "etymology"    ) complexity = 90;
                 if (complexity <= 2 && header == "pronunciation") complexity = 90;

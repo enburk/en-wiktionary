@@ -200,14 +200,14 @@
     <ClInclude Include="4_89_templates_zz.h" />
     <ClInclude Include="4_90_templates_z.h" />
     <ClInclude Include="5.h" />
-    <ClInclude Include="5_05_lex_links.h" />
+    <ClInclude Include="5_05_unlink1.h" />
     <ClInclude Include="5_10_lex_items.h" />
     <ClInclude Include="5_20_rel_items.h" />
     <ClInclude Include="5_30_lex_notes.h" />
     <ClInclude Include="5_50_altforms.h" />
+    <ClInclude Include="5_80_unlink2.h" />
     <ClInclude Include="6.h" />
     <ClInclude Include="6_00_load.h" />
-    <ClInclude Include="6_10_unlink.h" />
     <ClInclude Include="6_70_redirects.h" />
     <ClInclude Include="6_90_out.h" />
     <ClInclude Include="aux_abc.h" />

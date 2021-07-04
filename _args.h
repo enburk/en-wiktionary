@@ -8,6 +8,8 @@
     array<str> unnamed;
     int complexity = 0;
 
+    int size () { return unnamed.size(); }
+
     str & operator [] (int i) { return unnamed[i]; }
 
     str acquire (str option)

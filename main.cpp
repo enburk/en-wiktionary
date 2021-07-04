@@ -47,14 +47,14 @@
 #include "4_89_templates_zz.h"
 #include "4_90_templates_z.h"
 
-#include "5_05_lex_links.h"
+#include "5_05_unlink1.h"
 #include "5_10_lex_items.h"
 #include "5_20_rel_items.h"
 #include "5_30_lex_notes.h"
 #include "5_50_altforms.h"
+#include "5_80_unlink2.h"
 
 #include "6_00_load.h"
-#include "6_10_unlink.h"
 #include "6_70_redirects.h"
 #include "6_90_out.h"
 
@@ -107,14 +107,14 @@ int main ()
     pass4::templates_zz >>
     pass4::templates_z >>
 
-    pass5::lex_links >>
+    pass5::unlink1 >>
     pass5::lex_items >>
     pass5::rel_items >>
     pass5::lex_notes >>
     pass5::altforms  >>
+    pass5::unlink2 >>
     
     pass6::load >>
-    pass6::unlink >>
     pass6::redirects >> 
     pass6::out >>
 

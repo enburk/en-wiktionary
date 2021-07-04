@@ -29,9 +29,9 @@ namespace pass4
         if (name == "affixusex")
         {
             str
-            q = a.acquire("alt1"); if (q != "" and a.unnamed.size() >= 1) a[0] = q;
-            q = a.acquire("alt2"); if (q != "" and a.unnamed.size() >= 2) a[1] = q;
-            q = a.acquire("alt3"); if (q != "" and a.unnamed.size() >= 3) a[2] = q;
+            q = a.acquire("alt1"); if (q != "" and a.size() >= 1) a[0] = q;
+            q = a.acquire("alt2"); if (q != "" and a.size() >= 2) a[1] = q;
+            q = a.acquire("alt3"); if (q != "" and a.size() >= 3) a[2] = q;
             if (a.complexity == 3) { output = "''"+a[0]+"'' + ''"+a[1] +"'' → ''"+a[2]+"''"; } else
             a.kind += " quest";
         }
@@ -44,21 +44,21 @@ namespace pass4
             name == "compound")
         {
             str
-            q = a.acquire("alt1"); if (q != "" and a.unnamed.size() >= 1) { a[0] = q; }//kind = "{{suffix}} alt"; }
-            q = a.acquire("alt2"); if (q != "" and a.unnamed.size() >= 2) { a[1] = q; }//kind = "{{suffix}} alt"; }
-            q = a.acquire("alt3"); if (q != "" and a.unnamed.size() >= 3) { a[2] = q; }//kind = "{{suffix}} alt"; }
-            if (name == "prefix" or name == "confix") if (a.unnamed.size() >= 1 and a[0] != "" and not a[0].ends_with  ("-")) a[0] = a[0] + "-";
-            if (name == "suffix" or name == "confix") if (a.unnamed.size() >= 2 and a[1] != "" and not a[1].starts_with("-")) a[1] = "-" + a[1];
-            if (name == "suffix" or name == "confix") if (a.unnamed.size() >= 3 and a[2] != "" and not a[2].starts_with("-")) a[2] = "-" + a[2];
+            q = a.acquire("alt1"); if (q != "" and a.size() >= 1) { a[0] = q; }//kind = "{{suffix}} alt"; }
+            q = a.acquire("alt2"); if (q != "" and a.size() >= 2) { a[1] = q; }//kind = "{{suffix}} alt"; }
+            q = a.acquire("alt3"); if (q != "" and a.size() >= 3) { a[2] = q; }//kind = "{{suffix}} alt"; }
+            if (name == "prefix" or name == "confix") if (a.size() >= 1 and a[0] != "" and not a[0].ends_with  ("-")) a[0] = a[0] + "-";
+            if (name == "suffix" or name == "confix") if (a.size() >= 2 and a[1] != "" and not a[1].starts_with("-")) a[1] = "-" + a[1];
+            if (name == "suffix" or name == "confix") if (a.size() >= 3 and a[2] != "" and not a[2].starts_with("-")) a[2] = "-" + a[2];
             for (str & s : a.unnamed) if (s != "") s = "''" + s + "''";
-            q = a.acquire("t1" ); if (q != "" and a.unnamed.size() >= 1) { a[0] += " (“"+q+"”)"; }//kind = "{{suffix}} trans"; }
-            q = a.acquire("t2" ); if (q != "" and a.unnamed.size() >= 2) { a[1] += " (“"+q+"”)"; }//kind = "{{suffix}} trans"; }
-            q = a.acquire("t3" ); if (q != "" and a.unnamed.size() >= 3) { a[2] += " (“"+q+"”)"; }//kind = "{{suffix}} trans"; }
-            q = a.acquire("lit"); if (q != "" and a.unnamed.size() >= 1) { a[0] += " (literally “"+q+"”)"; }
+            q = a.acquire("t1" ); if (q != "" and a.size() >= 1) { a[0] += " (“"+q+"”)"; }//kind = "{{suffix}} trans"; }
+            q = a.acquire("t2" ); if (q != "" and a.size() >= 2) { a[1] += " (“"+q+"”)"; }//kind = "{{suffix}} trans"; }
+            q = a.acquire("t3" ); if (q != "" and a.size() >= 3) { a[2] += " (“"+q+"”)"; }//kind = "{{suffix}} trans"; }
+            q = a.acquire("lit"); if (q != "" and a.size() >= 1) { a[0] += " (literally “"+q+"”)"; }
             str lang1 = a.lang1 != "" and Languages.contains(a.lang1) ? Languages[a.lang1] : "";
             str lang2 = a.lang2 != "" and Languages.contains(a.lang2) ? Languages[a.lang2] : "";
-            if (lang1 != "" and a.unnamed.size() >= 1 and a[0] != "") { a [0] = lang1 + " " + a[0]; a.kind += " lang"; }
-            if (lang2 != "" and a.unnamed.size() >= 2 and a[1] != "") { a [1] = lang2 + " " + a[1]; a.kind += " lang"; }
+            if (lang1 != "" and a.size() >= 1 and a[0] != "") { a [0] = lang1 + " " + a[0]; a.kind += " lang"; }
+            if (lang2 != "" and a.size() >= 2 and a[1] != "") { a [1] = lang2 + " " + a[1]; a.kind += " lang"; }
             a.ignore_all();
             array<str> aa;
             for (str s : a.unnamed) if (s != "") aa += s;

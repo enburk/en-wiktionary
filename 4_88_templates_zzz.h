@@ -43,7 +43,7 @@ namespace pass4
                     "thirteenth", "fourteenth", "fifteenth", "sixteenth", "seventeenth", "eighteenth", "nineteenth",
                     "twentieth", "twenty-first", "twenty-second", "twenty-third", "twenty-fourth", "twenty-fifth", "twenty-sixth"};
                 str nth = list[n];
-                str s = a[2]; if (a.unnamed.size() > 3) s += " ''or'' " + a[3];
+                str s = a[2]; if (a.size() > 3) s += " ''or'' " + a[3];
                 output = a[0] == "letter" ?
                     "''The "+nth+" letter of the English alphabet, called'' "+s+" ''and written in the Latin script.''":
                     "''The ordinal number '''"+nth+"''', derived from this letter of the English alphabet, "
@@ -55,12 +55,12 @@ namespace pass4
         else
         if (name == "alt")
         {
-            while (a.unnamed.size() >= 2) {
+            while (a.size() >= 2) {
                 if (a[1] == "") break;
                 a[0] += ", " + a[1];
                 a.unnamed.erase(1);
             }
-            output = a[0]; if (a.unnamed.size() >= 3)
+            output = a[0]; if (a.size() >= 3)
             output += "(''"+a[2]+"'')";
         }
         else
@@ -94,7 +94,7 @@ namespace pass4
             output = qual == "often" ? 
                 "Often used other than figuratively or idiomatically: ":
                 "Used other than figuratively or idiomatically: ";
-            if (a.unnamed.size() > 1) output += "see ";
+            if (a.size() > 1) output += "see ";
             output += str::list(a.unnamed, ", ", " and ");
             output = "''" + output + "''";
             if (a.nodot != "") output += a.dot == "" ? "." : a.dot;
@@ -151,7 +151,7 @@ namespace pass4
                 name == "homophones")
             {
                 str s = name;
-                if (a.unnamed.size() < 2) s.truncate();
+                if (a.size() < 2) s.truncate();
                 output = s + ": " + output;
             }
         }

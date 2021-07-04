@@ -380,7 +380,7 @@ namespace pass4
 				a.kind += " def"; output = def;
 			}
 			else
-			if (body.contains("<<") and a.unnamed.size() == 1)
+			if (body.contains("<<") and a.size() == 1)
 			{
 				a.kind += " new";
 				a.ignore("a");

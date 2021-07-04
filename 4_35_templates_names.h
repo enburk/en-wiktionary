@@ -41,9 +41,9 @@ namespace pass4
             str dimin = dim == "" ? " " : " diminutive of the ";
 
             str what;
-            if (a.unnamed.size() == 0) { ; } else 
-            if (a.unnamed.size() >= 1 and a[0] == "") { ; } else
-            if (a.unnamed.size() >= 1 and a[0] != "") { what = a[0];
+            if (a.size() == 0) { ; } else 
+            if (a.size() >= 1 and a[0] == "") { ; } else
+            if (a.size() >= 1 and a[0] != "") { what = a[0];
                 if (a[0].starts_with("English") and A == "A") A = "An"; } else
                 a.kind += " quest";
 

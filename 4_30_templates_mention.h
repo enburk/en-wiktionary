@@ -66,16 +66,16 @@ namespace pass4
             a.ignore("g"); a.ignore("g1"); a.ignore("g2"); // gender
             a.ignore("w");
 
-            if (a.unnamed.size() > 0
+            if (a.size() > 0
             and Languages.contains(a[0])) {
-                output = Languages[a[0]];
+                output = a[0] == "mul" ? "" : Languages[a[0]];
                 a.unnamed.erase(0);
                 a.complexity--;
             }
 
-            if (a.unnamed.size() == 0 or // ''(?)''
-                a.unnamed.size() >= 2 or
-                a.unnamed[0] != "-")
+            if (a.size() == 0 or // ''(?)''
+                a.size() >= 2 or
+                a[0] != "-")
                 output += (
                 output == "" ? "" : " ")
                     + a.link("''", "''");
@@ -115,7 +115,7 @@ namespace pass4
         else
         if (name == "inflection of")
         {
-            a.languaged(); if (a.unnamed.size() < 3) a.kind += " quest size"; else
+            a.languaged(); if (a.size() < 3) a.kind += " quest size"; else
             {
                 a.ignore_all(); if (not a.opt.empty()) a.kind += " opt";
                 str word = a.unnamed[0]; a.unnamed.erase(0);

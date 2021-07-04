@@ -15,7 +15,7 @@ namespace pass2
             a.languaged();
             a.dotcapped();
 
-            if (a.unnamed.size() > 0)
+            if (a.size() > 0)
             {
                 str lexical_form = a[0];
                 output = a.capitalized(a[0]);
@@ -53,7 +53,7 @@ namespace pass2
         a.languaged();
         a.dotcapped();
 
-        if (a.unnamed.size() > 0 and a[0] != "")
+        if (a.size() > 0 and a[0] != "")
         {
             std::lock_guard lock{lexforms_mutex};
             lexforms[a[0]] += lexform{lexical_form, "-", title};

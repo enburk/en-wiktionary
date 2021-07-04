@@ -28,8 +28,8 @@ namespace pass4
             "ber", "nover", "ver", "vere", "vr", "wplink", "wplnk", "wslink", };
             for (auto ignore : ignored) a.ignore(ignore);
 
-            str sname; if (a.unnamed.size() >= 1) sname = a.unnamed[0];
-            str taxon; if (a.unnamed.size() >= 2) taxon = a.unnamed[1];
+            str sname; if (a.size() >= 1) sname = a[0];
+            str taxon; if (a.size() >= 2) taxon = a[1];
             str genus, species; sname.split_by(" ", genus, species);
             const array<str> taxons = { "division", "taxon",
                 "superkingdom", "kingdom", "subkingdom", "infrakingdom",
@@ -40,12 +40,12 @@ namespace pass4
             bool is_taxon   = taxons.contains(taxon) && species == "";
             bool is_genus   = taxon == "genus"       && species == "";
             bool is_scepies = taxon == "species";
-            if (a.complexity == 2 && is_taxon  ) { output = "["  + sname +  "]"; kind += " 1 taxon";   } else
-            if (a.complexity == 2 && is_genus  ) { output = "[''"+ sname +"'']"; kind += " 1 genus";   } else
-            if (a.complexity == 2 && is_scepies) { output = "[''"+ sname +"'']"; kind += " 1 species"; } else
-            if (a.complexity == 2              ) { output = "[''"+ sname +"'']"; kind += " 2"; } else
-            if (a.complexity == 3              ) { output = "[''"+ a[2]  +"'']"; kind += " 3"; } else
-            if (a.complexity == 4              ) { output = "[''"+ a[2]  +"'']"; kind += " 4"; } else
+            if (a.complexity == 2 && is_taxon  ) { output = ""  + sname +  ""; kind += " 1 taxon";   } else
+            if (a.complexity == 2 && is_genus  ) { output = "''"+ sname +"''"; kind += " 1 genus";   } else
+            if (a.complexity == 2 && is_scepies) { output = "''"+ sname +"''"; kind += " 1 species"; } else
+            if (a.complexity == 2              ) { output = "''"+ sname +"''"; kind += " 2"; } else
+            if (a.complexity == 3              ) { output = "''"+ a[2]  +"''"; kind += " 3"; } else
+            if (a.complexity == 4              ) { output = "''"+ a[2]  +"''"; kind += " 4"; } else
             kind += " quest";
         }
         else
@@ -79,7 +79,7 @@ namespace pass4
             if (name == "SI-unit-2"   ) { t2 = a[3]; a.unnamed.erase(2); }
             if (name == "SI-unit-abb2") { t2 = a[2]; a.unnamed.erase(2); }
 
-            if (a.unnamed.size() == 2) a.unnamed +=
+            if (a.size() == 2) a.unnamed +=
                 a[1] == "ampere" ? "current" :
                 a[1] == "candela" ? "luminous intensity" :
                 a[1] == "kelvin" ? "temperature" :
@@ -101,7 +101,7 @@ namespace pass4
                 a[1] == "volt" ? "electric potential" :
                 "??????????????????????????????????????????";
 
-            if (a.unnamed.size() != 3) a.kind += " quest size"; else
+            if (a.size() != 3) a.kind += " quest size"; else
             {
                 str pow =
                     a[0] == "yocto" ?"-24" :
