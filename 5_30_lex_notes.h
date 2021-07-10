@@ -89,10 +89,21 @@ namespace pass5
 
                 if (header == "etymology")
                 {
-                    if (complexity == 0) complexity = 90; else
+                    if (complexity == 0) complexity = 90;
+                    else
                     if (str(content).size() < 2*title.size() and
                         str(content).contains("+"))
-                        complexity = 900 +
+                        complexity = 9900 +
+                        min(4, complexity);
+                    else
+                    if (str(content).size() < 3*title.size() and
+                        str(content).contains("+"))
+                        complexity = 99900 +
+                        min(4, complexity);
+                    else
+                    if (str(content).size() < 4*title.size() and
+                        str(content).contains("+"))
+                        complexity = 999900 +
                         min(4, complexity);
                 }
 

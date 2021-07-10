@@ -60,7 +60,7 @@
 #include "6_70_redirects.h"
 #include "6_90_out.h"
 
-Pass <pass5::entry, nothing> stop = [](auto & input, auto &)
+Pass <pass6::entry, nothing> stop = [](auto & input, auto &)
 {
     Time t0; for (auto && e: input) { (void)e; }
     Time t1; std::cout
@@ -118,9 +118,9 @@ int main ()
     pass5::unlink2 >>
     pass5::fix >>
     
-    //pass6::load >>
-    //pass6::redirects >> 
-    //pass6::out >>
+    pass6::load >>
+    pass6::redirects >> 
+    pass6::out >>
 
     stop >> terminator;
     return 0;

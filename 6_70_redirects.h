@@ -23,7 +23,7 @@ namespace pass6
 
     Pass <entry, entry> redirects = [](auto & input, auto & output)
     {
-        Result result {__FILE__, output};
+        Result result {__FILE__, output, true};
 
         std::map<str, array<paragraph>> entries;
 
@@ -41,12 +41,20 @@ namespace pass6
             static int64_t nn = 0; if (++nn % 100'000 == 0)
                 logout("redirects", nn, input.cargo);
 
-            bool complex = false; str report, origin;
+            bool complex = false;
+            bool notfound = false;
+            str report, origin;
 
             for (auto & [header, forms, content] : topic)
             {
-                if (not lexical_items.contains(header)) {
-                    complex = true; continue; }
+                if (not lexical_items.contains(header))
+                {
+                    if (header != "pronunciation" and
+                        header != "hyphenation")
+                        complex = true;
+
+                    continue;
+                }
 
                 for (auto & line : content)
                 {
@@ -91,6 +99,7 @@ namespace pass6
                             if (not found)
                             {
                                 complex = true;
+                                notfound = true;
                                 result.report(form + " " + s + " = " + title,
                                     " - not found");
                             }
@@ -107,7 +116,12 @@ namespace pass6
                 std::ostringstream sstream; sstream << entry{title, topic};
                 result.report (sstream.str() + ">>>>> " + origin + " <<<<<\n\n", report);
             }
-            if (complex and origin != "")
+            if (complex and origin != "" and notfound)
+            {
+                std::ostringstream sstream; sstream << entry{title, topic};
+                result.report (sstream.str() + ">>>>> " + origin + " <<<<<\n\n", "--");
+            }
+            if (complex and origin != "" and not notfound)
             {
                 std::ostringstream sstream; sstream << entry{title, topic};
                 result.report (sstream.str() + ">>>>> " + origin + " <<<<<\n\n", "-");
