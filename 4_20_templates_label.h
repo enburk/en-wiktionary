@@ -28,11 +28,13 @@ namespace pass4
 
         for (auto arg : args.unnamed)
         {
+            if (arg == "")
+                continue;
+
             if (arg == "_") {
                 output += " ";
                 OMIT_postComma = true;
-                continue;
-            }
+                continue; }
 
             str out = arg; bool alias = false;
             if (labels_aliases.contains(arg)) {

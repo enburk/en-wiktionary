@@ -10,7 +10,7 @@ namespace pass4
             "rfi", // (Image requested)
             "rfdef", // (definition required, request for definition, required definition)
             "rfquotek", "rfap", "rfex", "rfp", "rfap", "rfquote-sense", "rfv-etym",
-            "rfc-sense", "rfv-sense", "rfc", "rfclarify", "rfd-sense", "rfv-pron",
+            "rfc-sense", "rfv-sense", "rfc", "rfclarify", "rfd-sense", // "rfv-pron",
             "rfref", "rfquote", "rfscript", "rfd-redundant", "rfm-sense",
             "rfd", "rfm", "rfv", // "rfdate",
             "attention", "checksense",
@@ -39,7 +39,7 @@ namespace pass4
         }},
         {   "pronunciation",
         {
-            "audio", "rhymes", "enPR", // non IPA pronunciation
+            "audio", "audio-pron", "rhymes", "enPR", // non IPA pronunciation
         }},
         {   "etymology",
         {

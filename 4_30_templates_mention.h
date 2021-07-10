@@ -68,7 +68,10 @@ namespace pass4
 
             if (a.size() > 0
             and Languages.contains(a[0])) {
-                output = a[0] == "mul" ? "" : Languages[a[0]];
+                output =
+                    a[0] == "mul" ? "translingual" :
+                    a[0] == "en" ? "" :
+                    Languages[a[0]];
                 a.unnamed.erase(0);
                 a.complexity--;
             }

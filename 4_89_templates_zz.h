@@ -72,38 +72,11 @@ namespace pass4
             a.kind += " quest";
         }
         else
-        if (name == "hyphenation")
-        {
-            str text   = a.acquire("caption");
-            str notext = a.acquire("nocaption");
-            output = notext == "" ? text == "" ? "hyphenation: " : text+":" : "";
-            output += str(a.unnamed, "‧");
-        }
-        else
         if (name == "unknown")
         {
             str nocap = a.acquire("nocap");
             str title = a.acquire("title");
             output = title == "" ? nocap == "" ? "Unknown" : "unknown" : title;
-        }
-        else
-        if (name == "IPA letters")
-        {
-            output = "/";
-            for (auto s : a.unnamed)
-            {
-                if (s.starts_with("'")) { output += "'"; s.erase(0); }
-                output += 
-                s=="A" ? "eɪ"    : s=="B" ? "biː"  : s=="C" ? "siː"    : s=="D" ? "diː"  :
-                s=="E" ? "iː"    : s=="F" ? "ɛf"   : s=="G" ? "dʒiː"   : s=="H" ? "eɪtʃ" :
-                s=="I" ? "aɪ"    : s=="J" ? "dʒeɪ" : s=="K" ? "keɪ"    : s=="L" ? "ɛl"   :
-                s=="M" ? "ɛm"    : s=="N" ? "ɛn"   : s=="O" ? "əʊ"     : s=="P" ? "piː"  : s=="Q" ? "kjuː" :
-                s=="R" ? "ɑː(ɹ)" : s=="S" ? "ɛs"   : s=="T" ? "tiː"    : s=="U" ? "juː"  : s=="V" ? "viː"  : s=="W" ? "dʌb.əl.juː" :
-                s=="X" ? "ɛks"   : s=="Y" ? "waɪ"  : s=="Z" ? "zɛd"    :
-                s=="0" ? "əʊ"    : s=="1" ? "wʌn"  : s=="2" ? "tuː"    : s=="3" ? "θɹiː" : s=="4" ? "fɔː(ɹ)" :
-                s=="5" ? "faɪv"  : s=="6" ? "sɪks" : s=="7" ? "sɛv.ən" : s=="8" ? "eɪt"  : s=="9" ? "naɪn"   : "?????";
-            }
-            output += "/";
         }
         else
         {

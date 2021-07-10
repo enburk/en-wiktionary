@@ -196,6 +196,12 @@
     <ClInclude Include="5_80_unlink2.h">
       <Filter>5</Filter>
     </ClInclude>
+    <ClInclude Include="5_35_pronunciation.h">
+      <Filter>5</Filter>
+    </ClInclude>
+    <ClInclude Include="5_90_fix.h">
+      <Filter>5</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="0">

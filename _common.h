@@ -60,7 +60,7 @@ array<str> related_items
 };
 array<str> lexical_notes
 {
-    "pronunciation", "etymology", "usage notes", "trivia",
+    "pronunciation", "hyphenation", "etymology", "usage notes", "trivia",
 };
 
 struct lexform { str form, ack, word; };

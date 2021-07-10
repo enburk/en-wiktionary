@@ -128,7 +128,13 @@ namespace pass2
             output = "''" + lexical_form + "'' " + output;
 
             str first = lexical_form.upto(1);
-            if (first != first.ascii_lowercased())
+            if (first != first.ascii_lowercased() and
+                lexical_form != "Aphetic form of" and
+                lexical_form != "Alternative form of" and
+                lexical_form != "Alternative spelling of" and
+                lexical_form != "Alternative letter-case of" and
+                lexical_form != "Ellipsis of" and
+                lexical_form != "Synonym of")
                 output += ".";
 
             str out = output;

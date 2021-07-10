@@ -43,8 +43,8 @@ namespace pass4
         if (name == "unsupported"   )
         {
             a.kind = "sybol unsupported";
-            if (a[0] == "."           ) { a.kind += " 0"; output = a[0]; }
-            if (a[0] == " "           ) { a.kind += " 0"; output = a[0]; }
+            if (a[0] == "."           ) { a.kind += " 0"; output = zws + a[0] + zws; }
+            if (a[0] == " "           ) { a.kind += " 0"; output = zws + a[0] + zws; }
             if (a[0] == "_"           ) { a.kind += " 0"; output = a[0]; }
             if (a[0] == "[…]"         ) { a.kind += " 0"; output = a[0]; }
             if (a[0] == "_ _"         ) { a.kind += " 0"; output = a[0]; }

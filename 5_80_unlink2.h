@@ -32,10 +32,15 @@ namespace pass5
             str anchor;
             l.split_by("#A", l, anchor);
             l.split_by("#E", l, anchor);
+            l.split_by("#D", l, anchor);
             l.split_by("#I", l, anchor);
+            l.split_by("#M", l, anchor);
+            l.split_by("#N", l, anchor);
             l.split_by("#O", l, anchor);
             l.split_by("#P", l, anchor);
+            l.split_by("#S", l, anchor);
             l.split_by("#U", l, anchor);
+            l.split_by("#V", l, anchor);
             l.split_by("##", l, anchor);
         }
 
@@ -92,13 +97,26 @@ namespace pass5
             output = "[["+y1+"]]";
         }
         else
+        if (body != "." and
+            body != "," and
+            body != ":" and
+            body != ";")
             output = body;
+
+        bool compact = 
+            kind != "" and 
+            kind != "category";
 
         if (output.contains(":")) kind = "quest"; else
         if (report.contains("#")) kind += " complex2"; else
         if (report.contains(":")) kind += " complex1";
 
-        result.report (report + " => " + output, kind);
+        if (compact)
+        result.report (report + " => " + output, kind); else
+        result.report ("==== "+title+ " ==== "+header+ " ===="
+            + "\n" + line + "\n" + report + " => " + output
+            + "\n",
+            kind);
         return output;
     }
 
@@ -108,9 +126,6 @@ namespace pass5
 
         for (auto && [title, topic] : input)
         {
-            static int64_t nn = 0; if (++nn % 200'000 == 0)
-                logout("unlink", nn, input.cargo);
-
             for (auto & [header, forms, content] : topic)
             {
                 auto t = title;
@@ -125,15 +140,6 @@ namespace pass5
                     b.proceed(line);
             
                     line = std::move(b.output);
-
-                    line.replace_all("_COLON_", ":");
-                    line.replace_all("_COLONEQ_", ":=");
-                    line.replace_all("_SMILE1_", ":)");
-                    line.replace_all("_SMILE2_", ":-)");
-                    line.replace_all("_PIPE_", "|");
-                    line.replace_all("_EQUAL_", "=");
-                    line.replace_all("_LCURLY_", "{");
-                    line.replace_all("_RCURLY_", "}");
                 }
             }
 
