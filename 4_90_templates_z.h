@@ -35,7 +35,7 @@ namespace pass4
 
         if (name.starts_with("U..en..")) a.kind = "U..en..";
 
-        str zws = u8"\u200B"; // zero width space
+        const str zws = u8"\u200B"; // zero width space
 
         if (name == "'"             ) { output = zws + "'"  + zws; a.kind = "sybol apostroph"; } else
         if (name == "!"             ) { output = "_PIPE_";         a.kind = "sybol pipe"; } else
@@ -86,7 +86,7 @@ namespace pass4
         if (name == "U..en..NNES"   ) output = "Generally an error made by non-native speakers."; else
         if (name == "U..en..an h"   ) output = "Like many terms that start with a non-silent ''h'' but have emphasis on their second syllable, some people precede ''"+title+"'' with ''an'', others with ''a''."; else
         if (name == "U..en..equal"  ) output = "In mathematics, this adjective can be used in phrases like \"A and B are congruent\", \"A is congruent to B\", and, less commonly, \"A is congruent with B\"."; else
-        if (name == "U..en..foreignism"   ) output = "Often written in italics (''"+title+"''), or pronounced as a "+(a.size() > 1 ? a[1] : "foreign")+" word."; else
+        if (name == "U..en..foreignism"   ) output = "Often written in italics ("+italic(title)+"), or pronounced as a "+(a.size() > 1 ? a[1] : "foreign")+" word."; else
         if (name == "U..en..-ese"   )
         {
             str an = a.acquire("an") == "" ? "a" : "an";

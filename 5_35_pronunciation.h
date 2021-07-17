@@ -43,10 +43,12 @@ namespace pass5
                         line.replace_all( "/ ''or'' , /",  "/ ''or'' /");
                         line.replace_all( ", ,",  ",");
                         line.replace_all( ", ,",  ",");
-                        if (line.starts_with(", /"))
+                        if (line.starts_with(", /") or
+                            line.starts_with(", ["))
                             line.upto(2).erase();
 
-                        if (line.ends_with("/,")) {
+                        if (line.ends_with("/,") or
+                            line.ends_with("],")) {
                             line.truncate();
                             complexity = max(70,
                             complexity);

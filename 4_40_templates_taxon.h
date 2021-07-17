@@ -40,18 +40,18 @@ namespace pass4
             bool is_taxon   = taxons.contains(taxon) && species == "";
             bool is_genus   = taxon == "genus"       && species == "";
             bool is_scepies = taxon == "species";
-            if (a.complexity == 2 && is_taxon  ) { output = ""  + sname +  ""; kind += " 1 taxon";   } else
-            if (a.complexity == 2 && is_genus  ) { output = "''"+ sname +"''"; kind += " 1 genus";   } else
-            if (a.complexity == 2 && is_scepies) { output = "''"+ sname +"''"; kind += " 1 species"; } else
-            if (a.complexity == 2              ) { output = "''"+ sname +"''"; kind += " 2"; } else
-            if (a.complexity == 3              ) { output = "''"+ a[2]  +"''"; kind += " 3"; } else
-            if (a.complexity == 4              ) { output = "''"+ a[2]  +"''"; kind += " 4"; } else
+            if (a.complexity == 2 && is_taxon  ) { output =        sname ; kind += " 1 taxon";   } else
+            if (a.complexity == 2 && is_genus  ) { output = italic(sname); kind += " 1 genus";   } else
+            if (a.complexity == 2 && is_scepies) { output = italic(sname); kind += " 1 species"; } else
+            if (a.complexity == 2              ) { output = italic(sname); kind += " 2"; } else
+            if (a.complexity == 3              ) { output = italic(a[2] ); kind += " 3"; } else
+            if (a.complexity == 4              ) { output = italic(a[2] ); kind += " 4"; } else
             kind += " quest";
         }
         else
         if (name == "taxlink2")
         {
-            output = "''" + a[0] + "''";
+            output = italic(a[0]);
         }
         else
         if (name == "taxon")
@@ -132,9 +132,9 @@ namespace pass4
                 output +=
                     name == "SI-unit" or
                     name == "SI-unit-2" ?
-                    "An ": "Symbol for '''" + a[0] + a[1] + "'''";
+                    "An ": "Symbol for " + bold(a[0]+a[1]);
 
-                if (t2 != "") output += " (''" + a[0] + t2 + "'')";
+                if (t2 != "") output += " (" + italic(a[0]+t2) + ")";
                 
                 output += ", an SI unit of " + a[2] +
                     " equal to 10<small><sup>" + pow

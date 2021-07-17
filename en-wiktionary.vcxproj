@@ -207,11 +207,14 @@
     <ClInclude Include="5_30_lex_notes.h" />
     <ClInclude Include="5_35_pronunciation.h" />
     <ClInclude Include="5_50_altforms.h" />
-    <ClInclude Include="5_80_unlink2.h" />
-    <ClInclude Include="5_90_fix.h" />
+    <ClInclude Include="5_70_unlink2.h" />
+    <ClInclude Include="5_82_fix_bold.h" />
+    <ClInclude Include="5_84_fix_tags.h" />
+    <ClInclude Include="5_88_fix.h" />
     <ClInclude Include="6.h" />
     <ClInclude Include="6_00_load.h" />
     <ClInclude Include="6_70_redirects.h" />
+    <ClInclude Include="6_80_rotate.h" />
     <ClInclude Include="6_90_out.h" />
     <ClInclude Include="aux_abc.h" />
     <ClInclude Include="aux_array.h" />

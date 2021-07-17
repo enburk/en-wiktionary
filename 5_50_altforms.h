@@ -39,7 +39,7 @@ namespace pass5
                     if (not found and form != t)
                         lexforms[t] += lexform{"Alternative form of", "?", form};
 
-                    return "'''" + form + "'''";
+                    return bold(form);
                 };
 
                 int complexity = 0;

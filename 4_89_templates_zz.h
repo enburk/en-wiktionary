@@ -46,7 +46,7 @@ namespace pass4
         if (name == "native or resident of") output = "A native or resident of " + a[0]; else
         if (name == "used in phrasal verbs") output = a.capitalized("''Used in a phrasal verb'' ") + a.link(); else
         if (name == "ws"            ) output = "* " + a[0]; else
-        if (name == "g"             ) output = "''" + a[0] + "''"; else
+        if (name == "g"             ) output = italic(a[0]); else
         if (name == "mention-gloss" ) output = "“" + a[0] + "”"; else
         if (name == "nuclide"       )
         {

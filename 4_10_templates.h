@@ -149,7 +149,7 @@ namespace pass4
         {
             a.kind = "list helper";
             str title = a.acquire("title");
-            output = "(''"+title+"''): ";
+            output = "("+italic(title)+"): ";
             bracketer b;
             b.proceed_template = [&](str s){ return templates_(title, header, s, result); };
             b.proceed(str::list(a.unnamed));
@@ -161,7 +161,7 @@ namespace pass4
             a.kind = "list helper 2";
             str title = a.acquire("title");
             str list  = a.acquire("list");
-            output = "(''"+title+"''): ";
+            output = "("+italic(title)+"): ";
             bracketer b;
             b.proceed_template = [&](str s){ return templates_(title, header, s, result); };
             b.proceed(list);

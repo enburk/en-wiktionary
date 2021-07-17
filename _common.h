@@ -122,7 +122,24 @@ void strip (array<str> & content)
         content.end());
 }
 
-str esc = "###################################";
+const str esc = "###################################";
+const str zws = u8"\u200B"; // zero width space
+
+str italic (str s)
+{
+    if (s.starts_with("'")) s = zws + s;
+    if (s.ends_with  ("'")) s += zws;
+	return "''" + s + "''";
+}
+str bold (str s)
+{
+    if (s.starts_with("'")) s = zws + s;
+    if (s.ends_with  ("'")) s += zws;
+	return "'''" + s + "'''";
+}
+
+str lcfirst (str s) { if (s != "") s[0] = str::ascii_tolower(s[0]); return s; }
+str ucfirst (str s) { if (s != "") s[0] = str::ascii_toupper(s[0]); return s; }
 
 void save_meta (std::ofstream && fstream)
 {

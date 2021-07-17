@@ -14,15 +14,15 @@ namespace pass4
         if (name == "prefixusex")
         {
             a.ignore_all();
-            if (a.complexity == 2) { output = "''"+title+"'' + ''"+a[0]+"'' → ''"+a[1]+"''"; } else
+            if (a.complexity == 2) { output = italic(title)+" + "+italic(a[0])+" → "+italic(a[1]); } else
             a.kind += " quest";
         }
         else
         if (name == "suffixusex")
         {
             a.ignore_all();
-            if (a.complexity == 2) { output = "''"+a[0]+"'' + ''"+title+"'' → ''"+a[1]+"''"; } else
-            if (a.complexity == 4) { output = "''"+a[0]+"'' + ''"+a[1] +"'' + ''"+a[2]+"'' → ''"+a[3]+"''"; } else
+            if (a.complexity == 2) { output = italic(a[0])+" + "+italic(title)+" → "+italic(a[1])+""; } else
+            if (a.complexity == 4) { output = italic(a[0])+" + "+italic(a[1] )+" + "+italic(a[2])+" → "+italic(a[3]); } else
             a.kind += " quest";
         }
         else
@@ -32,7 +32,7 @@ namespace pass4
             q = a.acquire("alt1"); if (q != "" and a.size() >= 1) a[0] = q;
             q = a.acquire("alt2"); if (q != "" and a.size() >= 2) a[1] = q;
             q = a.acquire("alt3"); if (q != "" and a.size() >= 3) a[2] = q;
-            if (a.complexity == 3) { output = "''"+a[0]+"'' + ''"+a[1] +"'' → ''"+a[2]+"''"; } else
+            if (a.complexity == 3) { output = italic(a[0])+" + "+italic(a[1]) +" → "+italic(a[2]); } else
             a.kind += " quest";
         }
         else
@@ -50,7 +50,7 @@ namespace pass4
             if (name == "prefix" or name == "confix") if (a.size() >= 1 and a[0] != "" and not a[0].ends_with  ("-")) a[0] = a[0] + "-";
             if (name == "suffix" or name == "confix") if (a.size() >= 2 and a[1] != "" and not a[1].starts_with("-")) a[1] = "-" + a[1];
             if (name == "suffix" or name == "confix") if (a.size() >= 3 and a[2] != "" and not a[2].starts_with("-")) a[2] = "-" + a[2];
-            for (str & s : a.unnamed) if (s != "") s = "''" + s + "''";
+            for (str & s : a.unnamed) if (s != "") s = italic(s);
             q = a.acquire("t1" ); if (q != "" and a.size() >= 1) { a[0] += " (“"+q+"”)"; }//kind = "{{suffix}} trans"; }
             q = a.acquire("t2" ); if (q != "" and a.size() >= 2) { a[1] += " (“"+q+"”)"; }//kind = "{{suffix}} trans"; }
             q = a.acquire("t3" ); if (q != "" and a.size() >= 3) { a[2] += " (“"+q+"”)"; }//kind = "{{suffix}} trans"; }

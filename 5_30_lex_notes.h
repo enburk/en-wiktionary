@@ -78,11 +78,17 @@ namespace pass5
                     if (line.contains(str::one_of("{}"))) { complexity = max(92, complexity); break; }
                     if (line.contains(str::one_of("#|"))) { complexity = max(93, complexity); break; }
                     if (line.contains("[http:]"        )) { complexity = max(94, complexity); break; }
+                    if (line.contains("<h>"            )) { complexity = max(95, complexity); break; }
+                    if (line.contains("<ol>"           )) { complexity = max(95, complexity); break; }
+                    if (line.contains("<ul>"           )) { complexity = max(95, complexity); break; }
+                    if (line.contains("<dd>"           )) { complexity = max(95, complexity); break; }
+                    if (line.contains("<hiero>"        )) { complexity = max(96, complexity); break; }
+                    if (line.contains("<Chinese"       )) { complexity = max(96, complexity); break; }
                     if (line.contains("wiki") or line.contains("wikt") or
                         line.contains("Wiki") or line.contains("Wikt") or
                         line.contains("Category") or
                         line.contains("Appendix"))
-                        complexity = max(96, complexity);
+                        complexity = max(97, complexity);
 
                     accepted += line;
                 }

@@ -246,6 +246,9 @@
         alt = acquire("alt" ); if (alt != "") output = alt;
         alt = acquire("alt1"); if (alt != "") output = alt;
 
+        if (o.ends_with("'") and output.starts_with("'")) output = zws + output;
+        if (c.starts_with("'") and output.ends_with("'")) output += zws;
+
         output = o + output + c;
 
         ignore("sc"); // script
@@ -260,8 +263,8 @@
         if (tt == "" and gloss1 != "") tt = gloss1;
         if (tr == "-") tr = "";
         if (tt == "-") tt = "";
-        if (tr != "") tr = "''"+tr+"''";
-        if (tt != "") tt = "“" +tt+ "”";
+        if (tr != "") tr = italic(tr);
+        if (tt != "") tt = "“"+tt+"”";
 
         str lit = acquire("lit"); if (lit != "") tt = "literally “" +lit+ "”";
 
@@ -291,13 +294,13 @@
         {
             str q = acquire(qual);
             if (q != "" and unnamed.size() >= 1)
-                unnamed[0] = "(''" + q + "'') " +
+                unnamed[0] = "(" + italic(q) + ") " +
                 unnamed[0];
 
             for (int i=1; i<20; i++) {
                 str q = acquire(qual + std::to_string(i));
                 if (q != "" and unnamed.size() >= i)
-                    unnamed[i-1] = "(''" + q + "'') " +
+                    unnamed[i-1] = "(" + italic(q) + ") " +
                     unnamed[i-1];
             }
         }

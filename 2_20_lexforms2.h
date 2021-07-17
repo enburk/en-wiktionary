@@ -123,9 +123,11 @@ namespace pass2
                 lexforms[output] += lexform{lexical_form, "-", title};
             }
 
-            if (not output.starts_with("'''")) output = "'''" + output;
-            if (not output.ends_with  ("'''")) output = output + "'''";
-            output = "''" + lexical_form + "'' " + output;
+            if (not
+                output.starts_with("'''"))
+                output = bold(output);
+
+            output = italic(lexical_form) + " " + output;
 
             str first = lexical_form.upto(1);
             if (first != first.ascii_lowercased() and

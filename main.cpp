@@ -53,11 +53,14 @@
 #include "5_30_lex_notes.h"
 #include "5_35_pronunciation.h"
 #include "5_50_altforms.h"
-#include "5_80_unlink2.h"
-#include "5_90_fix.h"
+#include "5_70_unlink2.h"
+#include "5_82_fix_bold.h"
+#include "5_84_fix_tags.h"
+#include "5_88_fix.h"
 
 #include "6_00_load.h"
 #include "6_70_redirects.h"
+#include "6_80_rotate.h"
 #include "6_90_out.h"
 
 Pass <pass6::entry, nothing> stop = [](auto & input, auto &)
@@ -116,10 +119,13 @@ int main ()
     pass5::pronunciation >>
     pass5::altforms  >>
     pass5::unlink2 >>
+    pass5::fix_bold >>
+    pass5::fix_tags >>
     pass5::fix >>
     
     pass6::load >>
     pass6::redirects >> 
+    pass6::rotate >>
     pass6::out >>
 
     stop >> terminator;

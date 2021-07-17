@@ -98,7 +98,7 @@ namespace pass2
         output = a.capitalized(lexical_form);
 
         if (output != "")
-            output = "''" + output + "'' ";
+            output = italic(output) + " ";
 
         output += a.link();
 
@@ -109,12 +109,12 @@ namespace pass2
             output[2] = str::ascii_tolower(output[2]);
             if (extra.ends_with(" spelling"))
                 extra.resize(extra.size()-9);
-            output = "''" + extra + "'' " + output;
+            output = italic(extra) + " " + output;
             a.kind = "extra standard";
         }
         else if (extra != "") {
             if (output.ends_with(".")) output.truncate();
-            output += ", ''representing " + extra + "''";
+            output += ", " + italic("representing " + extra);
             a.kind = "extra";
         }
 

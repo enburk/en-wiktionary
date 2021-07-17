@@ -59,7 +59,7 @@ namespace pass4
             if (usage != "") output += ", of " + usage + " usage";
             if (name == "surname" and dot   != "") output += dot; else
             if (name == "surname" and nodot == "") output += ".";
-            output = "''" + output + "''";
+            output = italic(output);
         }
         else
         if (name == "coinage" or

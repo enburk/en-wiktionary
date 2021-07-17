@@ -111,9 +111,11 @@ namespace pass3
 
                     str text = content.from(a).upto(p);
 
-                    if (name == "math")
+                    if (name == "math"
+                    or  name == "nowiki")
                     {
                         str math = text; 
+                        math.replace_all("'", u8"\u200B" "'" u8"\u200B");
                         math.replace_all("{{", "{" u8"\u200B" "{"); // zero with space
                         math.replace_all("{{", "{" u8"\u200B" "{"); // zero with space
                         math.replace_all("}}", "}" u8"\u200B" "}"); // zero with space

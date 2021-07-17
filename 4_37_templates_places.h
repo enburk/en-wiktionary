@@ -145,9 +145,6 @@ namespace pass4
 		"borough", // +
 	};
 
-	str lcfirst (str s) { if (s != "") s[0] = str::ascii_tolower(s[0]); return s; }
-	str ucfirst (str s) { if (s != "") s[0] = str::ascii_toupper(s[0]); return s; }
-
 	auto map (const std::map<str,str> & m, const str & s) {
 		auto it = m.find(s); return it != m.end() ? it->second : s;	};
 

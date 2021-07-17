@@ -15,7 +15,7 @@ namespace pass4
             a.languaged();
             a.ignore("sc"); // script
             a.ignore("face");
-            if (a.complexity >= 1) output = "''" + a[0] + "''";
+            if (a.complexity >= 1) output = italic(a[0]);
             else a.kind += " quest";
         }
         else
@@ -105,7 +105,10 @@ namespace pass4
             a.languaged();
             a.dotcapped();
             a.ignore_all(); 
-            output = a.capitalized("Doublet of ''") + str::list(a.unnamed, ", ", " and ") + "''";
+            output = a.unnamed.empty() ?
+                a.capitalized("Doublet") :
+                a.capitalized("Doublet of ") +
+                italic(str::list(a.unnamed, ", ", " and "));
         }
         else
         if (name == "onomatopoeic")
@@ -176,7 +179,7 @@ namespace pass4
                     { output += "?"; a.kind += "!"; }
                 }
 
-                output = "''" + output + " of'' '''" + word + "'''";
+                output = "''" + output + " of'' " + bold(word);
             }
         }
         else

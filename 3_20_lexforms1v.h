@@ -183,7 +183,7 @@ namespace pass3
                     s.replace_all("~", t);
                     if (q != "" and s == "") r = "problem";
                     if (s != "" and not same(s, t)) r = "problem";
-                    if (q != "" and s != "") s = "'''(''" + q + "'')''' " + s;
+                    if (q != "" and s != "") s = "'''(" + italic(q) + ")''' " + s;
                     if (s != "") forms += s;
                 };
 
@@ -355,19 +355,24 @@ namespace pass3
                         ed_ != "" or
                         pp_ != "") r = "complex2";
 
-                    if (es_ != "") v1 = "'''(''" + es_ + "'')''' " + v1;
-                    if (ng_ != "") v2 = "'''(''" + ng_ + "'')''' " + v2;
-                    if (ed_ != "") v3 = "'''(''" + ed_ + "'')''' " + v3;
-                    if (pp_ != "") v4 = "'''(''" + pp_ + "'')''' " + v4;
+                    v1 = bold(v1);
+                    v2 = bold(v2);
+                    v3 = bold(v3);
+                    v4 = bold(v4);
 
-                    for (str s : ess) v1 += "''',''' " + s;
-                    for (str s : ngs) v2 += "''',''' " + s;
-                    for (str s : eds) v3 += "''',''' " + s;
-                    for (str s : pps) v4 += "''',''' " + s;
+                    if (es_ != "") v1 = "(" + italic(es_) + ") " + v1;
+                    if (ng_ != "") v2 = "(" + italic(ng_) + ") " + v2;
+                    if (ed_ != "") v3 = "(" + italic(ed_) + ") " + v3;
+                    if (pp_ != "") v4 = "(" + italic(pp_) + ") " + v4;
+
+                    for (str s : ess) v1 += ", " + bold(s);
+                    for (str s : ngs) v2 += ", " + bold(s);
+                    for (str s : eds) v3 += ", " + bold(s);
+                    for (str s : pps) v4 += ", " + bold(s);
                 }
 
                 if (v1 != "" and v1 != "" and v3 != "" and v4 != "")
-                f = "('''" + v1 + "''';''' " + v2 + "''';''' " + v3 + "''';''' " + v4 + "''')";
+                f = "(" + v1 + "; " + v2 + "; " + v3 + "; " + v4 + ")";
                 else r += " quest";
 
                 result.report (t + " == " + original_forms + " == " + f, r);

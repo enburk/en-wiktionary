@@ -76,7 +76,7 @@ namespace pass4
 
         complexity += complexity_plus;
         result.report (report + " => " + output, kind + " " + complexity);
-        return "(''"+output+"'')";
+        return "("+italic(output)+")";
     }
 
     str templates_label_ (str title, str header, str body, Result<entry> & result)
@@ -106,13 +106,13 @@ namespace pass4
                 if (arg == "GenAus") arg = "General Australian";
                 if (arg == "CA"    ) arg = "Canada";
                 if (arg == "NZ"    ) arg = "General New Zealand";
-                if (arg == "cot–caught"          ) arg = "</i>cot–caught<i> merger";
-                if (arg == "pin-pen"             ) arg = "</i>pin-pen<i> merger";
-                if (arg == "father-bother"       ) arg = "</i>father-bother<i> merger";
-                if (arg == "wine/whine"          ) arg = "without the </i>wine-whine<i> merger";
-                if (arg == "horse-hoarse"        ) arg = "without the </i>horse–hoarse<i> merger";
-                if (arg == "Mary-marry-merry"    ) arg = "</i>Mary–marry–merry<i> merger";
-                if (arg == "non-Mary-marry-merry") arg = "</i>Mary–marry–merry<i> distinction";
+                if (arg == "cot–caught"          ) arg = zws+"''cot–caught ''merger";
+                if (arg == "pin-pen"             ) arg = zws+"''pin-pen ''merger";
+                if (arg == "father-bother"       ) arg = zws+"''father-bother ''merger";
+                if (arg == "wine/whine"          ) arg = "without the'' wine-whine ''merger";
+                if (arg == "horse-hoarse"        ) arg = "without the'' horse–hoarse ''merger";
+                if (arg == "Mary-marry-merry"    ) arg = zws+"''Mary–marry–merry ''merger";
+                if (arg == "non-Mary-marry-merry") arg = zws+"''Mary–marry–merry ''distinction";
             }
 
             output = templates_label__(args, body, result);

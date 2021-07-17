@@ -76,15 +76,15 @@ struct bracketer
             switch (c) {
             case ']':     closing += c; break;
             case '}':     closing += c; break;
-            case '[': if (closing != "") proceed_closing (); if (payload() == "") opening() += c; else stack.emplace(c, ""); break;
-            case '{': if (closing != "") proceed_closing (); if (payload() == "") opening() += c; else stack.emplace(c, ""); break;
-            default : if (closing != "") proceed_closing ();     payload() += c; break;
+            case '[': if (closing != "") proceed_closing(c); if (payload() == "") opening() += c; else stack.emplace(c, ""); break;
+            case '{': if (closing != "") proceed_closing(c); if (payload() == "") opening() += c; else stack.emplace(c, ""); break;
+            default : if (closing != "") proceed_closing(c);     payload() += c; break;
             }
         }
-        proceed_closing ();
+        proceed_closing(' ');
     }
 
-    void proceed_closing ()
+    void proceed_closing (char next)
     {
         while (closing != "")
         {
@@ -125,13 +125,21 @@ struct bracketer
             if (op == "{{" ) payload() = proceed_template  (payload()); else
             if (op == "{{{") payload() = proceed_parameter (payload());
 
+            if (payload().ends_with("'") and next == '\'')
+                payload() += zws; // zero-width space
+
             closing.upto(op.size()).erase();
+
             opening().truncate (opening().size() - op.size());
 
             if (opening() == "" && stack.size() > 1)
             {
                 str s = std::move(payload());
                 stack.pop();
+
+                if (payload().ends_with("'") and s.starts_with("'"))
+                    payload() += zws; // zero-width space
+
                 payload() += std::move(s);
             }
         }

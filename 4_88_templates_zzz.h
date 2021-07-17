@@ -17,10 +17,10 @@ namespace pass4
         args.kind  = "{{" + name + "}}";
 
         if (name == "audio-IPA"            ) { a.ignore_all(); output = a[1]; } else
-        if (name == "only used in"         ) { a.ignore_all(); output = "''Only used in'' '''" + a[0] + "'''"; } else
+        if (name == "only used in"         ) { a.ignore_all(); output = "''Only used in'' " + bold(a[0]); } else
         if (name == "acronym"              ) output = a.capitalized("Acronym of ") + a.link(); else
-        if (name == "City nickname"        ) output = "''A nickname for " + a[0] + "''"; else
-        if (name == "masculine of"         ) output = "''masculine of'' '''" + a[0] + "'''"; else
+        if (name == "City nickname"        ) output = italic("A nickname for " + a[0]); else
+        if (name == "masculine of"         ) output = "''masculine of'' " + bold(a[0]); else
         if (name == "indtr")
         {
             str intr = a.acquire("intr");
@@ -61,7 +61,7 @@ namespace pass4
                 a.unnamed.erase(1);
             }
             output = a[0]; if (a.size() >= 3)
-            output += "(''"+a[2]+"'')";
+            output += "("+italic(a[2])+")";
         }
         else
         if (name == "alternative plural of")
@@ -116,13 +116,13 @@ namespace pass4
             a.ignore("tr");
             a.ignore("ref");
             a.ignore("inline");
-            q = a.acquire("q");           if (q != "") a[0] += " (''" + q + "'')";
-            q = a.acquire("q1");          if (q != "") a[0] += " (''" + q + "'')";
-            q = a.acquire("t");           if (q != "") a[0] += " (''" + q + "'')";
-            q = a.acquire("footer");      if (q != "") a[0] += " (''" + q + "'')";
-            q = a.acquire("translation"); if (q != "") a[0] += " (''" + q + "'')";
-            if (a.complexity == 2) { output = "''"+a[0]+"'' ― ''"+a[1]+"''"; a.kind += " 2"; } else
-            if (a.complexity == 1) { output = "''"+a[0]+"''"; } else
+            q = a.acquire("q");           if (q != "") a[0] += " (" + italic(q) + ")";
+            q = a.acquire("q1");          if (q != "") a[0] += " (" + italic(q) + ")";
+            q = a.acquire("t");           if (q != "") a[0] += " (" + italic(q) + ")";
+            q = a.acquire("footer");      if (q != "") a[0] += " (" + italic(q) + ")";
+            q = a.acquire("translation"); if (q != "") a[0] += " (" + italic(q) + ")";
+            if (a.complexity == 2) { output = italic(a[0])+" ― "+italic(a[1]); a.kind += " 2"; } else
+            if (a.complexity == 1) { output = italic(a[0]); } else
             { output = ""; a.kind += " skip"; }
         }
         else

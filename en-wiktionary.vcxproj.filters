@@ -193,13 +193,22 @@
     <ClInclude Include="5_05_unlink1.h">
       <Filter>5</Filter>
     </ClInclude>
-    <ClInclude Include="5_80_unlink2.h">
-      <Filter>5</Filter>
-    </ClInclude>
     <ClInclude Include="5_35_pronunciation.h">
       <Filter>5</Filter>
     </ClInclude>
-    <ClInclude Include="5_90_fix.h">
+    <ClInclude Include="6_80_rotate.h">
+      <Filter>6</Filter>
+    </ClInclude>
+    <ClInclude Include="5_70_unlink2.h">
+      <Filter>5</Filter>
+    </ClInclude>
+    <ClInclude Include="5_82_fix_bold.h">
+      <Filter>5</Filter>
+    </ClInclude>
+    <ClInclude Include="5_84_fix_tags.h">
+      <Filter>5</Filter>
+    </ClInclude>
+    <ClInclude Include="5_88_fix.h">
       <Filter>5</Filter>
     </ClInclude>
   </ItemGroup>

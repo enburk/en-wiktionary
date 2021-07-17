@@ -68,7 +68,7 @@ namespace pass3
                     if (not found and form != t)
                         lexforms[t] += lexform{"plural of", "?", form};
 
-                    return " '''" + form + "'''";
+                    return " " + bold(form);
                 };
 
                 auto same = [](str s1, str s2) {
@@ -83,7 +83,7 @@ namespace pass3
                     f.upto(2).erase();
                     r = "plural only";
                     if (f.starts_with("sg=")) { r += " sg"; f = f.from(3);
-                    f = "''normally plural, singular'' '''" + f + "'''"; }
+                    f = italic("normally plural, singular") + " " + bold(f); }
                     else if (f != "" and f != t) { r += " quest"; f = ""; }
                     else f = "''plural only''";
                 }
